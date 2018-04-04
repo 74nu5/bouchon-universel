@@ -1,37 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using BouchonUniversel.Models;
-
-namespace BouchonUniversel.Controllers
+﻿namespace BouchonUniversel.Controllers
 {
+    #region Usings
+
+    using System.Diagnostics;
+
+    using Metier;
+
+    using Microsoft.AspNetCore.Mvc;
+
+    using Models;
+    using Models.ModelsView;
+
+    #endregion
+
+    /// <summary>The home controller.</summary>
     public class HomeController : Controller
     {
+        #region Champs
+
+        /// <summary>The metier.</summary>
+        private readonly BouchonMetier metier;
+
+        #endregion
+
+        #region Constructeurs et destructeurs
+
+        /// <summary>Initializes a new instance of the <see cref="HomeController"/> class.</summary>
+        /// <param name="metier">The metier.</param>
+        public HomeController(BouchonMetier metier) => this.metier = metier;
+
+        #endregion
+
+        #region Méthodes publiques
+
+        /// <summary>The index.</summary>
+        /// <returns>The <see cref="IActionResult" />.</returns>
         public IActionResult Index()
         {
-            return View();
+            var model = new IndexViewModel { IsBouchonActivated = this.metier.GetBouchonState(), Files = this.metier.GetFiles() };
+            return this.View(model);
         }
 
-        public IActionResult About()
+        /// <summary>The index.</summary>
+        /// <param name="isActivated">The is activated.</param>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        [HttpPost]
+        public IActionResult Index(bool isActivated)
         {
-            ViewData["Message"] = "Your application description page.";
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
 
-            return View();
+            var result = isActivated ? this.metier.ActivateBouchon() : this.metier.DesactivateBouchon();
+
+            if (!result)
+            {
+                this.ModelState.AddModelError("IsActivated", "Erreur lors de la gestion du bouchon");
+                return this.StatusCode(500);
+            }
+
+            var model = new IndexViewModel { IsBouchonActivated = isActivated, Files = this.metier.GetFiles() };
+            return this.View(model);
         }
 
-        public IActionResult Contact()
+        /// <summary>The error.</summary>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        public IActionResult Error() => this.View(new ErrorViewModel
         {
-            ViewData["Message"] = "Your contact page.";
+            RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
+        });
 
-            return View();
-        }
+        /// <summary>The get file.</summary>
+        /// <param name="fileSelected">The file selected.</param>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        public IActionResult GetFile(string fileSelected) => this.File(this.metier.GetFile(fileSelected), "application/octet-stream", fileSelected);
 
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        #endregion
     }
 }
