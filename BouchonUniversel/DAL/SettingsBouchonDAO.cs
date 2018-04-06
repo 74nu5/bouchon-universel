@@ -13,20 +13,20 @@
 
     /// <summary>The memory context dao.</summary>
     [UsedImplicitly]
-    public class MemoryContextDAO
+    public class SettingsBouchonDAO
     {
         #region Champs
 
         /// <summary>The context.</summary>
-        private readonly MemoryContext context;
+        private readonly DataContext context;
 
         #endregion
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="MemoryContextDAO"/> class. Initializes a new instance of the<see cref="T:System.Object"></see> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsBouchonDAO"/> class. Initializes a new instance of the<see cref="T:System.Object"></see> class.</summary>
         /// <param name="context">The context.</param>
-        public MemoryContextDAO(MemoryContext context) => this.context = context;
+        public SettingsBouchonDAO(DataContext context) => this.context = context;
 
         #endregion
 

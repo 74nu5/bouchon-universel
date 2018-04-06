@@ -19,7 +19,7 @@
         #region Champs
 
         /// <summary>The metier.</summary>
-        private readonly BouchonMetier metier;
+        private readonly SettingsBouchonMetier metier;
 
         #endregion
 
@@ -27,7 +27,7 @@
 
         /// <summary>Initializes a new instance of the <see cref="HomeController"/> class.</summary>
         /// <param name="metier">The metier.</param>
-        public HomeController(BouchonMetier metier) => this.metier = metier;
+        public HomeController(SettingsBouchonMetier metier) => this.metier = metier;
 
         #endregion
 

@@ -1,0 +1,37 @@
+﻿@model BouchonUniversel.Models.Bouchons.Service
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Service</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Cle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Cle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Url)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Url)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Environnement)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Environnement.EnvironnementId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ServiceId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

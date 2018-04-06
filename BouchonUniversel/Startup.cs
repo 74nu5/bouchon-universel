@@ -10,6 +10,7 @@
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -61,15 +62,21 @@
             services.AddOptions();
             services.Configure<ApplicationSettings>(this.Configuration.GetSection("Bouchon"));
 
-            services.AddEntityFrameworkInMemoryDatabase();
-            services.AddDbContext<MemoryContext>((serviceProvider, options) => options.UseInMemoryDatabase("BouchonDB").UseInternalServiceProvider(serviceProvider));
+            services.AddEntityFrameworkSqlite();
+            services.AddDbContext<DataContext>(builder => builder.UseSqlite(this.GetSqliteConnection()));
+            
+            //services.AddEntityFrameworkInMemoryDatabase();
+            //services.AddDbContext<DataContext>((serviceProvider, options) => options.UseInMemoryDatabase("BouchonDB").UseInternalServiceProvider(serviceProvider));
 
             services.AddSwaggerGen(c => { c.SwaggerDoc(VersionSwagger, new Info { Title = TitreSwagger, Version = VersionSwagger }); });
 
 
-            services.AddTransient<BouchonMetier>();
+            services.AddTransient<SettingsBouchonMetier>();
             services.AddTransient<BouchonInitializer>();
-            services.AddTransient<MemoryContextDAO>();
+            services.AddTransient<SettingsBouchonDAO>();
+            services.AddTransient<ServicesDAO>();
+            services.AddTransient<BouchonsDAO>();
+            services.AddTransient<BouchonsMetier>();
         }
 
         /// <summary>The configure.</summary>
@@ -94,8 +101,25 @@
 
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/{VersionSwagger}/swagger.json", TitreSwagger); });
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
+            app.UseMvc(
+                routes =>
+                {
+                    routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                });
         }
+
+        /// <summary>The get sqlite connection.</summary>
+        /// <returns>The <see cref="SqliteConnection" />.</returns>
+        private SqliteConnection GetSqliteConnection()
+        {
+            var connectionStringBuilder =
+                new SqliteConnectionStringBuilder
+                {
+                    DataSource = this.Configuration.GetConnectionString("BDDConnection")
+                };
+            return new SqliteConnection(connectionStringBuilder.ToString());
+        }
+
 
         #endregion
     }

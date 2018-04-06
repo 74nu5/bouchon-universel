@@ -2,6 +2,8 @@
 {
     #region Usings
 
+    using System.Linq;
+
     using Microsoft.Extensions.Options;
 
     using Models;
@@ -16,9 +18,14 @@
         /// <summary>The init.</summary>
         /// <param name="context">The context.</param>
         /// <param name="options">The options.</param>
-        public static void Init(MemoryContext context, IOptions<ApplicationSettings> options)
+        public static void Init(DataContext context, IOptions<ApplicationSettings> options)
         {
             context.Database.EnsureCreated();
+
+            if (context.SettingsBouchon.Any())
+            {
+                return;
+            }
 
             var defautActivationSettings = new SettingsBouchon
             {

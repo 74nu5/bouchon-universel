@@ -21,20 +21,20 @@ namespace BouchonUniversel.Metier
 
     /// <summary>The bouchon metier.</summary>
     [UsedImplicitly]
-    public class BouchonMetier
+    public class SettingsBouchonMetier
     {
         #region Champs
 
         /// <summary>The context.</summary>
-        private readonly MemoryContextDAO dao;
+        private readonly SettingsBouchonDAO dao;
 
         #endregion
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BouchonMetier"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsBouchonMetier"/> class.</summary>
         /// <param name="dao">The context.</param>
-        public BouchonMetier(MemoryContextDAO dao) => this.dao = dao;
+        public SettingsBouchonMetier(SettingsBouchonDAO dao) => this.dao = dao;
 
         #endregion
 

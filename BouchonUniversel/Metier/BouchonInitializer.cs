@@ -22,7 +22,7 @@ namespace BouchonUniversel.Metier
         private readonly IOptions<ApplicationSettings> settings;
 
         /// <summary>The context.</summary>
-        private readonly MemoryContext context;
+        private readonly DataContext context;
 
         #endregion
 
@@ -31,7 +31,7 @@ namespace BouchonUniversel.Metier
         /// <summary>Initializes a new instance of the <see cref="BouchonInitializer"/> class.</summary>
         /// <param name="context">The context.</param>
         /// <param name="settings">The bouchon.</param>
-        public BouchonInitializer(MemoryContext context, IOptions<ApplicationSettings> settings)
+        public BouchonInitializer(DataContext context, IOptions<ApplicationSettings> settings)
         {
             this.context = context;
             this.settings = settings;
