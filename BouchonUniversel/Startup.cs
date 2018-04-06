@@ -3,6 +3,7 @@
     #region Usings
 
     using DAL;
+    using DAL.DAO;
 
     using JetBrains.Annotations;
 
@@ -65,17 +66,14 @@
             services.AddEntityFrameworkSqlite();
             services.AddDbContext<DataContext>(builder => builder.UseSqlite(this.GetSqliteConnection()));
             
-            //services.AddEntityFrameworkInMemoryDatabase();
-            //services.AddDbContext<DataContext>((serviceProvider, options) => options.UseInMemoryDatabase("BouchonDB").UseInternalServiceProvider(serviceProvider));
-
             services.AddSwaggerGen(c => { c.SwaggerDoc(VersionSwagger, new Info { Title = TitreSwagger, Version = VersionSwagger }); });
-
 
             services.AddTransient<SettingsBouchonMetier>();
             services.AddTransient<BouchonInitializer>();
             services.AddTransient<SettingsBouchonDAO>();
             services.AddTransient<ServicesDAO>();
             services.AddTransient<BouchonsDAO>();
+            services.AddTransient<EnvironnementDAO>();
             services.AddTransient<BouchonsMetier>();
         }
 

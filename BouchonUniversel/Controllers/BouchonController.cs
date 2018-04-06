@@ -7,9 +7,13 @@
     using System.Diagnostics;
     using System.Net.Http;
 
+    using Exceptions;
+
     using Metier;
 
     using Microsoft.AspNetCore.Mvc;
+
+    using KeyNotFoundException = System.Collections.Generic.KeyNotFoundException;
 
     #endregion
 
@@ -46,16 +50,17 @@
         {
             try
             {
-                this.metier.ProcessRequest(cle, env, route, query);
+                var result = this.metier.ProcessRequest(cle, env, route, query);
+                return this.Ok(result);
             }
-            catch (HttpRequestException httpEx)
+            catch (KeyNotFoundException httpEx)
             {
-                return this.BadRequest(httpEx.Message);
+                return this.NotFound(httpEx.Message);
             }
-
-            Debug.WriteLine(cle);
-            Debug.WriteLine(route);
-            return this.Ok(query);
+            catch (EnvironmentNotFoundException httpEx)
+            {
+                return this.NotFound(httpEx.Message);
+            }
         }
 
         /// <summary>The post.</summary>

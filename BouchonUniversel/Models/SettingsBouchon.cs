@@ -6,11 +6,13 @@
 
     using JetBrains.Annotations;
 
+    using Metier;
+
     #endregion
 
     /// <summary>The settings bouchon.</summary>
     [UsedImplicitly]
-    public class SettingsBouchon
+    public class SettingsBouchon : IDto<long>
     {
         #region Propriétés et indexeurs
 

@@ -34,7 +34,7 @@ namespace BouchonUniversel.Controllers
             }
 
             var environnement = await _context.Environnement
-                .SingleOrDefaultAsync(m => m.EnvironnementId == id);
+                .SingleOrDefaultAsync(env => env.Id == id);
             if (environnement == null)
             {
                 return NotFound();
@@ -54,7 +54,7 @@ namespace BouchonUniversel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EnvironnementId,Nom,IsEnabled")] Environnement environnement)
+        public async Task<IActionResult> Create([Bind("Id,Nom,IsEnabled")] Environnement environnement)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +73,7 @@ namespace BouchonUniversel.Controllers
                 return NotFound();
             }
 
-            var environnement = await _context.Environnement.SingleOrDefaultAsync(m => m.EnvironnementId == id);
+            var environnement = await _context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
             if (environnement == null)
             {
                 return NotFound();
@@ -86,9 +86,9 @@ namespace BouchonUniversel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("EnvironnementId,Nom,IsEnabled")] Environnement environnement)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Nom,IsEnabled")] Environnement environnement)
         {
-            if (id != environnement.EnvironnementId)
+            if (id != environnement.Id)
             {
                 return NotFound();
             }
@@ -102,7 +102,7 @@ namespace BouchonUniversel.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EnvironnementExists(environnement.EnvironnementId))
+                    if (!EnvironnementExists(environnement.Id))
                     {
                         return NotFound();
                     }
@@ -125,7 +125,7 @@ namespace BouchonUniversel.Controllers
             }
 
             var environnement = await _context.Environnement
-                .SingleOrDefaultAsync(m => m.EnvironnementId == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
             if (environnement == null)
             {
                 return NotFound();
@@ -139,7 +139,7 @@ namespace BouchonUniversel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var environnement = await _context.Environnement.SingleOrDefaultAsync(m => m.EnvironnementId == id);
+            var environnement = await _context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
             _context.Environnement.Remove(environnement);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -147,7 +147,7 @@ namespace BouchonUniversel.Controllers
 
         private bool EnvironnementExists(long id)
         {
-            return _context.Environnement.Any(e => e.EnvironnementId == id);
+            return _context.Environnement.Any(e => e.Id == id);
         }
     }
 }

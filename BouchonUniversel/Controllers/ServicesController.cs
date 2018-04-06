@@ -36,7 +36,7 @@ namespace BouchonUniversel.Controllers
 
             var service = await _context.Services
                 .Include(s => s.Environnement)
-                .SingleOrDefaultAsync(m => m.ServiceId == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
             if (service == null)
             {
                 return NotFound();
@@ -48,7 +48,7 @@ namespace BouchonUniversel.Controllers
         // GET: Services/Create
         public IActionResult Create()
         {
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, "EnvironnementId", "EnvironnementId");
+            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom));
             return View();
         }
 
@@ -57,7 +57,7 @@ namespace BouchonUniversel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ServiceId,Cle,EnvironnementId,Url")] Service service)
+        public async Task<IActionResult> Create([Bind("Cle,EnvironnementId,Url,Id,IsEnabled")] Service service)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +65,7 @@ namespace BouchonUniversel.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, "EnvironnementId", "EnvironnementId", service.EnvironnementId);
+            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
             return View(service);
         }
 
@@ -77,12 +77,12 @@ namespace BouchonUniversel.Controllers
                 return NotFound();
             }
 
-            var service = await _context.Services.SingleOrDefaultAsync(m => m.ServiceId == id);
+            var service = await _context.Services.SingleOrDefaultAsync(m => m.Id == id);
             if (service == null)
             {
                 return NotFound();
             }
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, "EnvironnementId", "EnvironnementId", service.EnvironnementId);
+            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
             return View(service);
         }
 
@@ -91,9 +91,9 @@ namespace BouchonUniversel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("ServiceId,Cle,EnvironnementId,Url")] Service service)
+        public async Task<IActionResult> Edit(long id, [Bind("Cle,EnvironnementId,Url,Id,IsEnabled")] Service service)
         {
-            if (id != service.ServiceId)
+            if (id != service.Id)
             {
                 return NotFound();
             }
@@ -107,7 +107,7 @@ namespace BouchonUniversel.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ServiceExists(service.ServiceId))
+                    if (!ServiceExists(service.Id))
                     {
                         return NotFound();
                     }
@@ -118,7 +118,7 @@ namespace BouchonUniversel.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, "EnvironnementId", "EnvironnementId", service.EnvironnementId);
+            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
             return View(service);
         }
 
@@ -132,7 +132,7 @@ namespace BouchonUniversel.Controllers
 
             var service = await _context.Services
                 .Include(s => s.Environnement)
-                .SingleOrDefaultAsync(m => m.ServiceId == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
             if (service == null)
             {
                 return NotFound();
@@ -146,7 +146,7 @@ namespace BouchonUniversel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var service = await _context.Services.SingleOrDefaultAsync(m => m.ServiceId == id);
+            var service = await _context.Services.SingleOrDefaultAsync(m => m.Id == id);
             _context.Services.Remove(service);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -154,7 +154,7 @@ namespace BouchonUniversel.Controllers
 
         private bool ServiceExists(long id)
         {
-            return _context.Services.Any(e => e.ServiceId == id);
+            return _context.Services.Any(e => e.Id == id);
         }
     }
 }

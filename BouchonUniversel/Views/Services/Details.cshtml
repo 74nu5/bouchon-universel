@@ -24,14 +24,20 @@
             @Html.DisplayFor(model => model.Url)
         </dd>
         <dt>
+            @Html.DisplayNameFor(model => model.IsEnabled)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsEnabled)
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Environnement)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Environnement.EnvironnementId)
+            @Html.DisplayFor(model => model.Environnement.Id)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ServiceId">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

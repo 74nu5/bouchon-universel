@@ -19,6 +19,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Url)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsEnabled)
+                </th>
             <th>
                 @Html.DisplayNameFor(model => model.Environnement)
             </th>
@@ -35,12 +38,15 @@
                 @Html.DisplayFor(modelItem => item.Url)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Environnement.EnvironnementId)
+                @Html.DisplayFor(modelItem => item.IsEnabled)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ServiceId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ServiceId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ServiceId">Delete</a>
+                @Html.DisplayFor(modelItem => item.Environnement.Nom)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

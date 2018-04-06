@@ -10,6 +10,7 @@ namespace BouchonUniversel.Metier
     using System.Threading.Tasks;
 
     using DAL;
+    using DAL.DAO;
 
     using JetBrains.Annotations;
 
