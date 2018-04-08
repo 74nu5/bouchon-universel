@@ -4,8 +4,6 @@
 
     using System.Collections.Generic;
 
-    using Metier;
-
     #endregion
 
     /// <summary>The environnemment.</summary>

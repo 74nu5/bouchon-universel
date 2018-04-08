@@ -8,12 +8,12 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
+    using BouchonUniversel.Models;
+
     using JetBrains.Annotations;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Query;
-
-    using Models;
 
     #endregion
 
@@ -27,7 +27,7 @@
         #region Champs
 
         /// <summary>Gets or sets the context.</summary>
-        private readonly TContext Context;
+        private readonly TContext context;
 
         #endregion
 
@@ -37,8 +37,8 @@
         /// <param name="context">The context.</param>
         protected BaseDAO(TContext context)
         {
-            this.Context = context;
-            this.Entities = this.Context.Set<TModel>();
+            this.context = context;
+            this.Entities = this.context.Set<TModel>();
         }
 
         #endregion
@@ -57,29 +57,30 @@
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> Create([NotNull] TModel model)
         {
-            this.Context.Set<TModel>().Add(model);
-            return await this.Context.SaveChangesAsync();
+            this.context.Set<TModel>().Add(model);
+            return await this.context.SaveChangesAsync();
         }
 
         /// <summary>The exists.</summary>
         /// <param name="id">The id.</param>
         /// <returns>The <see cref="bool"/>.</returns>
-        public bool Exists(TIdentity id) => this.Context.Set<TModel>().Any(e => e.Id.CompareTo(id) == 0);
+        public bool Exists(TIdentity id) => this.context.Set<TModel>().Any(e => e.Id.CompareTo(id) == 0);
 
         /// <summary>The get all.</summary>
         /// <param name="includes">The includes.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<List<TModel>> GetAll([NotNull] params Expression<Func<TModel, object>>[] includes)
         {
-            var set = this.Context.Set<TModel>();
+            var set = this.context.Set<TModel>();
             var includeSet = includes.Aggregate<Expression<Func<TModel, object>>, IIncludableQueryable<TModel, object>>(
-                null, (current, include) => current == null ? set.Include(include) : current.Include(include));
+                null,
+                (current, include) => current == null ? set.Include(include) : current.Include(include));
             return includeSet == null ? await set.ToListAsync() : await includeSet.ToListAsync();
         }
 
         /// <summary>The get all.</summary>
         /// <returns>The <see cref="Task" />.</returns>
-        public async Task<List<TModel>> GetAll() => await this.Context.Set<TModel>().ToListAsync();
+        public async Task<List<TModel>> GetAll() => await this.context.Set<TModel>().ToListAsync();
 
         /// <summary>The get details.</summary>
         /// <param name="id">The id.</param>
@@ -87,26 +88,25 @@
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<TModel> GetDetails(TIdentity id, [NotNull] params Expression<Func<TModel, object>>[] includes)
         {
-            var set = this.Context.Set<TModel>();
+            var set = this.context.Set<TModel>();
             var includeSet = includes.Aggregate<Expression<Func<TModel, object>>, IIncludableQueryable<TModel, object>>(
-                null, (current, include) => current == null ? set.Include(include) : current.Include(include));
-            return includeSet == null
-                ? await set.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0)
-                : await includeSet.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0);
+                null,
+                (current, include) => current == null ? set.Include(include) : current.Include(include));
+            return includeSet == null ? await set.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0) : await includeSet.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0);
         }
 
         /// <summary>The get details.</summary>
         /// <param name="id">The id.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<TModel> GetDetails(TIdentity id) => await this.Context.Set<TModel>().SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0);
+        public async Task<TModel> GetDetails(TIdentity id) => await this.context.Set<TModel>().SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0);
 
         /// <summary>The remove.</summary>
         /// <param name="model">The model.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> Remove([NotNull] TModel model)
         {
-            this.Context.Set<TModel>().Remove(model);
-            return await this.Context.SaveChangesAsync();
+            this.context.Set<TModel>().Remove(model);
+            return await this.context.SaveChangesAsync();
         }
 
         /// <summary>The update.</summary>
@@ -114,13 +114,13 @@
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> Update([NotNull] TModel model)
         {
-            this.Context.Set<TModel>().Update(model);
-            return await this.Context.SaveChangesAsync();
+            this.context.Set<TModel>().Update(model);
+            return await this.context.SaveChangesAsync();
         }
 
         /// <summary>The save changes.</summary>
         /// <returns>The <see cref="int" />.</returns>
-        public int SaveChanges() => this.Context.SaveChanges();
+        public int SaveChanges() => this.context.SaveChanges();
 
         #endregion
     }

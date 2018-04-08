@@ -1,160 +1,196 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using BouchonUniversel.DAL;
-using BouchonUniversel.Models.Bouchons;
-
-namespace BouchonUniversel.Controllers
+﻿namespace BouchonUniversel.Controllers
 {
+    #region Usings
+
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BouchonUniversel.DAL;
+    using BouchonUniversel.Models.Bouchons;
+
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.EntityFrameworkCore;
+
+    #endregion
+
+    /// <summary>The services controller.</summary>
     public class ServicesController : Controller
     {
-        private readonly DataContext _context;
+        #region Champs
 
-        public ServicesController(DataContext context)
-        {
-            _context = context;
-        }
+        /// <summary>The context.</summary>
+        private readonly DataContext context;
 
-        // GET: Services
+        #endregion
+
+        #region Constructeurs et destructeurs
+
+        /// <summary>Initializes a new instance of the <see cref="ServicesController"/> class.</summary>
+        /// <param name="context">The context.</param>
+        public ServicesController(DataContext context) => this.context = context;
+
+        #endregion
+
+        #region Méthodes publiques
+
+        /// <summary>The index.</summary>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Index()
         {
-            var dataContext = _context.Services.Include(s => s.Environnement);
-            return View(await dataContext.ToListAsync());
+            var dataContext = this.context.Services.Include(s => s.Environnement);
+            return this.View(await dataContext.ToListAsync());
         }
 
-        // GET: Services/Details/5
+        /// <summary>The details.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            var service = await _context.Services
-                .Include(s => s.Environnement)
-                .SingleOrDefaultAsync(m => m.Id == id);
+            var service = await this.context.Services.Include(s => s.Environnement).SingleOrDefaultAsync(m => m.Id == id);
             if (service == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return View(service);
+            return this.View(service);
         }
 
-        // GET: Services/Create
+        /// <summary>The create.</summary>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
         public IActionResult Create()
         {
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom));
-            return View();
+            this.ViewData["EnvironnementId"] = new SelectList(this.context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom));
+            return this.View();
         }
 
-        // POST: Services/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>The create.</summary>
+        /// <param name="service">The service.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Cle,EnvironnementId,Url,Id,IsEnabled")] Service service)
+        public async Task<IActionResult> Create(
+            [Bind("Cle,EnvironnementId,Url,Id,IsEnabled")]
+            Service service)
         {
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                _context.Add(service);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                this.context.Add(service);
+                await this.context.SaveChangesAsync();
+                return this.RedirectToAction(nameof(this.Index));
             }
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
-            return View(service);
+
+            this.ViewData["EnvironnementId"] = new SelectList(this.context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
+            return this.View(service);
         }
 
-        // GET: Services/Edit/5
+        /// <summary>The edit.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            var service = await _context.Services.SingleOrDefaultAsync(m => m.Id == id);
+            var service = await this.context.Services.SingleOrDefaultAsync(m => m.Id == id);
             if (service == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
-            return View(service);
+
+            this.ViewData["EnvironnementId"] = new SelectList(this.context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
+            return this.View(service);
         }
 
-        // POST: Services/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>The edit.</summary>
+        /// <param name="id">The id.</param>
+        /// <param name="service">The service.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Cle,EnvironnementId,Url,Id,IsEnabled")] Service service)
+        public async Task<IActionResult> Edit(
+            long id,
+            [Bind("Cle,EnvironnementId,Url,Id,IsEnabled")]
+            Service service)
         {
             if (id != service.Id)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(service);
-                    await _context.SaveChangesAsync();
+                    this.context.Update(service);
+                    await this.context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ServiceExists(service.Id))
+                    if (!this.ServiceExists(service.Id))
                     {
-                        return NotFound();
+                        return this.NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
+
+                return this.RedirectToAction(nameof(this.Index));
             }
-            ViewData["EnvironnementId"] = new SelectList(_context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
-            return View(service);
+
+            this.ViewData["EnvironnementId"] = new SelectList(this.context.Environnement, nameof(Environnement.Id), nameof(Environnement.Nom), service.EnvironnementId);
+            return this.View(service);
         }
 
-        // GET: Services/Delete/5
+        /// <summary>The delete.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            var service = await _context.Services
-                .Include(s => s.Environnement)
-                .SingleOrDefaultAsync(m => m.Id == id);
+            var service = await this.context.Services.Include(s => s.Environnement).SingleOrDefaultAsync(m => m.Id == id);
             if (service == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return View(service);
+            return this.View(service);
         }
 
-        // POST: Services/Delete/5
-        [HttpPost, ActionName("Delete")]
+        /// <summary>The delete confirmed.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var service = await _context.Services.SingleOrDefaultAsync(m => m.Id == id);
-            _context.Services.Remove(service);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var service = await this.context.Services.SingleOrDefaultAsync(m => m.Id == id);
+            this.context.Services.Remove(service);
+            await this.context.SaveChangesAsync();
+            return this.RedirectToAction(nameof(this.Index));
         }
 
-        private bool ServiceExists(long id)
-        {
-            return _context.Services.Any(e => e.Id == id);
-        }
+        #endregion
+
+        #region Méthodes privées
+
+        /// <summary>The service exists.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="bool"/>.</returns>
+        private bool ServiceExists(long id) => this.context.Services.Any(e => e.Id == id);
+
+        #endregion
     }
 }

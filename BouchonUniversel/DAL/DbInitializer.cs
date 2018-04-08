@@ -45,7 +45,6 @@
                 Value = options.Value.UrlService
             };
 
-
             context.Add(defautActivationSettings);
             context.Add(cheminFichiers);
             context.Add(urlService);

@@ -1,153 +1,179 @@
-﻿    using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using BouchonUniversel.DAL;
-using BouchonUniversel.Models.Bouchons;
-
-namespace BouchonUniversel.Controllers
+﻿namespace BouchonUniversel.Controllers
 {
+    #region Usings
+
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BouchonUniversel.DAL;
+    using BouchonUniversel.Models.Bouchons;
+
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+
+    #endregion
+
+    /// <summary>The environnements controller.</summary>
     public class EnvironnementsController : Controller
     {
-        private readonly DataContext _context;
+        #region Champs
 
-        public EnvironnementsController(DataContext context)
-        {
-            _context = context;
-        }
+        /// <summary>The context.</summary>
+        private readonly DataContext context;
 
-        // GET: Environnements
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Environnement.ToListAsync());
-        }
+        #endregion
 
-        // GET: Environnements/Details/5
+        #region Constructeurs et destructeurs
+
+        /// <summary>Initializes a new instance of the <see cref="EnvironnementsController"/> class.</summary>
+        /// <param name="context">The context.</param>
+        public EnvironnementsController(DataContext context) => this.context = context;
+
+        #endregion
+
+        #region Méthodes publiques
+
+        /// <summary>The index.</summary>
+        /// <returns>The <see cref="Task" />.</returns>
+        public async Task<IActionResult> Index() => this.View(await this.context.Environnement.ToListAsync());
+
+        /// <summary>The details.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            var environnement = await _context.Environnement
-                .SingleOrDefaultAsync(env => env.Id == id);
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(env => env.Id == id);
             if (environnement == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return View(environnement);
+            return this.View(environnement);
         }
 
-        // GET: Environnements/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        /// <summary>The create.</summary>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        public IActionResult Create() => this.View();
 
-        // POST: Environnements/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>The create.</summary>
+        /// <param name="environnement">The environnement.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nom,IsEnabled")] Environnement environnement)
         {
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                _context.Add(environnement);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                this.context.Add(environnement);
+                await this.context.SaveChangesAsync();
+                return this.RedirectToAction(nameof(this.Index));
             }
-            return View(environnement);
+
+            return this.View(environnement);
         }
 
-        // GET: Environnements/Edit/5
+        /// <summary>The edit.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            var environnement = await _context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
             if (environnement == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
-            return View(environnement);
+
+            return this.View(environnement);
         }
 
-        // POST: Environnements/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>The edit.</summary>
+        /// <param name="id">The id.</param>
+        /// <param name="environnement">The environnement.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, [Bind("Id,Nom,IsEnabled")] Environnement environnement)
         {
             if (id != environnement.Id)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(environnement);
-                    await _context.SaveChangesAsync();
+                    this.context.Update(environnement);
+                    await this.context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EnvironnementExists(environnement.Id))
+                    if (!this.EnvironnementExists(environnement.Id))
                     {
-                        return NotFound();
+                        return this.NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
+
+                return this.RedirectToAction(nameof(this.Index));
             }
-            return View(environnement);
+
+            return this.View(environnement);
         }
 
-        // GET: Environnements/Delete/5
+        /// <summary>The delete.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            var environnement = await _context.Environnement
-                .SingleOrDefaultAsync(m => m.Id == id);
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
             if (environnement == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return View(environnement);
+            return this.View(environnement);
         }
 
-        // POST: Environnements/Delete/5
-        [HttpPost, ActionName("Delete")]
+        /// <summary>The delete confirmed.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var environnement = await _context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
-            _context.Environnement.Remove(environnement);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
+            this.context.Environnement.Remove(environnement);
+            await this.context.SaveChangesAsync();
+            return this.RedirectToAction(nameof(this.Index));
         }
 
-        private bool EnvironnementExists(long id)
-        {
-            return _context.Environnement.Any(e => e.Id == id);
-        }
+        #endregion
+
+        #region Méthodes privées
+
+        /// <summary>The environnement exists.</summary>
+        /// <param name="id">The id.</param>
+        /// <returns>The <see cref="bool"/>.</returns>
+        private bool EnvironnementExists(long id) => this.context.Environnement.Any(e => e.Id == id);
+
+        #endregion
     }
 }

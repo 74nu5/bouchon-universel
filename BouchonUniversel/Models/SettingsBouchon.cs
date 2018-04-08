@@ -6,8 +6,6 @@
 
     using JetBrains.Annotations;
 
-    using Metier;
-
     #endregion
 
     /// <summary>The settings bouchon.</summary>

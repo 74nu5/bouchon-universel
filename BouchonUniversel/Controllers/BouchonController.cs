@@ -2,14 +2,11 @@
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Net.Http;
+    using System.Threading.Tasks;
 
-    using Exceptions;
-
-    using Metier;
+    using BouchonUniversel.Exceptions;
+    using BouchonUniversel.Metier;
 
     using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +28,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BouchonController"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonController" /> class.</summary>
         /// <param name="metier">The metier.</param>
         public BouchonController(BouchonsMetier metier) => this.metier = metier;
 
@@ -46,11 +43,11 @@
         /// <param name="query">The query.</param>
         /// <returns>The Dictionary.</returns>
         [HttpGet("{cle}/{env}/{*route}")]
-        public IActionResult Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, string> query)
+        public async Task<IActionResult> GetAsync([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, string> query)
         {
             try
             {
-                var result = this.metier.ProcessRequest(cle, env, route, query);
+                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query);
                 return this.Ok(result);
             }
             catch (KeyNotFoundException httpEx)
@@ -64,10 +61,28 @@
         }
 
         /// <summary>The post.</summary>
-        /// <param name="value">The value.</param>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        /// <param name="cle">The cle.</param>
+        /// <param name="env">The env.</param>
+        /// <param name="route">The route.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="body">The body.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        [HttpPost("{cle}/{env}/{*route}")]
+        public async Task<IActionResult> Post([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, string> query, [FromBody] string body)
         {
+            try
+            {
+                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, body);
+                return this.Ok(result);
+            }
+            catch (KeyNotFoundException httpEx)
+            {
+                return this.NotFound(httpEx.Message);
+            }
+            catch (EnvironmentNotFoundException httpEx)
+            {
+                return this.NotFound(httpEx.Message);
+            }
         }
 
         /// <summary>The put.</summary>

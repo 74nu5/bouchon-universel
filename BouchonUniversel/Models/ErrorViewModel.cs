@@ -1,11 +1,16 @@
-using System;
-
 namespace BouchonUniversel.Models
 {
+    /// <summary>The error view model.</summary>
     public class ErrorViewModel
     {
+        #region Propriétés et indexeurs
+
+        /// <summary>Gets or sets the request id.</summary>
         public string RequestId { get; set; }
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+        /// <summary>The show request id.</summary>
+        public bool ShowRequestId => !string.IsNullOrEmpty(this.RequestId);
+
+        #endregion
     }
 }

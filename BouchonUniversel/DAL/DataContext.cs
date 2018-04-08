@@ -4,12 +4,12 @@
 
     using System;
 
+    using BouchonUniversel.Models;
+    using BouchonUniversel.Models.Bouchons;
+
     using JetBrains.Annotations;
 
     using Microsoft.EntityFrameworkCore;
-
-    using Models;
-    using Models.Bouchons;
 
     #endregion
 
@@ -29,7 +29,8 @@
         /// <param name="services">The services.</param>
         /// <param name="option">The option.</param>
         [UsedImplicitly]
-        public DataContext(IServiceProvider services, DbContextOptions option) : base(option)
+        public DataContext(IServiceProvider services, DbContextOptions option)
+            : base(option)
         {
         }
 
@@ -38,20 +39,18 @@
         #region Propriétés et indexeurs
 
         /// <summary>Gets or sets the options bouchons.</summary>
-        public DbSet<SettingsBouchon> SettingsBouchon { get; set; }
+        public DbSet<SettingsBouchon> SettingsBouchon { get; [UsedImplicitly] set; }
 
         /// <summary>Gets or sets the bouchons.</summary>
-        public DbSet<Bouchon> Bouchons { get; set; }
+        public DbSet<Bouchon> Bouchons { get; [UsedImplicitly] set; }
 
         /// <summary>Gets or sets the services.</summary>
-        public DbSet<Models.Bouchons.Service> Services { get; set; }
+        public DbSet<Service> Services { get; [UsedImplicitly] set; }
 
         /// <summary>Gets or sets the environnement.</summary>
-        public DbSet<Environnement> Environnement { get; set; }
+        public DbSet<Environnement> Environnement { get; [UsedImplicitly] set; }
 
         #endregion
-
-        #region Méthodes protected
 
         /// <summary>The on model creating.</summary>
         /// <param name="modelBuilder">The model builder.</param>
@@ -63,7 +62,5 @@
             modelBuilder.Entity<Service>().HasIndex(serv => new { serv.Cle, serv.EnvironnementId }).IsUnique();
             base.OnModelCreating(modelBuilder);
         }
-
-        #endregion
     }
 }

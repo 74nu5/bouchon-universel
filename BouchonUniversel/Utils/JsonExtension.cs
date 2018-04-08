@@ -17,7 +17,7 @@ namespace BouchonUniversel.Utils
         /// <summary>The deserialize.</summary>
         /// <param name="json">The json.</param>
         /// <typeparam name="T">Type à désérialiser</typeparam>
-        /// <returns>The <see cref="T"/>.</returns>
+        /// <returns>Le type à désérialiser.</returns>
         public static T FromJson<T>(this string json) => JsonConvert.DeserializeObject<T>(json);
 
         /// <summary>The serialize.</summary>

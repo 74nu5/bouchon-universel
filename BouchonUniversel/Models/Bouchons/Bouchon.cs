@@ -1,11 +1,5 @@
 ﻿namespace BouchonUniversel.Models.Bouchons
 {
-    #region Usings
-
-    using Metier;
-
-    #endregion
-
     /// <summary>The bouchon.</summary>
     public class Bouchon : IDto<long>
     {

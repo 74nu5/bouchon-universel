@@ -2,12 +2,12 @@
 {
     #region Usings
 
-    using DAL;
-    using DAL.DAO;
+    using BouchonUniversel.DAL;
+    using BouchonUniversel.DAL.DAO;
+    using BouchonUniversel.Metier;
+    using BouchonUniversel.Models;
 
     using JetBrains.Annotations;
-
-    using Metier;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -15,8 +15,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-
-    using Models;
 
     using Swashbuckle.AspNetCore.Swagger;
 
@@ -47,7 +45,7 @@
         #region Propriétés et indexeurs
 
         /// <summary>Gets the configuration.</summary>
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         #endregion
 
@@ -65,7 +63,7 @@
 
             services.AddEntityFrameworkSqlite();
             services.AddDbContext<DataContext>(builder => builder.UseSqlite(this.GetSqliteConnection()));
-            
+
             services.AddSwaggerGen(c => { c.SwaggerDoc(VersionSwagger, new Info { Title = TitreSwagger, Version = VersionSwagger }); });
 
             services.AddTransient<SettingsBouchonMetier>();
@@ -99,25 +97,20 @@
 
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/{VersionSwagger}/swagger.json", TitreSwagger); });
 
-            app.UseMvc(
-                routes =>
-                {
-                    routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
         }
+
+        #endregion
+
+        #region Méthodes privées
 
         /// <summary>The get sqlite connection.</summary>
         /// <returns>The <see cref="SqliteConnection" />.</returns>
         private SqliteConnection GetSqliteConnection()
         {
-            var connectionStringBuilder =
-                new SqliteConnectionStringBuilder
-                {
-                    DataSource = this.Configuration.GetConnectionString("BDDConnection")
-                };
+            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = this.Configuration.GetConnectionString("BDDConnection") };
             return new SqliteConnection(connectionStringBuilder.ToString());
         }
-
 
         #endregion
     }
