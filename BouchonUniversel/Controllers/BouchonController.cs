@@ -8,6 +8,11 @@
     using BouchonUniversel.Exceptions;
     using BouchonUniversel.Metier;
 
+    using Filters;
+
+    using Metier;
+
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     using KeyNotFoundException = System.Collections.Generic.KeyNotFoundException;
@@ -41,9 +46,11 @@
         /// <param name="env">The env.</param>
         /// <param name="route">The route.</param>
         /// <param name="query">The query.</param>
+        /// <param name="headers">The header.</param>
         /// <returns>The Dictionary.</returns>
         [HttpGet("{cle}/{env}/{*route}")]
-        public async Task<IActionResult> GetAsync([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, string> query)
+        [AddHeaderParameters("headers")]
+        public IActionResult Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, string> query, Dictionary<string, string[]> headers)
         {
             try
             {

@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Models\ModelsView\" />
+    <Folder Include="Middlewares\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 
