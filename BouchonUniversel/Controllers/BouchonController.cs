@@ -5,14 +5,12 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    using BouchonUniversel.Exceptions;
-    using BouchonUniversel.Metier;
+    using Exceptions;
 
     using Filters;
 
     using Metier;
 
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     using KeyNotFoundException = System.Collections.Generic.KeyNotFoundException;
@@ -33,7 +31,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BouchonController" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonController"/> class.</summary>
         /// <param name="metier">The metier.</param>
         public BouchonController(BouchonsMetier metier) => this.metier = metier;
 
@@ -50,11 +48,16 @@
         /// <returns>The Dictionary.</returns>
         [HttpGet("{cle}/{env}/{*route}")]
         [AddHeaderParameters("headers")]
-        public IActionResult Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, string> query, Dictionary<string, string[]> headers)
+        public async Task<IActionResult> GetAsync(
+            [FromRoute] string cle,
+            [FromRoute] string env,
+            [FromRoute] string route,
+            [FromQuery] Dictionary<string, string> query,
+            Dictionary<string, string[]> headers)
         {
             try
             {
-                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query);
+                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query, headers);
                 return this.Ok(result);
             }
             catch (KeyNotFoundException httpEx)
@@ -75,7 +78,12 @@
         /// <param name="body">The body.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost("{cle}/{env}/{*route}")]
-        public async Task<IActionResult> Post([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, string> query, [FromBody] string body)
+        public async Task<IActionResult> Post(
+            [FromRoute] string cle,
+            [FromRoute] string env,
+            [FromRoute] string route,
+            [FromQuery] Dictionary<string, string> query,
+            [FromBody] string body)
         {
             try
             {

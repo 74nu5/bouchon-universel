@@ -3,6 +3,7 @@ namespace BouchonUniversel.Utils
     #region Usings
 
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Net;
@@ -83,50 +84,7 @@ namespace BouchonUniversel.Utils
         /// <param name="url">The url.</param>
         /// <param name="authentification">The authentification.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public static async Task<string> GetAsync(string url, string authentification)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            var handler = new HttpClientHandler();
-
-            handler.ServerCertificateCustomValidationCallback += (message, certificate2, arg3, arg4) => true;
-
-            var client = new HttpClient(handler);
-
-            if (!string.IsNullOrEmpty(authentification))
-            {
-                client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authentification);
-            }
-
-            try
-            {
-                return await client.GetStringAsync(url);
-            }
-            catch (WebException ex)
-            {
-                var errorResponse = ex.Response;
-
-                using (var responseStream = errorResponse.GetResponseStream())
-                {
-                    if (responseStream == null)
-                    {
-                        throw;
-                    }
-
-                    var reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
-
-                    var errorText = reader.ReadToEnd();
-
-                    throw new Exception(errorText);
-                }
-            }
-            finally
-            {
-                stopWatch.Stop();
-                Debug.WriteLine($"GET {url} : {stopWatch.ElapsedMilliseconds} ms");
-            }
-        }
+        public static async Task<string> GetAsync(string url, string authentification) => await GetAsync(url, null, null);
 
         /// <summary>The post.</summary>
         /// <param name="url">The url.</param>
@@ -187,6 +145,64 @@ namespace BouchonUniversel.Utils
         /// <typeparam name="TResponse">Type de la réponse</typeparam>
         /// <returns>The TResponse.</returns>
         public static TResponse Put<TResponse>(string url, string authentification) => throw new NotImplementedException();
+
+        /// <summary>The get async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public static async Task<string> GetAsync(string url, Dictionary<string, string[]> headers, string authentification)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            var handler = new HttpClientHandler();
+
+            handler.ServerCertificateCustomValidationCallback += (message, certificate2, arg3, arg4) => true;
+
+            var client = new HttpClient(handler);
+
+            if (!string.IsNullOrEmpty(authentification))
+            {
+                client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authentification);
+            }
+
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            }
+
+            try
+            {
+                return await client.GetStringAsync(url);
+            }
+            catch (WebException ex)
+            {
+                var errorResponse = ex.Response;
+
+                using (var responseStream = errorResponse.GetResponseStream())
+                {
+                    if (responseStream == null)
+                    {
+                        throw;
+                    }
+
+                    var reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
+
+                    var errorText = reader.ReadToEnd();
+
+                    throw new Exception(errorText);
+                }
+            }
+            finally
+            {
+                stopWatch.Stop();
+                Debug.WriteLine($"GET {url} : {stopWatch.ElapsedMilliseconds} ms");
+            }
+        }
 
         #endregion
     }

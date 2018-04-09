@@ -8,13 +8,15 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using BouchonUniversel.DAL.DAO;
-    using BouchonUniversel.Exceptions;
-    using BouchonUniversel.Utils;
+    using DAL.DAO;
+
+    using Exceptions;
 
     using JetBrains.Annotations;
 
-    using KeyNotFoundException = BouchonUniversel.Exceptions.KeyNotFoundException;
+    using Utils;
+
+    using KeyNotFoundException = Exceptions.KeyNotFoundException;
 
     #endregion
 
@@ -44,9 +46,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BouchonsMetier" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonsMetier"/> class.</summary>
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
@@ -66,10 +66,11 @@
         /// <param name="env">The env.</param>
         /// <param name="route">The route.</param>
         /// <param name="query">The query.</param>
-        /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
+        /// <param name="headers">The headers.</param>
+        /// <exception cref="KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="string" />.</returns>
-        public async Task<string> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, string> query)
+        /// <returns>The <see cref="string"/>.</returns>
+        public async Task<string> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, string> query, Dictionary<string, string[]> headers)
         {
             var requestIsActivated = this.ServiceIsActivated(cle, env);
 
@@ -90,7 +91,7 @@
             var urlBase = new Uri(this.servicesDAO.GetUrl(cle, env));
             var url = new Uri(urlBase, new Uri(route + queryStr));
 
-            var result = await HttpService.GetAsync(url.ToString(), null);
+            var result = await HttpService.GetAsync(url.ToString(), headers, null);
 
             File.WriteAllText(fileName, result);
 
@@ -105,7 +106,7 @@
         /// <param name="body">The body.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public Task<string> ProcessPostRequestAsync(string cle, string env, string route, Dictionary<string, string> query, string body) => throw new NotImplementedException();
 
         #endregion
@@ -117,7 +118,7 @@
         /// <param name="env">The env.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="bool" />.</returns>
+        /// <returns>The <see cref="bool"/>.</returns>
         private bool ServiceIsActivated(string cle, string env)
         {
             if (!this.servicesDAO.ExistsByCle(cle))
