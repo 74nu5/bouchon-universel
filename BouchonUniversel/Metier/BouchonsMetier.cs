@@ -132,7 +132,7 @@
             }
 
             var urlBase = new Uri(this.servicesDAO.GetUrl(cle, env));
-            var url = new Uri(urlBase, new Uri(route + queryStr));
+            var url = new Uri(urlBase, new Uri(route + queryStr, UriKind.Relative));
 
             var result = string.Empty;
 
