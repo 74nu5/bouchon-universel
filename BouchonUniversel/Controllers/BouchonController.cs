@@ -4,7 +4,10 @@
 
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
+
+    using BouchonUniversel.Utils.Http;
 
     using Exceptions;
 
@@ -19,7 +22,6 @@
     #endregion
 
     /// <summary>The bouchon controller.</summary>
-    [Produces("application/json")]
     [Route("api/Bouchon")]
     public class BouchonController : Controller
     {
@@ -80,7 +82,6 @@
         /// <param name="env">The env.</param>
         /// <param name="route">The route.</param>
         /// <param name="query">The query.</param>
-        /// <param name="body">The body.</param>
         /// <param name="headers">The headers.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost("{cle}/{env}/{*route}")]
@@ -90,12 +91,11 @@
             [FromRoute] string env,
             [FromRoute] string route,
             [FromQuery] Dictionary<string, string> query,
-            [FromBody] string body,
             Dictionary<string, string[]> headers)
         {
             try
             {
-                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, body);
+                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
                 return this.Ok(result);
             }
             catch (KeyNotFoundException httpEx)
