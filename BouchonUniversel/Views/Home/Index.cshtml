@@ -1,32 +1,25 @@
-﻿@model BouchonUniversel.Models.ModelsView.IndexViewModel
+﻿@using System.IO
+@using BouchonUniversel.Models.ModelsView
+@using Microsoft.AspNetCore.Mvc.Razor
+@model BouchonUniversel.Models.ModelsView.IndexViewModel
 
 @{
-    ViewData["Title"] = "Configuration";
+    ViewData["Title"] = "Index";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-@if (Model?.IsBouchonActivated != null)
-{
-    if (Model.IsBouchonActivated.Value)
-    {
-        <p class="alert-success">Le bouchon est activé.</p>
-    }
-    else
-    {
-        <p class="alert-warning">Le bouchon est désactivé.</p>
-    }
-}
+<div class="container flexbox">
+    <a asp-controller="Services" asp-action="Index">
+        <img width="300" src="images/API-icon.png" alt="Services" />
+        <span>Services</span>
+    </a>
+    <a asp-controller="Environnements" asp-action="Index" > 
+        <img width="300" src="images/env.png" alt="Evironnement"/>
+        <span>Environnements</span>
+    </a>
+</div>
 
-<form asp-action="Index">
-    <p class="help-block">Mode du bouchon > ON : bouchon activé / OFF : passe plat.</p>
-    <p>
-        <button type="submit" name="IsActivated" value="true">ON</button>
-    </p>
-    <p>
-        <button type="submit" name="IsActivated" value="false">OFF</button>
-    </p>
-</form>
 @*
     @if (Model != null)
     {
