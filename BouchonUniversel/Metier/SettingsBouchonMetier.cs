@@ -35,21 +35,6 @@ namespace BouchonUniversel.Metier
 
         #region Méthodes publiques
 
-        /// <summary>The get bouchon state.</summary>
-        /// <returns>The <see cref="bool" />.</returns>
-        public bool GetBouchonState()
-        {
-            try
-            {
-                return this.dao.GetBouchonState();
-            }
-            catch (Exception e)
-            {
-                Debug.Write($"[ERROR] {e.Message}");
-                throw;
-            }
-        }
-
         /// <summary>The activate bouchon.</summary>
         /// <returns>The <see cref="bool" />.</returns>
         public bool ActivateBouchon()
@@ -80,18 +65,38 @@ namespace BouchonUniversel.Metier
             }
         }
 
-        /// <summary>The get files.</summary>
-        /// <returns>The files list.</returns>
-        public IEnumerable<string> GetFiles()
+        /// <summary>The get bouchon state.</summary>
+        /// <returns>The <see cref="bool" />.</returns>
+        public bool GetBouchonState()
         {
-            var dirInfo = new DirectoryInfo(this.dao.GetCheminFichier());
-            return dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(info => info.FullName.Replace(this.dao.GetCheminFichier() + "\\", string.Empty));
+            try
+            {
+                return this.dao.GetBouchonState();
+            }
+            catch (Exception e)
+            {
+                Debug.Write($"[ERROR] {e.Message}");
+                throw;
+            }
         }
 
         /// <summary>The get file.</summary>
         /// <param name="fileName">The file name.</param>
         /// <returns>The <see cref="Stream"/>.</returns>
         public Stream GetFile(string fileName) => new FileInfo(Path.Combine(this.dao.GetCheminFichier(), fileName)).OpenRead();
+
+        /// <summary>The get files.</summary>
+        /// <returns>The files list.</returns>
+        public IEnumerable<string> GetFiles()
+        {
+            var dirInfo = new DirectoryInfo(this.dao.GetCheminFichier());
+            if (!dirInfo.Exists)
+            {
+                throw new DirectoryNotFoundException($"Le dossier {this.dao.GetCheminFichier()} est inexistant.");
+            }
+
+            return dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(info => info.FullName.Replace(this.dao.GetCheminFichier() + "\\", string.Empty));
+        }
 
         #endregion
     }
