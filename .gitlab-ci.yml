@@ -1,6 +1,7 @@
 image : microsoft/dotnet:latest
 stages:
   - build
+  - deploy_test
 
 before_script:
   - 'dotnet restore'
@@ -11,7 +12,7 @@ build:
   - 'dotnet build'
 
 deploy_test:
-  stage: deploy
+  stage: deploy_test
   script:
     - echo "Deploy to test server"
   environment:
