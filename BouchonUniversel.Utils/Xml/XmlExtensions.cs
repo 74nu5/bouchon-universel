@@ -5,6 +5,8 @@
     using System.Xml.Linq;
     using System.Xml.Serialization;
 
+    using JetBrains.Annotations;
+
     #endregion
 
     /// <summary>The xml utils.</summary>

@@ -8,6 +8,8 @@ namespace BouchonUniversel.Utils.Utils
     using System.Linq;
     using System.Reflection;
 
+    using JetBrains.Annotations;
+
     #endregion
 
     /// <summary>The check.</summary>

@@ -6,6 +6,7 @@
     using BouchonUniversel.DAL.DAO;
     using BouchonUniversel.Metier;
     using BouchonUniversel.Models;
+    using BouchonUniversel.Utils.Http;
 
     using JetBrains.Annotations;
 
