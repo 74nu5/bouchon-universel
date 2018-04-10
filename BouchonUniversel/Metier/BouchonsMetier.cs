@@ -142,23 +142,31 @@
                     result = await this.http.GetAsync(url.ToString(), headers, null);
                     break;
                 case HttpMethod.Put:
+                    // TODO Gérer le verbe PUT
                     break;
                 case HttpMethod.Delete:
+                    // TODO Gérer le verbe DELETE
                     break;
                 case HttpMethod.Post:
                     result = await this.http.PostAsync(url.ToString(), headers, body, null);
                     break;
                 case HttpMethod.Head:
+                    // TODO Gérer le verbe HEAD
                     break;
                 case HttpMethod.Trace:
+                    // TODO Gérer le verbe TRACE
                     break;
                 case HttpMethod.Patch:
+                    // TODO Gérer le verbe PATCH
                     break;
                 case HttpMethod.Connect:
+                    // TODO Gérer le verbe CONNECT
                     break;
                 case HttpMethod.Options:
+                    // TODO Gérer le verbe OPTIONS
                     break;
                 case HttpMethod.Custom:
+                    // TODO Gérer le verbe CUSTOM
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(method), method, null);
