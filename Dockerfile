@@ -4,13 +4,15 @@ WORKDIR /app
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY BouchonUniversel/*.csproj ./BouchonUniversel/
+COPY BouchonUniversel.Utils/*.csproj ./BouchonUniversel.Utils/
 RUN dotnet restore
 
 # copy and build everything else
 COPY BouchonUniversel/. ./BouchonUniversel/
+COPY BouchonUniversel.Utils/. ./BouchonUniversel.Utils/
 RUN dotnet build
 
-FROM test AS publish
+FROM build AS publish
 WORKDIR /app/BouchonUniversel
 RUN dotnet publish -o out
 
