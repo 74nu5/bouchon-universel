@@ -40,10 +40,7 @@
 
         /// <summary>Gets or sets the options bouchons.</summary>
         public DbSet<SettingsBouchon> SettingsBouchon { get; [UsedImplicitly] set; }
-
-        /// <summary>Gets or sets the bouchons.</summary>
-        public DbSet<Bouchon> Bouchons { get; [UsedImplicitly] set; }
-
+        
         /// <summary>Gets or sets the services.</summary>
         public DbSet<Service> Services { get; [UsedImplicitly] set; }
 
@@ -56,7 +53,6 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Bouchon>().HasKey(bouchon => new { bouchon.BaseUrl, bouchon.ServiceUrl });
             modelBuilder.Entity<Service>().HasOne(service => service.Environnement).WithMany(environnement => environnement.Services);
 
             modelBuilder.Entity<Service>().HasIndex(serv => new { serv.Cle, serv.EnvironnementId }).IsUnique();

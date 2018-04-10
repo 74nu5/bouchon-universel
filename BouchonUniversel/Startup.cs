@@ -75,7 +75,6 @@
             services.AddTransient<BouchonInitializer>();
             services.AddTransient<SettingsBouchonDAO>();
             services.AddTransient<ServicesDAO>();
-            services.AddTransient<BouchonsDAO>();
             services.AddTransient<EnvironnementDAO>();
             services.AddTransient<BouchonsMetier>();
         }

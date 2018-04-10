@@ -10,7 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.filenesting.json = .filenesting.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouchonUniversel.Utils", "BouchonUniversel.Utils\BouchonUniversel.Utils.csproj", "{25358BB5-1FA7-4559-99FA-AE3F439AC85A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BouchonUniversel.Utils", "BouchonUniversel.Utils\BouchonUniversel.Utils.csproj", "{25358BB5-1FA7-4559-99FA-AE3F439AC85A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{539F5FA6-13D8-4A91-995C-4DBD230542BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouchonUniversel.ApiTest", "BouchonUniversel.ApiTest\BouchonUniversel.ApiTest.csproj", "{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +30,16 @@ Global
 		{25358BB5-1FA7-4559-99FA-AE3F439AC85A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25358BB5-1FA7-4559-99FA-AE3F439AC85A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25358BB5-1FA7-4559-99FA-AE3F439AC85A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE} = {539F5FA6-13D8-4A91-995C-4DBD230542BB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8FD93305-DFB4-4F96-A390-0AD1EED0507A}

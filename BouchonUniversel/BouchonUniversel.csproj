@@ -9,6 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\BouchonsManager\**" />
+    <Content Remove="Views\BouchonsManager\**" />
+    <EmbeddedResource Remove="Views\BouchonsManager\**" />
+    <None Remove="Views\BouchonsManager\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\BouchonsManagerController.cs" />
+    <Compile Remove="DAL\DAO\BouchonsDAO.cs" />
+    <Compile Remove="Models\Bouchons\Bouchon.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
