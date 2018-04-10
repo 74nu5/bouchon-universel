@@ -14,7 +14,7 @@ build:
 deploy_test:
   stage: deploy_test
   script:
-    - echo "Deploy to test server"
+    - ls
   environment:
     name: test
     url: http://bouchon.dotnet4ever.ovh
