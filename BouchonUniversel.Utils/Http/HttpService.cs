@@ -140,6 +140,19 @@
             return result;
         }
 
+        /// <summary>The post async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="content">The content.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<string> PostAsync(string url, Dictionary<string, string[]> headers, string content, string authentification)
+        {
+            var result = await new Func<string, Dictionary<string, string[]>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(out var time, url, headers, content, authentification);
+            Debug.WriteLine($"GET {url} : {time} ms");
+            return result;
+        }
+
         #endregion
 
         #region Méthodes privées
