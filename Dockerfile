@@ -5,11 +5,13 @@ WORKDIR /app
 COPY *.sln .
 COPY BouchonUniversel/*.csproj ./BouchonUniversel/
 COPY BouchonUniversel.Utils/*.csproj ./BouchonUniversel.Utils/
+COPY BouchonUniversel.ApiTest/*.csproj ./BouchonUniversel.ApiTest/
 RUN dotnet restore
 
 # copy and build everything else
 COPY BouchonUniversel/. ./BouchonUniversel/
 COPY BouchonUniversel.Utils/. ./BouchonUniversel.Utils/
+COPY BouchonUniversel.ApiTest/. ./BouchonUniversel.ApiTest/
 RUN dotnet build
 
 FROM build AS publish
