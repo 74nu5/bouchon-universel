@@ -26,13 +26,6 @@
     [UsedImplicitly]
     public class BouchonsMetier
     {
-        #region Champs et constantes statiques
-
-        /// <summary>The prefix file get.</summary>
-        private const string PrefixFileGet = "GET_";
-
-        #endregion
-
         #region Champs
 
         /// <summary>The environnement dao.</summary>
@@ -124,7 +117,7 @@
             }
 
             var queryStr = string.Join("&", query.Select(pair => $"{pair.Key}={pair.Value}").ToArray());
-            var fileName = Path.Combine(bouchonDir.FullName, $"{PrefixFileGet}{queryStr}");
+            var fileName = Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryStr}");
 
             if (requestIsActivated)
             {
