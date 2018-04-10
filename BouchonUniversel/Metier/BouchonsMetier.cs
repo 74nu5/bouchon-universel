@@ -117,7 +117,7 @@
         {
             var requestIsActivated = this.ServiceIsActivated(cle, env);
 
-            var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), route));
+            var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, route));
             if (!bouchonDir.Exists)
             {
                 bouchonDir.Create();
