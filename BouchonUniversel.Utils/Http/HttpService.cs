@@ -1,31 +1,18 @@
-﻿// ------------------------------------------------------------------------------------------------------------------------
-// <copyright file="HttpService.cs" company="">
-//   
-// </copyright>
-// <summary>
-//   The http service.
-// </summary>
-// ------------------------------------------------------------------------------------------------------------------------
-
-namespace BouchonUniversel.Utils.Http
+﻿namespace BouchonUniversel.Utils.Http
 {
     #region Usings
 
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Text;
     using System.Threading.Tasks;
 
-    using Extensions;
+    using BouchonUniversel.Utils.Extensions;
+    using BouchonUniversel.Utils.Json;
 
     using JetBrains.Annotations;
-
-    using Json;
 
     #endregion
 
@@ -60,63 +47,24 @@ namespace BouchonUniversel.Utils.Http
         /// <returns>The TResponse.</returns>
         public static TResponse Delete<TResponse>(string url, string authentification) => throw new NotImplementedException();
 
-        /// <summary>The get.</summary>
-        /// <param name="url">The url.</param>
-        /// <param name="authentification">The authentification.</param>
-        /// <typeparam name="TResponse">Type de la réponse</typeparam>
-        /// <returns>The TResponse.</returns>
-        public static async Task<TResponse> GetAsync<TResponse>(string url, string authentification)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            var handler = new HttpClientHandler();
-
-            handler.ServerCertificateCustomValidationCallback += (message, certificate2, arg3, arg4) => true;
-
-            var client = new HttpClient(handler);
-
-            if (!string.IsNullOrEmpty(authentification))
-            {
-                client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authentification);
-            }
-
-            try
-            {
-                var response = await client.GetStringAsync(url);
-                return response.FromJson<TResponse>();
-            }
-            catch (WebException ex)
-            {
-                var errorResponse = ex.Response;
-
-                using (var responseStream = errorResponse.GetResponseStream())
-                {
-                    if (responseStream == null)
-                    {
-                        throw;
-                    }
-
-                    var reader = new StreamReader(responseStream, Encoding.GetEncoding("utf-8"));
-
-                    var errorText = reader.ReadToEnd();
-
-                    throw new Exception(errorText);
-                }
-            }
-            finally
-            {
-                stopWatch.Stop();
-                Debug.WriteLine($"GET {url} : {stopWatch.ElapsedMilliseconds} ms");
-            }
-        }
-
         /// <summary>The put.</summary>
         /// <param name="url">The url.</param>
         /// <param name="authentification">The authentification.</param>
         /// <typeparam name="TResponse">Type de la réponse</typeparam>
         /// <returns>The TResponse.</returns>
         public static TResponse Put<TResponse>(string url, string authentification) => throw new NotImplementedException();
+
+        /// <summary>The get async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <typeparam name="TResponse">Type de la réponse</typeparam>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<TResponse> GetAsync<TResponse>(string url, string authentification)
+        {
+            var result = await new Func<string, string, Task<TResponse>>(this.GetAsyncInternal<TResponse>).TestPerf(out var timestamp, url, authentification);
+            Debug.WriteLine($"GET {url} : {timestamp} ms");
+            return result;
+        }
 
         /// <summary>The get.</summary>
         /// <param name="url">The url.</param>
@@ -136,10 +84,34 @@ namespace BouchonUniversel.Utils.Http
         /// <returns>The <see cref="Task"/>.</returns>
         public async Task<string> GetAsync(string url, Dictionary<string, string[]> headers, string authentification)
         {
-            var result = await new Func<string, Dictionary<string, string[]>, string, Task<string>>(this.GetAsyncInternal).TestPerf(
-                out var timestamp, url, headers, authentification);
+            var result = await new Func<string, Dictionary<string, string[]>, string, Task<string>>(this.GetAsyncInternal).TestPerf(out var timestamp, url, headers, authentification);
             Debug.WriteLine($"GET {url} : {timestamp} ms");
             return result;
+        }
+
+        /// <summary>The get.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <typeparam name="TResponse">Type de la réponse</typeparam>
+        /// <returns>The TResponse.</returns>
+        public async Task<TResponse> GetAsyncInternal<TResponse>(string url, string authentification)
+        {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            var client = new HttpClient(this.handler);
+
+            client.SetAuthentication(authentification);
+
+            try
+            {
+                var response = await client.GetStringAsync(url);
+                return response.FromJson<TResponse>();
+            }
+            catch (WebException ex)
+            {
+                throw ex.ProcessWebException();
+            }
         }
 
         /// <summary>The post.</summary>
@@ -150,33 +122,47 @@ namespace BouchonUniversel.Utils.Http
         /// <returns>The TResponse.</returns>
         public async Task<TResponse> PostAsync<TResponse>(string url, string content, string authentification)
         {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
+            var result = await new Func<string, Dictionary<string, string[]>, string, string, Task<TResponse>>(this.PostAsyncInternal<TResponse>).TestPerf(
+                             out var time, url, null, content, authentification);
+            Debug.WriteLine($"GET {url} : {time} ms");
+            return result;
+        }
 
+        /// <summary>The post async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="content">The content.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="string"/>.</returns>
+        public async Task<string> PostAsync(string url, string content, string authentification)
+        {
+            var result = await new Func<string, Dictionary<string, string[]>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(out var time, url, null, content, authentification);
+            Debug.WriteLine($"GET {url} : {time} ms");
+            return result;
+        }
 
-            var json = new StringContent(content);
+        #endregion
 
+        #region Méthodes privées
 
+        /// <summary>The get async internal.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        private async Task<string> GetAsyncInternal(string url, Dictionary<string, string[]> headers, string authentification)
+        {
             var client = new HttpClient(this.handler);
 
-            if (!string.IsNullOrEmpty(authentification))
-            {
-                client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authentification);
-            }
+            client.SetAuthentication(authentification);
+            client.SetHeaders(headers);
 
             try
             {
-                var response = await client.PostAsync(url, json);
-                return response.Content.ToString().FromJson<TResponse>();
+                return await client.GetStringAsync(url);
             }
             catch (WebException ex)
             {
                 throw ex.ProcessWebException();
-            }
-            finally
-            {
-                stopWatch.Stop();
-                Debug.WriteLine($"POST {url} : {stopWatch.ElapsedMilliseconds} ms");
             }
         }
 
@@ -186,14 +172,12 @@ namespace BouchonUniversel.Utils.Http
         /// <param name="body">The body.</param>
         /// <param name="authentication">The authentication.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<string> PostAsync(string url, Dictionary<string, string[]> headers, string body, string authentication)
+        private async Task<string> PostAsyncInternal(string url, Dictionary<string, string[]> headers, string body, string authentication)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-
             var client = new HttpClient(this.handler);
-
 
             var content = new StringContent(body);
             client.SetAuthentication(authentication);
@@ -215,30 +199,37 @@ namespace BouchonUniversel.Utils.Http
             }
         }
 
-        #endregion
-
-        #region Méthodes privées
-
-        /// <summary>The get async internal.</summary>
+        /// <summary>The post async internal.</summary>
         /// <param name="url">The url.</param>
         /// <param name="headers">The headers.</param>
+        /// <param name="content">The content.</param>
         /// <param name="authentification">The authentification.</param>
+        /// <typeparam name="TResponse">Test de la réponse</typeparam>
         /// <returns>The <see cref="Task"/>.</returns>
-        /// <exception cref="Exception"></exception>
-        private async Task<string> GetAsyncInternal(string url, Dictionary<string, string[]> headers, string authentification)
+        private async Task<TResponse> PostAsyncInternal<TResponse>(string url, Dictionary<string, string[]> headers, string content, string authentification)
         {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            var json = new StringContent(content);
+
             var client = new HttpClient(this.handler);
 
             client.SetAuthentication(authentification);
-            client.SetHeaders(headers);
 
             try
             {
-                return await client.GetStringAsync(url);
+                var response = await client.PostAsync(url, json);
+                return response.Content.ToString().FromJson<TResponse>();
             }
             catch (WebException ex)
             {
                 throw ex.ProcessWebException();
+            }
+            finally
+            {
+                stopWatch.Stop();
+                Debug.WriteLine($"POST {url} : {stopWatch.ElapsedMilliseconds} ms");
             }
         }
 
