@@ -18,6 +18,8 @@
 
     using Swashbuckle.AspNetCore.Swagger;
 
+    using Utils;
+
     #endregion
 
     /// <summary>The startup.</summary>
@@ -65,6 +67,8 @@
             services.AddDbContext<DataContext>(builder => builder.UseSqlite(this.GetSqliteConnection()));
 
             services.AddSwaggerGen(c => { c.SwaggerDoc(VersionSwagger, new Info { Title = TitreSwagger, Version = VersionSwagger }); });
+
+            services.AddSingleton<HttpService>();
 
             services.AddTransient<SettingsBouchonMetier>();
             services.AddTransient<BouchonInitializer>();

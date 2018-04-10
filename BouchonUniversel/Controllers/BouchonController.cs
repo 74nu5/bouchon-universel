@@ -76,18 +76,21 @@
         /// <param name="route">The route.</param>
         /// <param name="query">The query.</param>
         /// <param name="body">The body.</param>
+        /// <param name="headers">The headers.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost("{cle}/{env}/{*route}")]
+        [AddHeaderParameters("headers")]
         public async Task<IActionResult> Post(
             [FromRoute] string cle,
             [FromRoute] string env,
             [FromRoute] string route,
             [FromQuery] Dictionary<string, string> query,
-            [FromBody] string body)
+            [FromBody] string body,
+            Dictionary<string, string[]> headers)
         {
             try
             {
-                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, body);
+                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, body);
                 return this.Ok(result);
             }
             catch (KeyNotFoundException httpEx)

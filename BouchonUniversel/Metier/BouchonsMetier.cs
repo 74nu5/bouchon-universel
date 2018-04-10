@@ -14,7 +14,9 @@
 
     using JetBrains.Annotations;
 
-    using Utils;
+    using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+
+    using Utils.Http;
 
     using KeyNotFoundException = Exceptions.KeyNotFoundException;
 
@@ -36,6 +38,9 @@
         /// <summary>The environnement dao.</summary>
         private readonly EnvironnementDAO environnementDAO;
 
+        /// <summary>The http.</summary>
+        private readonly HttpService http;
+
         /// <summary>The services dao.</summary>
         private readonly ServicesDAO servicesDAO;
 
@@ -50,11 +55,13 @@
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
-        public BouchonsMetier(ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO)
+        /// <param name="http">The http.</param>
+        public BouchonsMetier(ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, HttpService http)
         {
             this.servicesDAO = servicesDAO;
             this.environnementDAO = environnementDAO;
             this.settingsBouchonDAO = settingsBouchonDAO;
+            this.http = http;
         }
 
         #endregion
@@ -67,10 +74,46 @@
         /// <param name="route">The route.</param>
         /// <param name="query">The query.</param>
         /// <param name="headers">The headers.</param>
-        /// <exception cref="KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
+        /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="string"/>.</returns>
         public async Task<string> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, string> query, Dictionary<string, string[]> headers)
+            => await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null);
+
+        /// <summary>The process post request async.</summary>
+        /// <param name="cle">The cle.</param>
+        /// <param name="env">The env.</param>
+        /// <param name="route">The route.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="body">The body.</param>
+        /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
+        /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<string> ProcessPostRequestAsync(string cle, string env, string route, Dictionary<string, string> query, Dictionary<string, string[]> headers, string body)
+            => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body);
+
+        #endregion
+
+        #region Méthodes privées
+
+        /// <summary>The process request async.</summary>
+        /// <param name="method">The get.</param>
+        /// <param name="cle">The cle.</param>
+        /// <param name="env">The env.</param>
+        /// <param name="route">The route.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="body">The body.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        private async Task<string> ProcessRequestAsync(
+            HttpMethod method,
+            string cle,
+            string env,
+            string route,
+            Dictionary<string, string> query,
+            Dictionary<string, string[]> headers,
+            string body)
         {
             var requestIsActivated = this.ServiceIsActivated(cle, env);
 
@@ -91,27 +134,40 @@
             var urlBase = new Uri(this.servicesDAO.GetUrl(cle, env));
             var url = new Uri(urlBase, new Uri(route + queryStr));
 
-            var result = await HttpService.GetAsync(url.ToString(), headers, null);
+            var result = string.Empty;
+
+            switch (method)
+            {
+                case HttpMethod.Get:
+                    result = await this.http.GetAsync(url.ToString(), headers, null);
+                    break;
+                case HttpMethod.Put:
+                    break;
+                case HttpMethod.Delete:
+                    break;
+                case HttpMethod.Post:
+                    result = await this.http.PostAsync(url.ToString(), headers, body, null);
+                    break;
+                case HttpMethod.Head:
+                    break;
+                case HttpMethod.Trace:
+                    break;
+                case HttpMethod.Patch:
+                    break;
+                case HttpMethod.Connect:
+                    break;
+                case HttpMethod.Options:
+                    break;
+                case HttpMethod.Custom:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(method), method, null);
+            }
 
             File.WriteAllText(fileName, result);
 
             return result;
         }
-
-        /// <summary>The process post request async.</summary>
-        /// <param name="cle">The cle.</param>
-        /// <param name="env">The env.</param>
-        /// <param name="route">The route.</param>
-        /// <param name="query">The query.</param>
-        /// <param name="body">The body.</param>
-        /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
-        /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="Task"/>.</returns>
-        public Task<string> ProcessPostRequestAsync(string cle, string env, string route, Dictionary<string, string> query, string body) => throw new NotImplementedException();
-
-        #endregion
-
-        #region Méthodes privées
 
         /// <summary>The assert service exists.</summary>
         /// <param name="cle">The cle.</param>

@@ -24,7 +24,10 @@
   <ItemGroup>
     <Folder Include="Models\ModelsView\" />
     <Folder Include="Middlewares\" />
-    <Folder Include="Utils\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BouchonUniversel.Utils\BouchonUniversel.Utils.csproj" />
   </ItemGroup>
 
 </Project>
