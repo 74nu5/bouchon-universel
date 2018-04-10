@@ -3,6 +3,7 @@
     #region Usings
 
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading.Tasks;
 
     using Exceptions;
@@ -60,13 +61,17 @@
                 var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query, headers);
                 return this.Ok(result);
             }
-            catch (KeyNotFoundException httpEx)
+            catch (KeyNotFoundException ex)
             {
-                return this.NotFound(httpEx.Message);
+                return this.NotFound(ex.Message);
             }
-            catch (EnvironmentNotFoundException httpEx)
+            catch (EnvironmentNotFoundException ex)
             {
-                return this.NotFound(httpEx.Message);
+                return this.NotFound(ex.Message);
+            }
+            catch (FileNotFoundException ex)
+            {
+                return this.NotFound(ex.Message);
             }
         }
 
