@@ -310,7 +310,7 @@
             try
             {
                 var proper = typeof(T).GetProperty(paraName);
-                return proper.GetValue(data).ToString();
+                return proper?.GetValue(data).ToString();
             }
             catch (Exception)
             {

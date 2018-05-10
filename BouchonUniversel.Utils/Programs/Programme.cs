@@ -47,6 +47,11 @@
                 }
 
                 var entries = Console.ReadLine();
+                if (entries == null)
+                {
+                    continue;
+                }
+
                 foreach (var entry in entries.Split(' '))
                 {
                     var isChoixNumerique = int.TryParse(entry, out var choix);

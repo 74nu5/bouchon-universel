@@ -78,7 +78,7 @@
 
             for (var index = 0; index < formatterNames.Length; ++index)
             {
-                str = str.Replace("{" + formatterNames[index] + "}", "{" + index + "}");
+                str = str?.Replace("{" + formatterNames[index] + "}", "{" + index + "}");
             }
 
             return str;
