@@ -19,8 +19,6 @@
 
     using Swashbuckle.AspNetCore.Swagger;
 
-    using Utils;
-
     #endregion
 
     /// <summary>The startup.</summary>
