@@ -4,27 +4,31 @@
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Xml.Linq;
 
-    using DAL.DAO;
-
-    using Exceptions;
+    using BouchonUniversel.DAL.DAO;
+    using BouchonUniversel.Exceptions;
+    using BouchonUniversel.Models.Bouchons;
+    using BouchonUniversel.Utils;
+    using BouchonUniversel.Utils.Http;
+    using BouchonUniversel.Utils.Xml;
 
     using JetBrains.Annotations;
 
     using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
-    using Utils.Http;
-
-    using KeyNotFoundException = Exceptions.KeyNotFoundException;
+    using KeyNotFoundException = BouchonUniversel.Exceptions.KeyNotFoundException;
 
     #endregion
 
     /// <summary>The bouchon metier.</summary>
     [UsedImplicitly]
-    public class BouchonsMetier
+    [SuppressMessage("ReSharper", "StyleCop.SA1008", Justification = "Stylecop Issue with Tuple")]
+    public sealed class BouchonsMetier
     {
         #region Champs
 
@@ -69,9 +73,9 @@
         /// <param name="headers">The headers.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="string"/>.</returns>
-        public async Task<string> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, string> query, Dictionary<string, string[]> headers)
-            => await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null);
+        /// <returns>The <see cref="ReponseBouchonnee"/>.</returns>
+        public async Task<ReponseBouchonnee> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, string[]> query, Dictionary<string, IEnumerable<string>> headers) =>
+            await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null);
 
         /// <summary>The process post request async.</summary>
         /// <param name="cle">The cle.</param>
@@ -83,8 +87,14 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<string> ProcessPostRequestAsync(string cle, string env, string route, Dictionary<string, string> query, Dictionary<string, string[]> headers, string body)
-            => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body);
+        public async Task<ReponseBouchonnee> ProcessPostRequestAsync(
+            string cle,
+            string env,
+            string route,
+            Dictionary<string, string[]> query,
+            Dictionary<string, IEnumerable<string>> headers,
+            string body) =>
+            await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body);
 
         #endregion
 
@@ -99,15 +109,16 @@
         /// <param name="headers">The headers.</param>
         /// <param name="body">The body.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        private async Task<string> ProcessRequestAsync(
+        private async Task<ReponseBouchonnee> ProcessRequestAsync(
             HttpMethod method,
             string cle,
             string env,
             string route,
-            Dictionary<string, string> query,
-            Dictionary<string, string[]> headers,
+            Dictionary<string, string[]> query,
+            Dictionary<string, IEnumerable<string>> headers,
             string body)
         {
+            var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
             var requestIsActivated = this.ServiceIsActivated(cle, env);
 
             var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, route));
@@ -116,58 +127,73 @@
                 bouchonDir.Create();
             }
 
-            var queryStr = string.Join("&", query.Select(pair => $"{pair.Key}={pair.Value}").ToArray());
+            var queryStr = string.Join("&", query.Select(pair => $"{pair.Key}={string.Join(",", pair.Value)}").ToArray());
             var fileName = Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryStr}");
 
             if (requestIsActivated)
             {
-                return File.ReadAllText(fileName);
+                return XDocument.Load(fileName).FromXml<ReponseBouchonnee>();
             }
 
             var urlBase = new Uri(this.servicesDAO.GetUrl(cle, env));
             var url = new Uri(urlBase, new Uri(route + queryStr, UriKind.Relative));
 
-            var result = string.Empty;
-
+            var reponse = default(ReponseBouchonnee);
             switch (method)
             {
                 case HttpMethod.Get:
-                    result = await this.http.GetAsync(url.ToString(), headers, null);
+                {
+                    var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null);
+                    reponse = new ReponseBouchonnee { Body = response, Headers = responseHeaders.ToKeyValueList(), Request = req, StatusCode = (int)httpCode, ResponsePhrase = responsePhrase };
                     break;
+                }
+
                 case HttpMethod.Put:
+
                     // TODO Gérer le verbe PUT
                     break;
                 case HttpMethod.Delete:
+
                     // TODO Gérer le verbe DELETE
                     break;
                 case HttpMethod.Post:
-                    result = await this.http.PostAsync(url.ToString(), headers, body, null);
+                {
+                    var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null);
+                    reponse = new ReponseBouchonnee { Body = response, Headers = responseHeaders.ToKeyValueList(), Request = req, StatusCode = (int)httpCode, ResponsePhrase = responsePhrase };
                     break;
+                }
+
                 case HttpMethod.Head:
+
                     // TODO Gérer le verbe HEAD
                     break;
                 case HttpMethod.Trace:
+
                     // TODO Gérer le verbe TRACE
                     break;
                 case HttpMethod.Patch:
+
                     // TODO Gérer le verbe PATCH
                     break;
                 case HttpMethod.Connect:
+
                     // TODO Gérer le verbe CONNECT
                     break;
                 case HttpMethod.Options:
+
                     // TODO Gérer le verbe OPTIONS
                     break;
                 case HttpMethod.Custom:
+
                     // TODO Gérer le verbe CUSTOM
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(method), method, null);
             }
 
-            File.WriteAllText(fileName, result);
+            File.WriteAllText(fileName, reponse.ToXml());
 
-            return result;
+            return reponse;
         }
 
         /// <summary>The assert service exists.</summary>

@@ -8,9 +8,9 @@
 
     #endregion
 
-    /// <summary>The reponse bouchonnee.</summary>
+    /// <summary>The request.</summary>
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public sealed class ReponseBouchonnee
+    public sealed class Request
     {
         #region Propriétés et indexeurs
 
@@ -20,14 +20,11 @@
         /// <summary>Gets or sets the headers.</summary>
         public List<KeyValue> Headers { get; set; }
 
-        /// <summary>Gets or sets the request.</summary>
-        public Request Request { get; set; }
+        /// <summary>Gets or sets the query.</summary>
+        public List<KeyValue> Query { get; set; }
 
-        /// <summary>Gets or sets the response phrase.</summary>
-        public string ResponsePhrase { get; set; }
-
-        /// <summary>Gets or sets the status code.</summary>
-        public int StatusCode { get; set; }
+        /// <summary>Gets or sets the route.</summary>
+        public string Route { get; set; }
 
         #endregion
     }
