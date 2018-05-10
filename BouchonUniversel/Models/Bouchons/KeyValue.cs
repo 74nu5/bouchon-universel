@@ -2,21 +2,25 @@
 {
     #region Usings
 
+    using System.Xml.Serialization;
+
     using JetBrains.Annotations;
 
     #endregion
 
     /// <summary>The key value.</summary>
-    [UsedImplicitly]
-    public class KeyValue
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    public sealed class KeyValue
     {
         #region Propriétés et indexeurs
 
         /// <summary>Gets or sets the key.</summary>
+        [XmlAttribute]
         public string Key { get; set; }
 
         /// <summary>Gets or sets the value.</summary>
-        public string Value { get; set; }
+        [XmlAttribute]
+        public string[] Value { get; set; }
 
         #endregion
     }

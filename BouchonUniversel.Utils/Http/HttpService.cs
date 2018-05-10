@@ -5,6 +5,8 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -18,7 +20,8 @@
 
     /// <summary>The http service.</summary>
     [PublicAPI]
-    public class HttpService
+    [SuppressMessage("ReSharper", "StyleCop.SA1009", Justification = "Stylecop Issue with Tuple")]
+    public sealed class HttpService
     {
         #region Champs
 
@@ -54,14 +57,68 @@
         /// <returns>The TResponse.</returns>
         public static TResponse Put<TResponse>(string url, string authentification) => throw new NotImplementedException();
 
+        /// <summary>The get http response async.</summary>
+        /// <typeparam name="TResponse">Type de la réponse</typeparam>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<(HttpStatusCode Code, string ResponsePhrase, Dictionary<string, IEnumerable<string>> Headers, TResponse Response)> GetHttpResponseAsync<TResponse>(
+            string url,
+            Dictionary<string, IEnumerable<string>> headers,
+            string authentification)
+        {
+            var result =
+                await new Func<string, Dictionary<string, IEnumerable<string>>, string, Task<(HttpStatusCode, string, Dictionary<string, IEnumerable<string>>, TResponse)>>(
+                    this.GetHttpResponseAsyncInternal<TResponse>).TestPerf(out var timestamp, url, headers, authentification);
+            Debug.WriteLine($"GET {url} : {timestamp} ms");
+            return result;
+        }
+
+        /// <summary>The get http response async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<(HttpStatusCode StatusCode, string ResponsePhrase, Dictionary<string, IEnumerable<string>> Headers, string Response)> GetHttpResponseAsync(
+            string url,
+            Dictionary<string, IEnumerable<string>> headers,
+            string authentification)
+        {
+            var result =
+                await new Func<string, Dictionary<string, IEnumerable<string>>, string, Task<(HttpStatusCode, string, Dictionary<string, IEnumerable<string>>, string)>>(
+                    this.GetHttpResponseAsyncInternal).TestPerf(out var timestamp, url, headers, authentification);
+            Debug.WriteLine($"GET {url} : {timestamp} ms");
+            return result;
+        }
+
+        /// <summary>The post http response async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="body">The body.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<(HttpStatusCode StatusCode, string ResponsePhrase, Dictionary<string, IEnumerable<string>> Headers, string Response)> PostHttpResponseAsync(
+            string url,
+            Dictionary<string, IEnumerable<string>> headers,
+            string body,
+            string authentification)
+        {
+            var result =
+                await new Func<string, Dictionary<string, IEnumerable<string>>, string, string, Task<(HttpStatusCode, string, Dictionary<string, IEnumerable<string>>, string)>>(
+                    this.PostHttpResponseAsyncInternal).TestPerf(out var timestamp, url, headers, body, authentification);
+            Debug.WriteLine($"GET {url} : {timestamp} ms");
+            return result;
+        }
+
         /// <summary>The get async.</summary>
         /// <param name="url">The url.</param>
         /// <param name="authentification">The authentification.</param>
         /// <typeparam name="TResponse">Type de la réponse</typeparam>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<TResponse> GetAsync<TResponse>(string url, string authentification)
+        public async Task<TResponse> GetStringAsync<TResponse>(string url, string authentification)
         {
-            var result = await new Func<string, string, Task<TResponse>>(this.GetAsyncInternal<TResponse>).TestPerf(out var timestamp, url, authentification);
+            var result = await new Func<string, string, Task<TResponse>>(this.GetResponseAsyncInternal<TResponse>).TestPerf(out var timestamp, url, authentification);
             Debug.WriteLine($"GET {url} : {timestamp} ms");
             return result;
         }
@@ -70,9 +127,9 @@
         /// <param name="url">The url.</param>
         /// <param name="authentification">The authentification.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<string> GetAsync(string url, string authentification)
+        public async Task<string> GetStringAsync(string url, string authentification)
         {
-            var result = await new Func<string, Dictionary<string, string[]>, string, Task<string>>(this.GetAsyncInternal).TestPerf(out var timestamp, url, null, authentification);
+            var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, Task<string>>(this.GetStringAsyncInternal).TestPerf(out var timestamp, url, null, authentification);
             Debug.WriteLine($"GET {url} : {timestamp} ms");
             return result;
         }
@@ -82,11 +139,155 @@
         /// <param name="headers">The headers.</param>
         /// <param name="authentification">The authentification.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<string> GetAsync(string url, Dictionary<string, string[]> headers, string authentification)
+        public async Task<string> GetStringAsync(string url, Dictionary<string, IEnumerable<string>> headers, string authentification)
         {
-            var result = await new Func<string, Dictionary<string, string[]>, string, Task<string>>(this.GetAsyncInternal).TestPerf(out var timestamp, url, headers, authentification);
+            var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, Task<string>>(this.GetStringAsyncInternal).TestPerf(out var timestamp, url, headers, authentification);
             Debug.WriteLine($"GET {url} : {timestamp} ms");
             return result;
+        }
+
+        /// <summary>The post.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="content">The http content.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <typeparam name="TResponse">Type de la réponse</typeparam>
+        /// <returns>The TResponse.</returns>
+        public async Task<TResponse> PostAsync<TResponse>(string url, string content, string authentification)
+        {
+            var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, string, Task<TResponse>>(
+                             this.PostAsyncInternal<TResponse>).TestPerf(out var time, url, null, content, authentification);
+            Debug.WriteLine($"GET {url} : {time} ms");
+            return result;
+        }
+
+        /// <summary>The post async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="content">The content.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="string"/>.</returns>
+        public async Task<string> PostAsync(string url, string content, string authentification)
+        {
+            var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(out var time, url, null, content, authentification);
+            Debug.WriteLine($"GET {url} : {time} ms");
+            return result;
+        }
+
+        /// <summary>The post async.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="content">The content.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task<string> PostAsync(string url, Dictionary<string, IEnumerable<string>> headers, string content, string authentification)
+        {
+            var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(out var time, url, headers, content, authentification);
+            Debug.WriteLine($"GET {url} : {time} ms");
+            return result;
+        }
+
+        #endregion
+
+        #region Méthodes privées
+
+        /// <summary>The get response async internal.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <typeparam name="TResponse">Type de la reponse</typeparam>
+        /// <returns>The <see cref="Task"/>.</returns>
+        private async Task<(HttpStatusCode, string, Dictionary<string, IEnumerable<string>>, TResponse)> GetHttpResponseAsyncInternal<TResponse>(
+            string url,
+            Dictionary<string, IEnumerable<string>> headers,
+            string authentification)
+        {
+            var client = new HttpClient(this.handler);
+
+            client.SetAuthentication(authentification);
+            client.SetHeaders(headers);
+
+            try
+            {
+                var response = await client.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (response.StatusCode, response.ReasonPhrase, null, default(TResponse));
+                }
+
+                var headersResponse = response.Headers.ToDictionary(pair => pair.Key, pair => pair.Value);
+                return (response.StatusCode, response.ReasonPhrase, headersResponse, response.Content.ReadAsStringAsync().Result.FromJson<TResponse>());
+            }
+            catch (WebException ex)
+            {
+                throw ex.ProcessWebException();
+            }
+        }
+
+        /// <summary>The get http response async internal.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        private async Task<(HttpStatusCode, string, Dictionary<string, IEnumerable<string>>, string)> GetHttpResponseAsyncInternal(
+            string url,
+            Dictionary<string, IEnumerable<string>> headers,
+            string authentification)
+        {
+            var client = new HttpClient(this.handler);
+
+            client.SetAuthentication(authentification);
+            client.SetHeaders(headers);
+
+            try
+            {
+                var response = await client.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (response.StatusCode, response.ReasonPhrase, null, null);
+                }
+
+                var headersResponse = response.Headers.ToDictionary(pair => pair.Key, pair => pair.Value);
+                return (response.StatusCode, response.ReasonPhrase, headersResponse, await response.Content.ReadAsStringAsync());
+            }
+            catch (WebException ex)
+            {
+                throw ex.ProcessWebException();
+            }
+        }
+
+        /// <summary>The post http response async internal.</summary>
+        /// <param name="url">The url.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="body">The body.</param>
+        /// <param name="authentification">The authentification.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        private async Task<(HttpStatusCode, string, Dictionary<string, IEnumerable<string>>, string)> PostHttpResponseAsyncInternal(
+            string url,
+            Dictionary<string, IEnumerable<string>> headers,
+            string body,
+            string authentification)
+        {
+            var client = new HttpClient(this.handler);
+
+            var content = new StringContent(body);
+
+            client.SetAuthentication(authentification);
+            client.SetHeaders(headers);
+
+            try
+            {
+                var response = await client.PostAsync(url, content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (response.StatusCode, response.ReasonPhrase, null, null);
+                }
+
+                var headersResponse = response.Headers.ToDictionary(pair => pair.Key, pair => pair.Value);
+                return (response.StatusCode, response.ReasonPhrase, headersResponse, await response.Content.ReadAsStringAsync());
+            }
+            catch (WebException ex)
+            {
+                throw ex.ProcessWebException();
+            }
         }
 
         /// <summary>The get.</summary>
@@ -94,11 +295,8 @@
         /// <param name="authentification">The authentification.</param>
         /// <typeparam name="TResponse">Type de la réponse</typeparam>
         /// <returns>The TResponse.</returns>
-        public async Task<TResponse> GetAsyncInternal<TResponse>(string url, string authentification)
+        private async Task<TResponse> GetResponseAsyncInternal<TResponse>(string url, string authentification)
         {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-
             var client = new HttpClient(this.handler);
 
             client.SetAuthentication(authentification);
@@ -114,55 +312,12 @@
             }
         }
 
-        /// <summary>The post.</summary>
-        /// <param name="url">The url.</param>
-        /// <param name="content">The http content.</param>
-        /// <param name="authentification">The authentification.</param>
-        /// <typeparam name="TResponse">Type de la réponse</typeparam>
-        /// <returns>The TResponse.</returns>
-        public async Task<TResponse> PostAsync<TResponse>(string url, string content, string authentification)
-        {
-            var result = await new Func<string, Dictionary<string, string[]>, string, string, Task<TResponse>>(this.PostAsyncInternal<TResponse>).TestPerf(
-                             out var time, url, null, content, authentification);
-            Debug.WriteLine($"GET {url} : {time} ms");
-            return result;
-        }
-
-        /// <summary>The post async.</summary>
-        /// <param name="url">The url.</param>
-        /// <param name="content">The content.</param>
-        /// <param name="authentification">The authentification.</param>
-        /// <returns>The <see cref="string"/>.</returns>
-        public async Task<string> PostAsync(string url, string content, string authentification)
-        {
-            var result = await new Func<string, Dictionary<string, string[]>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(out var time, url, null, content, authentification);
-            Debug.WriteLine($"GET {url} : {time} ms");
-            return result;
-        }
-
-        /// <summary>The post async.</summary>
-        /// <param name="url">The url.</param>
-        /// <param name="headers">The headers.</param>
-        /// <param name="content">The content.</param>
-        /// <param name="authentification">The authentification.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<string> PostAsync(string url, Dictionary<string, string[]> headers, string content, string authentification)
-        {
-            var result = await new Func<string, Dictionary<string, string[]>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(out var time, url, headers, content, authentification);
-            Debug.WriteLine($"GET {url} : {time} ms");
-            return result;
-        }
-
-        #endregion
-
-        #region Méthodes privées
-
         /// <summary>The get async internal.</summary>
         /// <param name="url">The url.</param>
         /// <param name="headers">The headers.</param>
         /// <param name="authentification">The authentification.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        private async Task<string> GetAsyncInternal(string url, Dictionary<string, string[]> headers, string authentification)
+        private async Task<string> GetStringAsyncInternal(string url, Dictionary<string, IEnumerable<string>> headers, string authentification)
         {
             var client = new HttpClient(this.handler);
 
@@ -185,7 +340,7 @@
         /// <param name="body">The body.</param>
         /// <param name="authentication">The authentication.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        private async Task<string> PostAsyncInternal(string url, Dictionary<string, string[]> headers, string body, string authentication)
+        private async Task<string> PostAsyncInternal(string url, Dictionary<string, IEnumerable<string>> headers, string body, string authentication)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -219,7 +374,7 @@
         /// <param name="authentification">The authentification.</param>
         /// <typeparam name="TResponse">Test de la réponse</typeparam>
         /// <returns>The <see cref="Task"/>.</returns>
-        private async Task<TResponse> PostAsyncInternal<TResponse>(string url, Dictionary<string, string[]> headers, string content, string authentification)
+        private async Task<TResponse> PostAsyncInternal<TResponse>(string url, Dictionary<string, IEnumerable<string>> headers, string content, string authentification)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();

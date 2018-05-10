@@ -7,11 +7,14 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+
+    using JetBrains.Annotations;
 
     using Microsoft.AspNetCore.Http;
 
@@ -20,6 +23,7 @@
     #endregion
 
     /// <summary>The http client extensions.</summary>
+    [PublicAPI]
     public static class HttpExtensions
     {
         #region Méthodes publiques
@@ -84,7 +88,7 @@
         /// <summary>The set headers.</summary>
         /// <param name="client">The client.</param>
         /// <param name="headers">The headers.</param>
-        public static void SetHeaders(this HttpClient client, Dictionary<string, string[]> headers)
+        public static void SetHeaders(this HttpClient client, Dictionary<string, IEnumerable<string>> headers)
         {
             if (headers == null)
             {
@@ -94,6 +98,22 @@
             foreach (var header in headers)
             {
                 client.DefaultRequestHeaders.Add(header.Key, header.Value);
+            }
+        }
+
+        /// <summary>The set headers.</summary>
+        /// <param name="response">The response.</param>
+        /// <param name="headers">The headers.</param>
+        public static void SetHeaders(this HttpResponse response, Dictionary<string, IEnumerable<string>> headers)
+        {
+            if (headers == null)
+            {
+                return;
+            }
+
+            foreach (var header in headers)
+            {
+                response.Headers.Add(header.Key, header.Value.ToArray());
             }
         }
 

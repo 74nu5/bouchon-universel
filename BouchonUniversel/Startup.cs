@@ -23,7 +23,7 @@
 
     /// <summary>The startup.</summary>
     [UsedImplicitly]
-    public class Startup
+    public sealed class Startup
     {
         #region Champs et constantes statiques
 

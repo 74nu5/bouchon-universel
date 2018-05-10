@@ -56,7 +56,7 @@
                 {
                     var isChoixNumerique = int.TryParse(entry, out var choix);
 
-                    if (!isChoixNumerique || choix <= enumerable.Count && choix > 0)
+                    if (!isChoixNumerique || ((choix <= enumerable.Count) && (choix > 0)))
                     {
                         enumerable[choix - 1].Invoke();
                     }

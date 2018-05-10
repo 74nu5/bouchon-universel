@@ -4,15 +4,13 @@
 
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
+    using BouchonUniversel.Exceptions;
+    using BouchonUniversel.Filters;
+    using BouchonUniversel.Metier;
     using BouchonUniversel.Utils.Http;
-
-    using Exceptions;
-
-    using Filters;
-
-    using Metier;
 
     using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +20,7 @@
 
     /// <summary>The bouchon controller.</summary>
     [Route("api/Bouchon")]
-    public class BouchonController : Controller
+    public sealed class BouchonController : Controller
     {
         #region Champs
 
@@ -41,6 +39,13 @@
 
         #region Méthodes publiques
 
+        /// <summary>The delete.</summary>
+        /// <param name="id">The id.</param>
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
+
         /// <summary>The get.</summary>
         /// <param name="cle">The cle.</param>
         /// <param name="env">The env.</param>
@@ -50,17 +55,18 @@
         /// <returns>The Dictionary.</returns>
         [HttpGet("{cle}/{env}/{*route}")]
         [AddHeaderParameters("headers")]
-        public async Task<IActionResult> GetAsync(
+        public async Task<IActionResult> Get(
             [FromRoute] string cle,
             [FromRoute] string env,
             [FromRoute] string route,
             [FromQuery] Dictionary<string, string> query,
-            Dictionary<string, string[]> headers)
+            Dictionary<string, IEnumerable<string>> headers)
         {
             try
             {
-                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query, headers);
-                return this.Ok(result);
+                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query.ToDictionary(pair => pair.Key, pair => new[] { pair.Value }), headers);
+                this.Response.SetHeaders(result.Headers.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+                return this.StatusCode(result.StatusCode, result.Body);
             }
             catch (KeyNotFoundException ex)
             {
@@ -90,11 +96,17 @@
             [FromRoute] string env,
             [FromRoute] string route,
             [FromQuery] Dictionary<string, string> query,
-            Dictionary<string, string[]> headers)
+            Dictionary<string, IEnumerable<string>> headers)
         {
             try
             {
-                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
+                var result = await this.metier.ProcessPostRequestAsync(
+                                 cle,
+                                 env,
+                                 route,
+                                 query.ToDictionary(pair => pair.Key, pair => new[] { pair.Value }),
+                                 headers,
+                                 await this.Request.GetRawBodyStringAsync());
                 return this.Ok(result);
             }
             catch (KeyNotFoundException httpEx)
@@ -112,13 +124,6 @@
         /// <param name="value">The value.</param>
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        /// <summary>The delete.</summary>
-        /// <param name="id">The id.</param>
-        [HttpDelete("{id}")]
-        public void Delete(int id)
         {
         }
 

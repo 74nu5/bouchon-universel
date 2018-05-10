@@ -67,6 +67,7 @@
                 {
                     return "one month ago";
                 }
+
                 return $"{ts.Days} days ago";
             }
 

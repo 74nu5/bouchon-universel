@@ -9,7 +9,7 @@
     #endregion
 
     /// <summary>The add header parameters attribute.</summary>
-    public class AddHeaderParametersAttribute : ActionFilterAttribute
+    internal sealed class AddHeaderParametersAttribute : ActionFilterAttribute
     {
         #region Champs
 
@@ -30,7 +30,8 @@
 
         /// <summary>Called before the action executes, after model binding is complete.</summary>
         /// <param name="context">The <see cref="T:Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext"/>.</param>
-        public override void OnActionExecuting(ActionExecutingContext context) => context.ActionArguments[this.parameterName] = context.HttpContext.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.ToArray());
+        public override void OnActionExecuting(ActionExecutingContext context) =>
+            context.ActionArguments[this.parameterName] = context.HttpContext.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
 
         #endregion
     }
