@@ -13,6 +13,7 @@
     using BouchonUniversel.DAL.DAO;
     using BouchonUniversel.Exceptions;
     using BouchonUniversel.Models.Bouchons;
+    using BouchonUniversel.Models.ModelsView;
     using BouchonUniversel.Utils;
     using BouchonUniversel.Utils.Http;
     using BouchonUniversel.Utils.Xml;
@@ -65,6 +66,15 @@
 
         #region Méthodes internes
 
+        /// <summary>The get files of service.</summary>
+        /// <param name="service">The service.</param>
+        /// <returns>The <see cref="DirectoryBouchon"/>.</returns>
+        internal DirectoryBouchon GetFilesOfService(Service service)
+        {
+            var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), service.Cle, service.Environnement.Nom));
+            return !bouchonDir.Exists ? new DirectoryBouchon() : this.GetFileAndDirectory(bouchonDir);
+        }
+
         /// <summary>The process request.</summary>
         /// <param name="cle">The cle.</param>
         /// <param name="env">The env.</param>
@@ -105,6 +115,20 @@
 
         #region Méthodes privées
 
+        /// <summary>The get file and directory.</summary>
+        /// <param name="dir">The dir.</param>
+        /// <returns>The <see cref="DirectoryBouchon"/>.</returns>
+        private DirectoryBouchon GetFileAndDirectory(DirectoryInfo dir)
+        {
+            var result = new DirectoryBouchon
+                         {
+                             Name = dir.Name,
+                             FileBouchons = dir.GetFileSystemInfos().Select(file => new FileBouchon { Name = file.Name, FullName = file.FullName }).ToList(),
+                             Directories = dir.GetDirectories().Select(this.GetFileAndDirectory).ToList()
+                         };
+            return result;
+        }
+
         /// <summary>The process request async.</summary>
         /// <param name="method">The get.</param>
         /// <param name="cle">The cle.</param>
@@ -133,7 +157,7 @@
             }
 
             var queryStr = string.Join("&", query.Select(pair => $"{pair.Key}={string.Join(",", pair.Value)}").ToArray());
-            var fileName = Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryStr}");
+            var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryStr}")}.xml";
 
             if (requestIsActivated)
             {
