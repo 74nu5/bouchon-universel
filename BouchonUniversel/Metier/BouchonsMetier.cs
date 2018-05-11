@@ -63,7 +63,7 @@
 
         #endregion
 
-        #region Méthodes publiques
+        #region Méthodes internes
 
         /// <summary>The process request.</summary>
         /// <param name="cle">The cle.</param>
@@ -74,7 +74,12 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="ReponseBouchonnee"/>.</returns>
-        public async Task<ReponseBouchonnee> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, IEnumerable<string>> query, Dictionary<string, IEnumerable<string>> headers) =>
+        internal async Task<ReponseBouchonnee> ProcessGetRequestAsync(
+            string cle,
+            string env,
+            string route,
+            Dictionary<string, IEnumerable<string>> query,
+            Dictionary<string, IEnumerable<string>> headers) =>
             await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null);
 
         /// <summary>The process post request async.</summary>
@@ -87,7 +92,7 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<ReponseBouchonnee> ProcessPostRequestAsync(
+        internal async Task<ReponseBouchonnee> ProcessPostRequestAsync(
             string cle,
             string env,
             string route,
@@ -121,7 +126,7 @@
             var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
             var requestIsActivated = this.ServiceIsActivated(cle, env);
 
-            var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, route));
+            var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, route ?? string.Empty));
             if (!bouchonDir.Exists)
             {
                 bouchonDir.Create();

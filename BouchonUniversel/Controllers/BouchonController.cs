@@ -9,7 +9,6 @@
     using System.Threading.Tasks;
 
     using BouchonUniversel.Exceptions;
-    using BouchonUniversel.Filters;
     using BouchonUniversel.Metier;
     using BouchonUniversel.Utils.Http;
 
@@ -50,21 +49,19 @@
         /// <param name="env">The env.</param>
         /// <param name="route">The route.</param>
         /// <param name="query">The query.</param>
-        /// <param name="headers">The header.</param>
         /// <returns>The Dictionary.</returns>
         [HttpGet("{cle}/{env}/{*route}")]
-        [AddHeaderParameters("headers")]
         public async Task<IActionResult> Get(
             [FromRoute] string cle,
             [FromRoute] string env,
             [FromRoute] string route,
-            [FromQuery] Dictionary<string, IEnumerable<string>> query,
-            Dictionary<string, IEnumerable<string>> headers)
+            [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
             try
             {
+                var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
                 var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query, headers);
-                this.Response.SetHeaders(result.Headers.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+                this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
                 return this.StatusCode(result.StatusCode, result.Body);
             }
             catch (KeyNotFoundException ex)
@@ -86,19 +83,17 @@
         /// <param name="env">The env.</param>
         /// <param name="route">The route.</param>
         /// <param name="query">The query.</param>
-        /// <param name="headers">The headers.</param>
         /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost("{cle}/{env}/{*route}")]
-        [AddHeaderParameters("headers")]
         public async Task<IActionResult> Post(
             [FromRoute] string cle,
             [FromRoute] string env,
             [FromRoute] string route,
-            [FromQuery] Dictionary<string, IEnumerable<string>> query,
-            Dictionary<string, IEnumerable<string>> headers)
+            [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
             try
             {
+                var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
                 var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
                 return this.Ok(result);
             }

@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Filters\" />
     <Folder Include="Models\ModelsView\" />
     <Folder Include="Middlewares\" />
   </ItemGroup>
