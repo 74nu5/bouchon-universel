@@ -33,10 +33,15 @@
             @Html.DisplayNameFor(model => model.Environnement)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Environnement.Id)
+            @Html.DisplayFor(model => model.Environnement.Nom)
         </dd>
     </dl>
 </div>
+
+<div>
+    <p>Url du bouchon : <a href="http://@Context.Request.Host/api/bouchon/@Model.Cle/@Model.Environnement.Nom/">http://@Context.Request.Host/api/bouchon/@Model.Cle/@Model.Environnement.Nom/</a></p>
+</div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
