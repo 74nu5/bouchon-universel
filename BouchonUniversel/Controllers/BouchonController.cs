@@ -2,6 +2,7 @@
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -42,9 +43,7 @@
         /// <summary>The delete.</summary>
         /// <param name="id">The id.</param>
         [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        public void Delete(int id) => throw new NotImplementedException();
 
         /// <summary>The get.</summary>
         /// <param name="cle">The cle.</param>
@@ -59,12 +58,12 @@
             [FromRoute] string cle,
             [FromRoute] string env,
             [FromRoute] string route,
-            [FromQuery] Dictionary<string, string> query,
+            [FromQuery] Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers)
         {
             try
             {
-                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query.ToDictionary(pair => pair.Key, pair => new[] { pair.Value }), headers);
+                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query, headers);
                 this.Response.SetHeaders(result.Headers.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
                 return this.StatusCode(result.StatusCode, result.Body);
             }
@@ -95,18 +94,12 @@
             [FromRoute] string cle,
             [FromRoute] string env,
             [FromRoute] string route,
-            [FromQuery] Dictionary<string, string> query,
+            [FromQuery] Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers)
         {
             try
             {
-                var result = await this.metier.ProcessPostRequestAsync(
-                                 cle,
-                                 env,
-                                 route,
-                                 query.ToDictionary(pair => pair.Key, pair => new[] { pair.Value }),
-                                 headers,
-                                 await this.Request.GetRawBodyStringAsync());
+                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
                 return this.Ok(result);
             }
             catch (KeyNotFoundException httpEx)
@@ -123,9 +116,7 @@
         /// <param name="id">The id.</param>
         /// <param name="value">The value.</param>
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        public void Put(int id, [FromBody] string value) => throw new NotImplementedException();
 
         #endregion
     }
