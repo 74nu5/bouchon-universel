@@ -74,7 +74,7 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="ReponseBouchonnee"/>.</returns>
-        public async Task<ReponseBouchonnee> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, string[]> query, Dictionary<string, IEnumerable<string>> headers) =>
+        public async Task<ReponseBouchonnee> ProcessGetRequestAsync(string cle, string env, string route, Dictionary<string, IEnumerable<string>> query, Dictionary<string, IEnumerable<string>> headers) =>
             await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null);
 
         /// <summary>The process post request async.</summary>
@@ -91,7 +91,7 @@
             string cle,
             string env,
             string route,
-            Dictionary<string, string[]> query,
+            Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers,
             string body) =>
             await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body);
@@ -114,7 +114,7 @@
             string cle,
             string env,
             string route,
-            Dictionary<string, string[]> query,
+            Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers,
             string body)
         {
