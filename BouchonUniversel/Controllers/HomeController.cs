@@ -14,7 +14,7 @@
     #endregion
 
     /// <summary>The home controller.</summary>
-    public class HomeController : Controller
+    public sealed class HomeController : Controller
     {
         #region Champs
 
