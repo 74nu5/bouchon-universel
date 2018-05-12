@@ -97,7 +97,7 @@
 
             foreach (var header in headers)
             {
-                client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
             }
         }
 
@@ -111,7 +111,7 @@
                 return;
             }
 
-            foreach (var header in headers)
+            foreach (var header in headers.Where(pair => pair.Key != "Transfer-Encoding"))
             {
                 response.Headers.Add(header.Key, header.Value.ToArray());
             }

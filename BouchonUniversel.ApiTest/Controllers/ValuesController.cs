@@ -3,6 +3,9 @@
     #region Usings
 
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
 
@@ -37,10 +40,14 @@
 
         /// POST api/values
         /// <summary>The post.</summary>
-        /// <param name="value">The value.</param>
+        /// <returns>The <see cref="OkObjectResult"/>.</returns>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<OkObjectResult> PostAsync()
         {
+            using (var reader = new StreamReader(this.Request.Body, Encoding.UTF8))
+            {
+                return this.Ok(await reader.ReadToEndAsync());
+            }
         }
 
         /// PUT api/values/5

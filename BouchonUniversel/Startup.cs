@@ -2,6 +2,10 @@
 {
     #region Usings
 
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+
     using BouchonUniversel.DAL;
     using BouchonUniversel.DAL.DAO;
     using BouchonUniversel.Metier;
@@ -12,6 +16,7 @@
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -52,31 +57,6 @@
 
         #region Méthodes publiques
 
-        /// <summary>The configure services.</summary>
-        /// <param name="services">The services.</param>
-        [UsedImplicitly]
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc();
-
-            services.AddOptions();
-            services.Configure<ApplicationSettings>(this.Configuration.GetSection("Bouchon"));
-
-            services.AddEntityFrameworkSqlite();
-            services.AddDbContext<DataContext>(builder => builder.UseSqlite(this.GetSqliteConnection()));
-
-            services.AddSwaggerGen(c => { c.SwaggerDoc(VersionSwagger, new Info { Title = TitreSwagger, Version = VersionSwagger }); });
-
-            services.AddSingleton<HttpService>();
-
-            services.AddTransient<SettingsBouchonMetier>();
-            services.AddTransient<BouchonInitializer>();
-            services.AddTransient<SettingsBouchonDAO>();
-            services.AddTransient<ServicesDAO>();
-            services.AddTransient<EnvironnementDAO>();
-            services.AddTransient<BouchonsMetier>();
-        }
-
         /// <summary>The configure.</summary>
         /// <param name="app">The app.</param>
         /// <param name="env">The env.</param>
@@ -100,6 +80,41 @@
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/{VersionSwagger}/swagger.json", TitreSwagger); });
 
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
+        }
+
+        /// <summary>The configure services.</summary>
+        /// <param name="services">The services.</param>
+        [UsedImplicitly]
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc();
+
+            services.AddOptions();
+            services.Configure<ApplicationSettings>(this.Configuration.GetSection("Bouchon"));
+
+            services.AddEntityFrameworkSqlite();
+            services.AddDbContext<DataContext>(builder => builder.UseSqlite(this.GetSqliteConnection()));
+
+            services.AddSwaggerGen(
+                c =>
+                {
+                    c.SwaggerDoc(
+                        VersionSwagger,
+                        new Info { Title = TitreSwagger, Description = "Une api permettant de créer des bouchons.", Version = VersionSwagger, Contact = new Contact { Name = "Romain Avonde", Email = "romain@avonde.eu" } });
+
+                    var basePath = AppContext.BaseDirectory;
+                    var xmlPath = Path.Combine(basePath, "BouchonUniversel.xml");
+                    c.IncludeXmlComments(xmlPath);
+                });
+
+            services.AddSingleton<HttpService>();
+
+            services.AddTransient<SettingsBouchonMetier>();
+            services.AddTransient<BouchonInitializer>();
+            services.AddTransient<SettingsBouchonDAO>();
+            services.AddTransient<ServicesDAO>();
+            services.AddTransient<EnvironnementDAO>();
+            services.AddTransient<BouchonsMetier>();
         }
 
         #endregion

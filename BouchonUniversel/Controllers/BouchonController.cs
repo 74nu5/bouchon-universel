@@ -6,7 +6,9 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
+    using System.Web;
 
     using BouchonUniversel.Exceptions;
     using BouchonUniversel.Metier;
@@ -19,7 +21,7 @@
     #endregion
 
     /// <summary>The bouchon controller.</summary>
-    [Route("api/Bouchon")]
+    [Route("api/bouchon")]
     public sealed class BouchonController : Controller
     {
         #region Champs
@@ -39,79 +41,106 @@
 
         #region Méthodes publiques
 
-        /// <summary>The delete.</summary>
-        /// <param name="id">The id.</param>
-        [HttpDelete("{id}")]
-        public void Delete(int id) => throw new NotImplementedException();
-
-        /// <summary>The get.</summary>
-        /// <param name="cle">The cle.</param>
-        /// <param name="env">The env.</param>
-        /// <param name="route">The route.</param>
-        /// <param name="query">The query.</param>
-        /// <returns>The Dictionary.</returns>
+        /// <summary>Méthode get du bouchon (ne gère pas l'envoi d'un body en get).</summary>
+        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.</remarks>
+        /// <param name="cle">La clé du service créé.</param>
+        /// <param name="env">L'environnement créé.</param>
+        /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
+        /// <param name="query">La paramètre de la requête.</param>
+        /// <returns>Retourne la réponse du service associé au bouchon si celui-ci n'est pas activé, retourne le bouchon sinon.</returns>
+        /// <response code="405">
+        ///     -   Si la clé du service n'a pas été trouvée (un méssage spécifique est associé au retour)
+        ///     -   Si l'environnement n'a pas été trouve (un méssage spécifique est associé au retour)
+        ///     -   Si le fichier de bouchon n'a pas été trouvé (un méssage spécifique est associé au retour)
+        ///     -   Si le service associé au bouchon répond 405
+        /// </response>
         [HttpGet("{cle}/{env}/{*route}")]
-        public async Task<IActionResult> Get(
-            [FromRoute] string cle,
-            [FromRoute] string env,
-            [FromRoute] string route,
-            [FromQuery] Dictionary<string, IEnumerable<string>> query)
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 405)]
+        public async Task<IActionResult> Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
             try
             {
                 var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
-                var result = await this.metier.ProcessGetRequestAsync(cle, env, route, query, headers);
+                var result = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers);
+
+                this.Response.Headers.Add("Site", "Bouchon-Universel");
                 this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+
                 return this.StatusCode(result.StatusCode, result.Body);
             }
             catch (KeyNotFoundException ex)
             {
-                return this.NotFound(ex.Message);
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
             }
             catch (EnvironmentNotFoundException ex)
             {
-                return this.NotFound(ex.Message);
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
             }
             catch (FileNotFoundException ex)
             {
-                return this.NotFound(ex.Message);
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
             }
         }
 
-        /// <summary>The post.</summary>
-        /// <param name="cle">The cle.</param>
-        /// <param name="env">The env.</param>
-        /// <param name="route">The route.</param>
-        /// <param name="query">The query.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <summary>The healthcheck.</summary>
+        /// <returns>The <see cref="string"/>.</returns>
+        [HttpGet("healthcheck")]
+        public string Healthcheck() => "OK";
+
+        /// <summary>Méthode post du bouchon.</summary>
+        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.</remarks>
+        /// <param name="cle">La clé du service créé.</param>
+        /// <param name="env">L'environnement créé.</param>
+        /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
+        /// <param name="query">La paramètre de la requête.</param>
+        /// <returns>Retourne la réponse du service associé au bouchon si celui-ci n'est pas activé, retourne le bouchon sinon.</returns>
+        /// <response code="405">
+        ///     -   Si la clé du service n'a pas été trouvée (un méssage spécifique est associé au retour)
+        ///     -   Si l'environnement n'a pas été trouve (un méssage spécifique est associé au retour)
+        ///     -   Si le fichier de bouchon n'a pas été trouvé (un méssage spécifique est associé au retour)
+        ///     -   Si le service associé au bouchon répond 405
+        /// </response>
         [HttpPost("{cle}/{env}/{*route}")]
-        public async Task<IActionResult> Post(
-            [FromRoute] string cle,
-            [FromRoute] string env,
-            [FromRoute] string route,
-            [FromQuery] Dictionary<string, IEnumerable<string>> query)
+        public async Task<IActionResult> Post([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
             try
             {
                 var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
+
+                // On récupère le body de cette façon pour prendre en compte tous les genres de body (texte, json, binaires, ...).
                 var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
-                return this.Ok(result);
+
+                this.Response.Headers.Add("Site", "Bouchon-Universel");
+                this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+
+                return this.StatusCode(result.StatusCode, result.Body);
             }
-            catch (KeyNotFoundException httpEx)
+            catch (KeyNotFoundException ex)
             {
-                return this.NotFound(httpEx.Message);
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
             }
-            catch (EnvironmentNotFoundException httpEx)
+            catch (EnvironmentNotFoundException ex)
             {
-                return this.NotFound(httpEx.Message);
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
+            }
+            catch (FileNotFoundException ex)
+            {
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
             }
         }
 
-        /// <summary>The put.</summary>
-        /// <param name="id">The id.</param>
+        /// <summary>La méthode PUT n'est pas implémentée.</summary>
         /// <param name="value">The value.</param>
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value) => throw new NotImplementedException();
+        [HttpPut("NotImplemented")]
+        public void Put([FromBody] string value) => throw new NotImplementedException();
+
+        /// <summary>La méthode DELETE n'est pas implémentée.</summary>
+        /// <param name="id">The id.</param>
+        [HttpDelete("NotImplemented")]
+        public void Delete(int? id) => throw new NotImplementedException();
 
         #endregion
     }
