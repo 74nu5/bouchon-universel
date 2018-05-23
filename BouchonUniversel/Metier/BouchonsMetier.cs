@@ -10,19 +10,22 @@
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
-    using BouchonUniversel.DAL.DAO;
-    using BouchonUniversel.Exceptions;
-    using BouchonUniversel.Models.Bouchons;
-    using BouchonUniversel.Models.ModelsView;
-    using BouchonUniversel.Utils;
-    using BouchonUniversel.Utils.Http;
-    using BouchonUniversel.Utils.Xml;
+    using DAL.DAO;
+
+    using Exceptions;
 
     using JetBrains.Annotations;
 
     using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
-    using KeyNotFoundException = BouchonUniversel.Exceptions.KeyNotFoundException;
+    using Models.Bouchons;
+    using Models.ModelsView;
+
+    using Utils;
+    using Utils.Http;
+    using Utils.Xml;
+
+    using KeyNotFoundException = Exceptions.KeyNotFoundException;
 
     #endregion
 
@@ -49,7 +52,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BouchonsMetier"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonsMetier" /> class.</summary>
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
@@ -68,11 +71,11 @@
 
         /// <summary>The get files of service.</summary>
         /// <param name="service">The service.</param>
-        /// <returns>The <see cref="DirectoryBouchon"/>.</returns>
+        /// <returns>The <see cref="DirectoryBouchon" />.</returns>
         internal DirectoryBouchon GetFilesOfService(Service service)
         {
             var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), service.Cle, service.Environnement.Nom));
-            return !bouchonDir.Exists ? new DirectoryBouchon() : this.GetFileAndDirectory(bouchonDir);
+            return !bouchonDir.Exists?new DirectoryBouchon():this.GetFileAndDirectory(bouchonDir);
         }
 
         /// <summary>The process request.</summary>
@@ -83,7 +86,7 @@
         /// <param name="headers">The headers.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="ReponseBouchonnee"/>.</returns>
+        /// <returns>The <see cref="ReponseBouchonnee" />.</returns>
         internal async Task<ReponseBouchonnee> ProcessGetRequestAsync(
             string cle,
             string env,
@@ -101,7 +104,7 @@
         /// <param name="body">The body.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         internal async Task<ReponseBouchonnee> ProcessPostRequestAsync(
             string cle,
             string env,
@@ -117,15 +120,15 @@
 
         /// <summary>The get file and directory.</summary>
         /// <param name="dir">The dir.</param>
-        /// <returns>The <see cref="DirectoryBouchon"/>.</returns>
+        /// <returns>The <see cref="DirectoryBouchon" />.</returns>
         private DirectoryBouchon GetFileAndDirectory(DirectoryInfo dir)
         {
             var result = new DirectoryBouchon
-                         {
-                             Name = dir.Name,
-                             FileBouchons = dir.GetFileSystemInfos().Select(file => new FileBouchon { Name = file.Name, FullName = file.FullName }).ToList(),
-                             Directories = dir.GetDirectories().Select(this.GetFileAndDirectory).ToList()
-                         };
+            {
+                Name = dir.Name,
+                FileBouchons = dir.GetFileSystemInfos().Select(file => new FileBouchon { Name = file.Name, FullName = file.FullName }).ToList(),
+                Directories = dir.GetDirectories().Select(this.GetFileAndDirectory).ToList()
+            };
             return result;
         }
 
@@ -137,7 +140,7 @@
         /// <param name="query">The query.</param>
         /// <param name="headers">The headers.</param>
         /// <param name="body">The body.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         private async Task<ReponseBouchonnee> ProcessRequestAsync(
             HttpMethod method,
             string cle,
@@ -173,7 +176,14 @@
                 case HttpMethod.Get:
                 {
                     var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null);
-                    reponse = new ReponseBouchonnee { Body = response, Headers = responseHeaders.ToKeyValueList(), Request = req, StatusCode = (int)httpCode, ResponsePhrase = responsePhrase };
+                    reponse = new ReponseBouchonnee
+                    {
+                        Body = response,
+                        Headers = responseHeaders.ToKeyValueList(),
+                        Request = req,
+                        StatusCode = (int)httpCode,
+                        ResponsePhrase = responsePhrase
+                    };
                     break;
                 }
 
@@ -188,7 +198,14 @@
                 case HttpMethod.Post:
                 {
                     var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null);
-                    reponse = new ReponseBouchonnee { Body = response, Headers = responseHeaders.ToKeyValueList(), Request = req, StatusCode = (int)httpCode, ResponsePhrase = responsePhrase };
+                    reponse = new ReponseBouchonnee
+                    {
+                        Body = response,
+                        Headers = responseHeaders.ToKeyValueList(),
+                        Request = req,
+                        StatusCode = (int)httpCode,
+                        ResponsePhrase = responsePhrase
+                    };
                     break;
                 }
 
@@ -230,7 +247,7 @@
         /// <param name="env">The env.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="bool"/>.</returns>
+        /// <returns>The <see cref="bool" />.</returns>
         private bool ServiceIsActivated(string cle, string env)
         {
             if (!this.servicesDAO.ExistsByCle(cle))

@@ -33,7 +33,7 @@
 
             if (delta < 1 * Minute)
             {
-                return ts.Seconds == 1 ? "one second ago" : $"{ts.Seconds} seconds ago";
+                return ts.Seconds == 1?"one second ago":$"{ts.Seconds} seconds ago";
             }
 
             if (delta < 2 * Minute)
@@ -60,10 +60,10 @@
             {
                 return "yesterday";
             }
-            
+
             if (delta < 30 * Day)
             {
-                if (Horloge.Maintenant.Month == 3 && delta > 27 * Day)
+                if ((Horloge.Maintenant.Month == 3) && (delta > 27 * Day))
                 {
                     return "one month ago";
                 }
@@ -74,11 +74,11 @@
             if (delta < 12 * Month)
             {
                 var months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
-                return months <= 1 ? "one month ago" : $"{months} months ago";
+                return months <= 1?"one month ago":$"{months} months ago";
             }
 
             var years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
-            return years <= 1 ? "one year ago" : years + " years ago";
+            return years <= 1?"one year ago":years + " years ago";
         }
 
         #endregion

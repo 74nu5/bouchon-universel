@@ -10,7 +10,7 @@
     /// <summary>The extensions int 32.</summary>
     public static partial class ExtensionsInt32
     {
-        #region Méthodes privées
+        #region Méthodes publiques
 
         /// <summary>The times.</summary>
         /// <param name="count">The count.</param>

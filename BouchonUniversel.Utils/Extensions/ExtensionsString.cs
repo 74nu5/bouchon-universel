@@ -16,6 +16,8 @@
 
     using Utils;
 
+    using static ExtensionsString;
+
     #endregion
 
     /// <summary>The extensions string.</summary>
@@ -85,7 +87,7 @@
         /// <summary>The decrypt.</summary>
         /// <param name="stringToDecrypt">The string to decrypt.</param>
         /// <param name="key">The key.</param>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         [System.Diagnostics.Contracts.Pure]
         public static string Decrypt([NotNull] this string stringToDecrypt, string key)
         {
@@ -109,7 +111,7 @@
         /// <summary>The encrypt.</summary>
         /// <param name="stringToEncrypt">The string to encrypt.</param>
         /// <param name="key">The key.</param>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         [System.Diagnostics.Contracts.Pure]
         public static string Encrypt(this string stringToEncrypt, string key)
         {
@@ -135,15 +137,16 @@
         /// <summary>The to string format.</summary>
         /// <param name="stringFormat">The string format.</param>
         /// <param name="stringParams">The string params.</param>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         public static string F(this string stringFormat, params object[] stringParams) => string.Format(stringFormat, stringParams);
 
         /// <summary>The format.</summary>
         /// <param name="template">The template.</param>
         /// <param name="data">The data.</param>
         /// <typeparam name="T">Type à formatter</typeparam>
-        /// <returns>The <see cref="string"/>.</returns>
-        public static string Fs<T>(this string template, T data) => Regex.Replace(template, @"\@{([\w\d]+)\}", match => GetValue(match, data)).Replace("{{", "{").Replace("}}", "}");
+        /// <returns>The <see cref="string" />.</returns>
+        public static string Fs<T>(this string template, T data)
+            => Regex.Replace(template, @"\@{([\w\d]+)\}", match => GetValue(match, data)).Replace("{{", "{").Replace("}}", "}");
 
         /// <summary>Generate random hash value to store against password</summary>
         /// <param name="password">String to encrypt</param>
@@ -165,7 +168,7 @@
             }
             catch (KeyNotFoundException ex)
             {
-                throw new NotSupportedException(string.Format("Hash Provider '{0}' is not supported", provider), ex);
+                throw new NotSupportedException($"Hash Provider '{provider}' is not supported", ex);
             }
         }
 
@@ -202,7 +205,7 @@
         {
             if (hexString.Length % 2 != 0)
             {
-                throw new ArgumentException(string.Format("HexString cannot be in odd number: {0}", hexString));
+                throw new ArgumentException($"HexString cannot be in odd number: {hexString}");
             }
 
             var retVal = new byte[hexString.Length / 2];
@@ -216,13 +219,13 @@
 
         /// <summary>The is null or empty.</summary>
         /// <param name="str">The str.</param>
-        /// <returns>The <see cref="bool"/>.</returns>
+        /// <returns>The <see cref="bool" />.</returns>
         public static bool IsNullOrEmpty(this string str) => string.IsNullOrEmpty(str);
 
         /// <summary>The join.</summary>
         /// <param name="strs">The strs.</param>
         /// <param name="separator">The separator.</param>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         public static string Join(this string[] strs, string separator) => string.Join(separator, strs);
 
         /// <summary>Converts string to enum object</summary>
@@ -252,7 +255,8 @@
             var hashParts = hashValue.Split('$');
             if (hashParts.Length != 3)
             {
-                throw new ArgumentException("hashValue is not valid, it should contain hash algorithm, salt and hash value seperated by '$' e.g 'MD5$F8F25518$23C1916FF7C0A35166BEBCE564D19586'");
+                throw new ArgumentException(
+                    "hashValue is not valid, it should contain hash algorithm, salt and hash value seperated by '$' e.g 'MD5$F8F25518$23C1916FF7C0A35166BEBCE564D19586'");
             }
 
             HashType provider;
@@ -264,7 +268,7 @@
             }
             catch (Exception ex)
             {
-                throw new ArgumentException(string.Format("Invalid Hash Provider '{0}'", hashValue[0]), ex);
+                throw new ArgumentException($"Invalid Hash Provider '{hashValue[0]}'", ex);
             }
 
             return hashValue == GenerateHash(password, salt, provider);
@@ -277,24 +281,30 @@
         /// <summary>The get hash.</summary>
         /// <param name="input">The input.</param>
         /// <param name="hash">The hash.</param>
-        /// <returns>The <see cref="byte"/>.</returns>
+        /// <returns>The <see cref="byte" />.</returns>
         private static byte[] GetHash(string input, HashType hash)
         {
             var inputBytes = Encoding.ASCII.GetBytes(input);
 
             switch (hash)
             {
-                case HashType.MD5: return MD5.Create().ComputeHash(inputBytes);
+                case HashType.MD5:
+                    return MD5.Create().ComputeHash(inputBytes);
 
-                case HashType.SHA1: return SHA1.Create().ComputeHash(inputBytes);
+                case HashType.SHA1:
+                    return SHA1.Create().ComputeHash(inputBytes);
 
-                case HashType.SHA256: return SHA256.Create().ComputeHash(inputBytes);
+                case HashType.SHA256:
+                    return SHA256.Create().ComputeHash(inputBytes);
 
-                case HashType.SHA384: return SHA384.Create().ComputeHash(inputBytes);
+                case HashType.SHA384:
+                    return SHA384.Create().ComputeHash(inputBytes);
 
-                case HashType.SHA512: return SHA512.Create().ComputeHash(inputBytes);
+                case HashType.SHA512:
+                    return SHA512.Create().ComputeHash(inputBytes);
 
-                default: return inputBytes;
+                default:
+                    return inputBytes;
             }
         }
 
@@ -302,7 +312,7 @@
         /// <param name="match">The match.</param>
         /// <param name="data">The data.</param>
         /// <typeparam name="T">Type à inspecter</typeparam>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         /// <exception cref="ArgumentException">Lève une exception lorsque la propriété et/ou la valeur n'est pas trouvé</exception>
         private static string GetValue<T>([NotNull] Match match, T data)
         {

@@ -2,9 +2,6 @@
 {
     #region Usings
 
-    using System;
-    using System.IO;
-
     using JetBrains.Annotations;
 
     using Microsoft.AspNetCore.Builder;
@@ -32,7 +29,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="Startup"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Startup" /> class.</summary>
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration) => this.Configuration = configuration;
 
@@ -74,7 +71,13 @@
                 {
                     c.SwaggerDoc(
                         VersionSwagger,
-                        new Info { Title = TitreSwagger, Description = "Une api de test permettant de tester des bouchons.", Version = VersionSwagger, Contact = new Contact { Name = "Romain Avonde", Email = "romain@avonde.eu" } });
+                        new Info
+                        {
+                            Title = TitreSwagger,
+                            Description = "Une api de test permettant de tester des bouchons.",
+                            Version = VersionSwagger,
+                            Contact = new Contact { Name = "Romain Avonde", Email = "romain@avonde.eu" }
+                        });
                 });
 
             services.AddMvc();

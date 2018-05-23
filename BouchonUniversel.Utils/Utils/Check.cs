@@ -136,7 +136,7 @@ namespace BouchonUniversel.Utils.Utils
         [CanBeNull]
         public static string NullButNotEmpty([CanBeNull] string value, [InvokerParameterName] [NotNull] string parameterName)
         {
-            if (ReferenceEquals(value, null) || value.Length != 0)
+            if (ReferenceEquals(value, null) || (value.Length != 0))
             {
                 return value;
             }

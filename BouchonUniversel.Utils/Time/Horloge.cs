@@ -15,14 +15,17 @@
         #region Champs et constantes statiques
 
         /// <summary>The fonction.</summary>
-        private static Func<DateTime> fonction;
+        private static Func<DateTime> Fonction;
 
         #endregion
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes static members of the <see cref="Horloge"/> class. Initializes a new instance of the<see cref="T:System.Object"></see> class.</summary>
-        static Horloge() => fonction = () => DateTime.Now;
+        /// <summary>
+        ///     Initializes static members of the <see cref="Horloge" /> class. Initializes a new instance of the
+        ///     <see cref="T:System.Object"></see> class.
+        /// </summary>
+        static Horloge() => Fonction = () => DateTime.Now;
 
         #endregion
 
@@ -30,13 +33,13 @@
 
         /// <summary>Gets the maintenant.</summary>
         /// <value>The maintenant.</value>
-        public static DateTime Maintenant => fonction();
+        public static DateTime Maintenant => Fonction();
 
         /// <summary>Sets the fonction maintenant.</summary>
         /// <value>The fonction maintenant.</value>
         public static Func<DateTime> SetFonctionMaintenant
         {
-            set => fonction = value ?? (() => DateTime.Now);
+            set => Fonction = value ?? (() => DateTime.Now);
         }
 
         #endregion

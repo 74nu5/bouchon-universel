@@ -6,11 +6,11 @@
 
     using System.Linq;
 
-    using BouchonUniversel.Models.Bouchons;
-
     using JetBrains.Annotations;
 
     using Microsoft.EntityFrameworkCore;
+
+    using Models.Bouchons;
 
     #endregion
 
@@ -41,15 +41,19 @@
         /// <summary>The get url.</summary>
         /// <param name="cle">The cle.</param>
         /// <param name="environnement">The environnement.</param>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         public string GetUrl(string cle, string environnement) =>
-            this.Entities.Include(service => service.Environnement).FirstOrDefault(service => service.Cle == cle && service.Environnement.Nom == environnement)?.Url;
+            this.Entities.Include(service => service.Environnement).FirstOrDefault(service => (service.Cle == cle) && (service.Environnement.Nom == environnement))?.Url;
 
         #endregion
+
+        #region Méthodes internes
 
         /// <summary>The is activated.</summary>
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool" />.</returns>
         internal bool IsActivated(string cle) => this.Entities.FirstOrDefault(service => service.Cle == cle)?.IsEnabled ?? false;
+
+        #endregion
     }
 }

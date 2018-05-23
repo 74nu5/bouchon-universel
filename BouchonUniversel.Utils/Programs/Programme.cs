@@ -61,8 +61,7 @@
                         enumerable[choix - 1].Invoke();
                     }
                 }
-            }
-            while (true);
+            } while (true);
         }
 
         #endregion
