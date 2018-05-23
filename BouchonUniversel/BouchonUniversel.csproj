@@ -8,6 +8,10 @@
     <DocumentationFile>bin\Debug\netcoreapp2.0\BouchonUniversel.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\BouchonUniversel.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Views\BouchonsManager\**" />
     <Content Remove="Views\BouchonsManager\**" />

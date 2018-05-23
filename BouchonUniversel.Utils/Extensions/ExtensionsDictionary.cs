@@ -20,7 +20,7 @@
         /// <param name="key">The key.</param>
         /// <typeparam name="TKey">Type de la clé</typeparam>
         /// <typeparam name="TValue">Type de la valeur</typeparam>
-        /// <returns>The <see cref="TValue"/>.</returns>
+        /// <returns>The <see cref="TValue" />.</returns>
         public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
             where TValue : new()
         {
@@ -41,7 +41,7 @@
         /// <param name="valueProvider">The value provider.</param>
         /// <typeparam name="TKey">Type de la clé</typeparam>
         /// <typeparam name="TValue">Type de la valeur</typeparam>
-        /// <returns>The <see cref="TValue"/>.</returns>
+        /// <returns>The <see cref="TValue" />.</returns>
         public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueProvider)
         {
             if (dictionary.TryGetValue(key, out var ret))
@@ -61,7 +61,7 @@
         /// <param name="missingValue">The missing value.</param>
         /// <typeparam name="TKey">Type de la clé</typeparam>
         /// <typeparam name="TValue">Type de la valeur</typeparam>
-        /// <returns>The <see cref="TValue"/>.</returns>
+        /// <returns>The <see cref="TValue" />.</returns>
         public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue missingValue)
         {
             if (dictionary.TryGetValue(key, out var ret))

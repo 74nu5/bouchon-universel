@@ -1,13 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExtensionsFunc.cs" company="">
-//   
-// </copyright>
-// <summary>
-//   The extensions func.
-// </summary>
-// ------------------------------------------------------------------------------------------------------------------------
-
-namespace BouchonUniversel.Utils.Extensions
+﻿namespace BouchonUniversel.Utils.Extensions
 {
     #region Usings
 
@@ -30,7 +21,7 @@ namespace BouchonUniversel.Utils.Extensions
         /// <param name="func">The func. </param>
         /// <typeparam name="T">Type du paramètres d'entrée </typeparam>
         /// <typeparam name="TResult">Type du paramètres de retour </typeparam>
-        /// <returns>The <see cref="Func{T,TResult}"/>. </returns>
+        /// <returns>The <see cref="Func{T,TResult}" />. </returns>
         [NotNull]
         public static Func<T, TResult> Memoize<T, TResult>(this Func<T, TResult> func)
         {
@@ -51,7 +42,7 @@ namespace BouchonUniversel.Utils.Extensions
         /// <summary>The memoize. </summary>
         /// <param name="func">The func. </param>
         /// <typeparam name="TResult">Type de retour </typeparam>
-        /// <returns>The <see cref="Func{TResult}"/>. </returns>
+        /// <returns>The <see cref="Func{TResult}" />. </returns>
         [NotNull]
         public static Func<TResult> Memoize<TResult>(this Func<TResult> func)
         {
@@ -113,7 +104,7 @@ namespace BouchonUniversel.Utils.Extensions
         /// <typeparam name="T1">Type du premier paramètre</typeparam>
         /// <typeparam name="T2">Type du deuxième paramètre</typeparam>
         /// <typeparam name="TResult">Type du résultat</typeparam>
-        /// <returns>The <see cref="TResult"/>.</returns>
+        /// <returns>The <see cref="TResult" />.</returns>
         public static TResult TestPerf<T1, T2, TResult>([NotNull] this Func<T1, T2, TResult> action, out long timestamp, T1 param1, T2 param2)
         {
             var stopWatch = new Stopwatch();
@@ -136,7 +127,7 @@ namespace BouchonUniversel.Utils.Extensions
         /// <typeparam name="T2">Type du deuxième paramètre</typeparam>
         /// <typeparam name="T3">Type du troisième paramètre</typeparam>
         /// <typeparam name="TResult">Type du résultat</typeparam>
-        /// <returns>The <see cref="TResult"/>.</returns>
+        /// <returns>The <see cref="TResult" />.</returns>
         public static TResult TestPerf<T1, T2, T3, TResult>([NotNull] this Func<T1, T2, T3, TResult> action, out long timestamp, T1 param1, T2 param2, T3 param3)
         {
             var stopWatch = new Stopwatch();
@@ -161,7 +152,7 @@ namespace BouchonUniversel.Utils.Extensions
         /// <typeparam name="T3">Type du troisième paramètre</typeparam>
         /// <typeparam name="T4">Type du quatrième paramètre</typeparam>
         /// <typeparam name="TResult">Type du résultat</typeparam>
-        /// <returns>The <see cref="TResult"/>.</returns>
+        /// <returns>The <see cref="TResult" />.</returns>
         public static TResult TestPerf<T1, T2, T3, T4, TResult>([NotNull] this Func<T1, T2, T3, T4, TResult> action, out long timestamp, T1 param1, T2 param2, T3 param3, T4 param4)
         {
             var stopWatch = new Stopwatch();

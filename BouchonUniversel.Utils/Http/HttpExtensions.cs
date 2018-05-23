@@ -30,7 +30,7 @@
 
         /// <summary>Retrieves the raw body as a byte array from the Request.Body stream</summary>
         /// <param name="request">The request.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         public static async Task<byte[]> GetRawBodyBytesAsync(this HttpRequest request)
         {
             using (var ms = new MemoryStream(2048))
@@ -43,7 +43,7 @@
         /// <summary>Retrieve the raw body as a string from the Request.Body stream</summary>
         /// <param name="request">Request instance to apply to</param>
         /// <param name="encoding">Optional - Encoding, defaults to UTF8</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         public static async Task<string> GetRawBodyStringAsync(this HttpRequest request, Encoding encoding = null)
         {
             using (var reader = new StreamReader(request.Body, encoding ?? Encoding.UTF8))
@@ -54,7 +54,7 @@
 
         /// <summary>The process web exception.</summary>
         /// <param name="exception">The exception.</param>
-        /// <returns>The <see cref="System.Exception"/>.</returns>
+        /// <returns>The <see cref="System.Exception" />.</returns>
         public static Exception ProcessWebException(this WebException exception)
         {
             var errorResponse = exception.Response;

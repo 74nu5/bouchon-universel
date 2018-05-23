@@ -2,7 +2,7 @@
 {
     #region Usings
 
-    using BouchonUniversel.Models.Bouchons;
+    using Bouchons;
 
     #endregion
 

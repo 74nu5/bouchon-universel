@@ -10,11 +10,13 @@
     using System.Threading.Tasks;
     using System.Web;
 
-    using BouchonUniversel.Exceptions;
-    using BouchonUniversel.Metier;
-    using BouchonUniversel.Utils.Http;
+    using Exceptions;
+
+    using Metier;
 
     using Microsoft.AspNetCore.Mvc;
+
+    using Utils.Http;
 
     using KeyNotFoundException = System.Collections.Generic.KeyNotFoundException;
 
@@ -33,7 +35,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BouchonController"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonController" /> class.</summary>
         /// <param name="metier">The metier.</param>
         public BouchonController(BouchonsMetier metier) => this.metier = metier;
 
@@ -41,9 +43,16 @@
 
         #region Méthodes publiques
 
+        /// <summary>La méthode DELETE n'est pas implémentée.</summary>
+        /// <param name="id">The id.</param>
+        [HttpDelete("NotImplemented")]
+        public void Delete(int? id) => throw new NotImplementedException();
+
         /// <summary>Méthode get du bouchon (ne gère pas l'envoi d'un body en get).</summary>
-        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
-        ///     écrits dans la réponse.</remarks>
+        /// <remarks>
+        ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.
+        /// </remarks>
         /// <param name="cle">La clé du service créé.</param>
         /// <param name="env">L'environnement créé.</param>
         /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
@@ -85,13 +94,15 @@
         }
 
         /// <summary>The healthcheck.</summary>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         [HttpGet("healthcheck")]
         public string Healthcheck() => "OK";
 
         /// <summary>Méthode post du bouchon.</summary>
-        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
-        ///     écrits dans la réponse.</remarks>
+        /// <remarks>
+        ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.
+        /// </remarks>
         /// <param name="cle">La clé du service créé.</param>
         /// <param name="env">L'environnement créé.</param>
         /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
@@ -136,11 +147,6 @@
         /// <param name="value">The value.</param>
         [HttpPut("NotImplemented")]
         public void Put([FromBody] string value) => throw new NotImplementedException();
-
-        /// <summary>La méthode DELETE n'est pas implémentée.</summary>
-        /// <param name="id">The id.</param>
-        [HttpDelete("NotImplemented")]
-        public void Delete(int? id) => throw new NotImplementedException();
 
         #endregion
     }

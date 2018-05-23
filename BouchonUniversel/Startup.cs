@@ -4,25 +4,26 @@
 
     using System;
     using System.IO;
-    using System.Threading.Tasks;
 
-    using BouchonUniversel.DAL;
-    using BouchonUniversel.DAL.DAO;
-    using BouchonUniversel.Metier;
-    using BouchonUniversel.Models;
-    using BouchonUniversel.Utils.Http;
+    using DAL;
+    using DAL.DAO;
 
     using JetBrains.Annotations;
 
+    using Metier;
+
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
+    using Models;
+
     using Swashbuckle.AspNetCore.Swagger;
+
+    using Utils.Http;
 
     #endregion
 
@@ -42,7 +43,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="Startup"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="Startup" /> class.</summary>
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration) => this.Configuration = configuration;
 
@@ -100,7 +101,13 @@
                 {
                     c.SwaggerDoc(
                         VersionSwagger,
-                        new Info { Title = TitreSwagger, Description = "Une api permettant de créer des bouchons.", Version = VersionSwagger, Contact = new Contact { Name = "Romain Avonde", Email = "romain@avonde.eu" } });
+                        new Info
+                        {
+                            Title = TitreSwagger,
+                            Description = "Une api permettant de créer des bouchons.",
+                            Version = VersionSwagger,
+                            Contact = new Contact { Name = "Romain Avonde", Email = "romain@avonde.eu" }
+                        });
 
                     var basePath = AppContext.BaseDirectory;
                     var xmlPath = Path.Combine(basePath, "BouchonUniversel.xml");

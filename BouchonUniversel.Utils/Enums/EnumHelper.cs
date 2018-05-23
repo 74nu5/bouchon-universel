@@ -18,25 +18,6 @@
     {
         #region Méthodes publiques
 
-        /// <summary>Méthode d'obtention de la description d'une valeur d'une énumération.</summary>
-        /// <typeparam name="T">Type de l'énumération</typeparam>
-        /// <param name="value">The value. </param>
-        /// <returns>The <see cref="string"/>. </returns>
-        public static string GetEnumDescription<T>(T value)
-        {
-            var type = typeof(T);
-            if (type.GetTypeInfo().BaseType != typeof(Enum))
-            {
-                throw new ArgumentException("Le type fournit n'est pas une enumération.", nameof(value));
-            }
-
-            var name = Enum.GetNames(type).FirstOrDefault(f => string.Equals(f, value.ToString(), StringComparison.CurrentCultureIgnoreCase));
-
-            var field = type.GetTypeInfo().GetField(name);
-
-            return field.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute customAttribute ? customAttribute.Description ?? string.Empty : name;
-        }
-
         /// <summary>To the description dictionary.</summary>
         /// <typeparam name="T">Type de l'énumération</typeparam>
         /// <returns>Retourne un dictionnaire { key = name, value = description } pour une enum</returns>
@@ -61,6 +42,25 @@
             }
 
             return names.ToDictionary(name => name, Selector);
+        }
+
+        /// <summary>Méthode d'obtention de la description d'une valeur d'une énumération.</summary>
+        /// <typeparam name="T">Type de l'énumération</typeparam>
+        /// <param name="value">The value. </param>
+        /// <returns>The <see cref="string" />. </returns>
+        public static string GetEnumDescription<T>(T value)
+        {
+            var type = typeof(T);
+            if (type.GetTypeInfo().BaseType != typeof(Enum))
+            {
+                throw new ArgumentException("Le type fournit n'est pas une enumération.", nameof(value));
+            }
+
+            var name = Enum.GetNames(type).FirstOrDefault(f => string.Equals(f, value.ToString(), StringComparison.CurrentCultureIgnoreCase));
+
+            var field = type.GetTypeInfo().GetField(name);
+
+            return field.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute customAttribute?customAttribute.Description ?? string.Empty:name;
         }
 
         #endregion
