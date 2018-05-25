@@ -75,7 +75,7 @@
         internal DirectoryBouchon GetFilesOfService(Service service)
         {
             var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), service.Cle, service.Environnement.Nom));
-            return !bouchonDir.Exists?new DirectoryBouchon():this.GetFileAndDirectory(bouchonDir);
+            return !bouchonDir.Exists ? new DirectoryBouchon() : this.GetFileAndDirectory(bouchonDir);
         }
 
         /// <summary>The process request.</summary>
@@ -87,7 +87,7 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="ReponseBouchonnee" />.</returns>
-        internal async Task<ReponseBouchonnee> ProcessGetRequestAsync(
+        internal async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessGetRequestAsync(
             string cle,
             string env,
             string route,
@@ -105,7 +105,7 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="Task" />.</returns>
-        internal async Task<ReponseBouchonnee> ProcessPostRequestAsync(
+        internal async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessPostRequestAsync(
             string cle,
             string env,
             string route,
@@ -141,7 +141,7 @@
         /// <param name="headers">The headers.</param>
         /// <param name="body">The body.</param>
         /// <returns>The <see cref="Task" />.</returns>
-        private async Task<ReponseBouchonnee> ProcessRequestAsync(
+        private async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessRequestAsync(
             HttpMethod method,
             string cle,
             string env,
@@ -150,96 +150,115 @@
             Dictionary<string, IEnumerable<string>> headers,
             string body)
         {
-            var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
-            var requestIsActivated = this.ServiceIsActivated(cle, env);
-
-            var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, route ?? string.Empty));
-            if (!bouchonDir.Exists)
+            try
             {
-                bouchonDir.Create();
-            }
+                var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
+                var requestIsActivated = this.ServiceIsActivated(cle, env);
 
-            var queryStr = string.Join("&", query.Select(pair => $"{pair.Key}={string.Join(",", pair.Value)}").ToArray());
-            var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryStr}")}.xml";
-
-            if (requestIsActivated)
-            {
-                return XDocument.Load(fileName).FromXml<ReponseBouchonnee>();
-            }
-
-            var urlBase = new Uri(this.servicesDAO.GetUrl(cle, env));
-            var url = new Uri(urlBase, new Uri(route + queryStr, UriKind.Relative));
-
-            var reponse = default(ReponseBouchonnee);
-            switch (method)
-            {
-                case HttpMethod.Get:
+                var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, route ?? string.Empty));
+                if (!bouchonDir.Exists)
                 {
-                    var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null);
-                    reponse = new ReponseBouchonnee
-                    {
-                        Body = response,
-                        Headers = responseHeaders.ToKeyValueList(),
-                        Request = req,
-                        StatusCode = (int)httpCode,
-                        ResponsePhrase = responsePhrase
-                    };
-                    break;
+                    bouchonDir.Create();
                 }
 
-                case HttpMethod.Put:
+                var queryStr = string.Join("&", query.Select(pair => $"{pair.Key}={string.Join(",", pair.Value)}").ToArray());
+                var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryStr}")}.xml";
 
-                    // TODO Gérer le verbe PUT
-                    break;
-                case HttpMethod.Delete:
-
-                    // TODO Gérer le verbe DELETE
-                    break;
-                case HttpMethod.Post:
+                if (requestIsActivated)
                 {
-                    var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null);
-                    reponse = new ReponseBouchonnee
-                    {
-                        Body = response,
-                        Headers = responseHeaders.ToKeyValueList(),
-                        Request = req,
-                        StatusCode = (int)httpCode,
-                        ResponsePhrase = responsePhrase
-                    };
-                    break;
+                    return (XDocument.Load(fileName).FromXml<ReponseBouchonnee>(), null);
                 }
 
-                case HttpMethod.Head:
+                var urlBase = new Uri(this.servicesDAO.GetUrl(cle, env));
+                var url = new Uri(urlBase, new Uri(route + queryStr, UriKind.Relative));
 
-                    // TODO Gérer le verbe HEAD
-                    break;
-                case HttpMethod.Trace:
+                var reponse = default(ReponseBouchonnee);
+                switch (method)
+                {
+                    case HttpMethod.Get:
+                    {
+                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null);
+                        reponse = new ReponseBouchonnee
+                        {
+                            Body = response,
+                            Headers = responseHeaders.ToKeyValueList(),
+                            Request = req,
+                            StatusCode = (int)httpCode,
+                            ResponsePhrase = responsePhrase
+                        };
+                        break;
+                    }
 
-                    // TODO Gérer le verbe TRACE
-                    break;
-                case HttpMethod.Patch:
+                    case HttpMethod.Put:
 
-                    // TODO Gérer le verbe PATCH
-                    break;
-                case HttpMethod.Connect:
+                        // TODO Gérer le verbe PUT
+                        break;
+                    case HttpMethod.Delete:
 
-                    // TODO Gérer le verbe CONNECT
-                    break;
-                case HttpMethod.Options:
+                        // TODO Gérer le verbe DELETE
+                        break;
+                    case HttpMethod.Post:
+                    {
+                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null);
+                        reponse = new ReponseBouchonnee
+                        {
+                            Body = response,
+                            Headers = responseHeaders.ToKeyValueList(),
+                            Request = req,
+                            StatusCode = (int)httpCode,
+                            ResponsePhrase = responsePhrase
+                        };
+                        break;
+                    }
 
-                    // TODO Gérer le verbe OPTIONS
-                    break;
-                case HttpMethod.Custom:
+                    case HttpMethod.Head:
 
-                    // TODO Gérer le verbe CUSTOM
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(method), method, null);
+                        // TODO Gérer le verbe HEAD
+                        break;
+                    case HttpMethod.Trace:
+
+                        // TODO Gérer le verbe TRACE
+                        break;
+                    case HttpMethod.Patch:
+
+                        // TODO Gérer le verbe PATCH
+                        break;
+                    case HttpMethod.Connect:
+
+                        // TODO Gérer le verbe CONNECT
+                        break;
+                    case HttpMethod.Options:
+
+                        // TODO Gérer le verbe OPTIONS
+                        break;
+                    case HttpMethod.Custom:
+
+                        // TODO Gérer le verbe CUSTOM
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(method), method, null);
+                }
+
+                File.WriteAllText(fileName, reponse.ToXml());
+
+                return (reponse, null);
             }
-
-            File.WriteAllText(fileName, reponse.ToXml());
-
-            return reponse;
+            catch (KeyNotFoundException ex)
+            {
+                return (null, new ResponseErreur { Message = ex.Message, Code = 1001 });
+            }
+            catch (EnvironmentNotFoundException ex)
+            {
+                return (null, new ResponseErreur { Message = ex.Message, Code = 1002 });
+            }
+            catch (FileNotFoundException ex)
+            {
+                return (null, new ResponseErreur { Message = ex.Message, Code = 1003 });
+            }
+            catch (Exception ex)
+            {
+                return (null, new ResponseErreur { Message = ex.Message, Code = 1999 });
+            }
         }
 
         /// <summary>The assert service exists.</summary>

@@ -4,13 +4,11 @@
 
     using System;
     using System.Collections.Generic;
-    using System.IO;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using System.Web;
-
-    using Exceptions;
 
     using Metier;
 
@@ -18,12 +16,11 @@
 
     using Utils.Http;
 
-    using KeyNotFoundException = System.Collections.Generic.KeyNotFoundException;
-
     #endregion
 
     /// <summary>The bouchon controller.</summary>
     [Route("api/bouchon")]
+    [SuppressMessage("ReSharper", "StyleCop.SA1008", Justification = "Stylecop Issue with Tuple")]
     public sealed class BouchonController : Controller
     {
         #region Champs
@@ -35,9 +32,10 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BouchonController" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonController"/> class.</summary>
         /// <param name="metier">The metier.</param>
-        public BouchonController(BouchonsMetier metier) => this.metier = metier;
+        public BouchonController(BouchonsMetier metier)
+            => this.metier = metier;
 
         #endregion
 
@@ -46,13 +44,12 @@
         /// <summary>La méthode DELETE n'est pas implémentée.</summary>
         /// <param name="id">The id.</param>
         [HttpDelete("NotImplemented")]
-        public void Delete(int? id) => throw new NotImplementedException();
+        public void Delete(int? id)
+            => throw new NotImplementedException();
 
         /// <summary>Méthode get du bouchon (ne gère pas l'envoi d'un body en get).</summary>
-        /// <remarks>
-        ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
-        ///     écrits dans la réponse.
-        /// </remarks>
+        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.</remarks>
         /// <param name="cle">La clé du service créé.</param>
         /// <param name="env">L'environnement créé.</param>
         /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
@@ -69,40 +66,29 @@
         [ProducesResponseType(typeof(string), 405)]
         public async Task<IActionResult> Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
-            try
-            {
-                var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
-                var result = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers);
+            var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
+            var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers);
 
-                this.Response.Headers.Add("Site", "Bouchon-Universel");
-                this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+            if (erreur != null)
+            {
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
+            }
 
-                return this.StatusCode(result.StatusCode, result.Body);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
-            }
-            catch (EnvironmentNotFoundException ex)
-            {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
-            }
-            catch (FileNotFoundException ex)
-            {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
-            }
+            this.Response.Headers.Add("Site", "Bouchon-Universel");
+            this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+
+            return this.StatusCode(result.StatusCode, result.Body);
         }
 
         /// <summary>The healthcheck.</summary>
         /// <returns>The <see cref="string" />.</returns>
         [HttpGet("healthcheck")]
-        public string Healthcheck() => "OK";
+        public string Healthcheck()
+            => "OK";
 
         /// <summary>Méthode post du bouchon.</summary>
-        /// <remarks>
-        ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
-        ///     écrits dans la réponse.
-        /// </remarks>
+        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.</remarks>
         /// <param name="cle">La clé du service créé.</param>
         /// <param name="env">L'environnement créé.</param>
         /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
@@ -117,36 +103,27 @@
         [HttpPost("{cle}/{env}/{*route}")]
         public async Task<IActionResult> Post([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
-            try
-            {
-                var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
+            var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
 
-                // On récupère le body de cette façon pour prendre en compte tous les genres de body (texte, json, binaires, ...).
-                var result = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
+            // On récupère le body de cette façon pour prendre en compte tous les genres de body (texte, json, binaires, ...).
+            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
 
-                this.Response.Headers.Add("Site", "Bouchon-Universel");
-                this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+            if (erreur != null)
+            {
+                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
+            }
 
-                return this.StatusCode(result.StatusCode, result.Body);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
-            }
-            catch (EnvironmentNotFoundException ex)
-            {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
-            }
-            catch (FileNotFoundException ex)
-            {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, ex.Message);
-            }
+            this.Response.Headers.Add("Site", "Bouchon-Universel");
+            this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
+
+            return this.StatusCode(result.StatusCode, result.Body);
         }
 
         /// <summary>La méthode PUT n'est pas implémentée.</summary>
         /// <param name="value">The value.</param>
         [HttpPut("NotImplemented")]
-        public void Put([FromBody] string value) => throw new NotImplementedException();
+        public void Put([FromBody] string value)
+            => throw new NotImplementedException();
 
         #endregion
     }
