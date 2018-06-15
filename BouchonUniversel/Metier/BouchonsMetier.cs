@@ -170,7 +170,7 @@
                 }
 
                 var urlBase = new Uri(this.servicesDAO.GetUrl(cle, env));
-                var url = new Uri(urlBase, new Uri(route + queryStr, UriKind.Relative));
+                var url = new Uri(urlBase, new Uri(route + (!string.IsNullOrEmpty(queryStr) ? $"?{queryStr}" : string.Empty), UriKind.Relative));
 
                 var reponse = default(ReponseBouchonnee);
                 switch (method)
