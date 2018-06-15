@@ -226,7 +226,6 @@
             var client = new HttpClient(this.handler);
 
             client.SetAuthentication(authentification);
-            client.SetHeaders(headers);
 
             try
             {
@@ -258,7 +257,6 @@
             var client = new HttpClient(this.handler);
 
             client.SetAuthentication(authentification);
-            client.SetHeaders(headers);
 
             try
             {
@@ -292,9 +290,8 @@
             var client = new HttpClient(this.handler);
 
             var content = new StringContent(body);
-
             client.SetAuthentication(authentification);
-            client.SetHeaders(headers);
+            content.SetHeaders(headers);
 
             try
             {

@@ -30,8 +30,9 @@
 
         /// <summary>Retrieves the raw body as a byte array from the Request.Body stream</summary>
         /// <param name="request">The request.</param>
-        /// <returns>The <see cref="Task" />.</returns>
-        public static async Task<byte[]> GetRawBodyBytesAsync(this HttpRequest request)
+        /// <returns>The <see cref="Task"/>.</returns>
+        public static async Task<byte[]> GetRawBodyBytesAsync(
+            this HttpRequest request)
         {
             using (var ms = new MemoryStream(2048))
             {
@@ -43,8 +44,10 @@
         /// <summary>Retrieve the raw body as a string from the Request.Body stream</summary>
         /// <param name="request">Request instance to apply to</param>
         /// <param name="encoding">Optional - Encoding, defaults to UTF8</param>
-        /// <returns>The <see cref="Task" />.</returns>
-        public static async Task<string> GetRawBodyStringAsync(this HttpRequest request, Encoding encoding = null)
+        /// <returns>The <see cref="Task"/>.</returns>
+        public static async Task<string> GetRawBodyStringAsync(
+            this HttpRequest request,
+            Encoding encoding = null)
         {
             using (var reader = new StreamReader(request.Body, encoding ?? Encoding.UTF8))
             {
@@ -54,8 +57,9 @@
 
         /// <summary>The process web exception.</summary>
         /// <param name="exception">The exception.</param>
-        /// <returns>The <see cref="System.Exception" />.</returns>
-        public static Exception ProcessWebException(this WebException exception)
+        /// <returns>The <see cref="System.Exception"/>.</returns>
+        public static Exception ProcessWebException(
+            this WebException exception)
         {
             var errorResponse = exception.Response;
 
@@ -77,7 +81,9 @@
         /// <summary>The set authentication.</summary>
         /// <param name="client">The client.</param>
         /// <param name="authentication">The authentication.</param>
-        public static void SetAuthentication(this HttpClient client, string authentication)
+        public static void SetAuthentication(
+            this HttpClient client,
+            string authentication)
         {
             if (!string.IsNullOrEmpty(authentication))
             {
@@ -88,7 +94,9 @@
         /// <summary>The set headers.</summary>
         /// <param name="client">The client.</param>
         /// <param name="headers">The headers.</param>
-        public static void SetHeaders(this HttpClient client, Dictionary<string, IEnumerable<string>> headers)
+        public static void SetHeaders(
+            this HttpClient client,
+            Dictionary<string, IEnumerable<string>> headers)
         {
             if (headers == null)
             {
@@ -97,14 +105,48 @@
 
             foreach (var header in headers)
             {
-                client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+                try
+                {
+                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine(e);
+                }
+            }
+        }
+
+        /// <summary>The set headers.</summary>
+        /// <param name="client">The client.</param>
+        /// <param name="headers">The headers.</param>
+        public static void SetHeaders(
+            this HttpContent client,
+            Dictionary<string, IEnumerable<string>> headers)
+        {
+            if (headers == null)
+            {
+                return;
+            }
+
+            foreach (var header in headers)
+            {
+                try
+                {
+                    client.Headers.Add(header.Key, header.Value);
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine(e);
+                }
             }
         }
 
         /// <summary>The set headers.</summary>
         /// <param name="response">The response.</param>
         /// <param name="headers">The headers.</param>
-        public static void SetHeaders(this HttpResponse response, Dictionary<string, IEnumerable<string>> headers)
+        public static void SetHeaders(
+            this HttpResponse response,
+            Dictionary<string, IEnumerable<string>> headers)
         {
             if (headers == null)
             {
