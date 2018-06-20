@@ -1,8 +1,6 @@
-﻿namespace BouchonUniversel.Models.Bouchons
-{
+﻿namespace BouchonUniversel.Models.Bouchons {
     /// <summary>The services.</summary>
-    public class Service : IDto<long>
-    {
+    public class Service : IDto<long> {
         #region Propriétés et indexeurs
 
         /// <summary>Gets or sets the cle.</summary>
@@ -22,6 +20,9 @@
 
         /// <summary>Gets or sets a value indicating whether is enabled.</summary>
         public bool IsEnabled { get; set; }
+
+        /// <summary>Gets or sets a value indicating update dates is enabled.</summary>
+        public bool UpdateDates { get; set; }
 
         #endregion
     }
