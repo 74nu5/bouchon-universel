@@ -162,9 +162,9 @@
 
                 JObject jsonO = JObject.Parse (File.ReadAllText (@"./PatternDateFormatConfig.json"));
 
-                string paterns = jsonO.ToJson ();
+                string patterns = jsonO.ToJson ();
 
-                PaternDateFormatConfig pdfc = paterns.FromJson<PaternDateFormatConfig> ();
+                PatternDateFormatConfig pdfc = patterns.FromJson<PatternDateFormatConfig> ();
 
                 if (requestIsActivated) {
                     ReponseBouchonnee responseBouchonne = XDocument.Load (fileName).FromXml<ReponseBouchonnee> ();

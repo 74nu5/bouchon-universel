@@ -3,11 +3,11 @@ namespace BouchonUniversel.Models {
     using System.Collections.Generic;
     #endregion
 
-    public class PaternDateFormatConfig {
-        public List<PaternDateFormat> patterns { get; set; }
+    public class PatternDateFormatConfig {
+        public List<PatternDateFormat> patterns { get; set; }
     }
 
-    public class PaternDateFormat {
+    public class PatternDateFormat {
         public string pattern { get; set; }
 
         public string format { get; set; }
