@@ -8,15 +8,15 @@ namespace BouchonUniversel.Models {
     public static class MockICVRealTime {
         /// <summary>The get value.</summary>
         /// <param name="dDate">Date to Ajust.</param>
-        /// <param name="paternsFormats">Patern used.</param>
+        /// <param name="patternsFormats">Pattern used.</param>
         /// <returns>The <see cref="string" />.</returns>
         /// <exception cref="ArgumentException">Lève une exception lorsque la propriété et/ou la valeur n'est pas trouvé</exception>
-        public static string AjustDates (this string document, string dDate, List<PaternDateFormat> paternsFormats) {
+        public static string AjustDates (this string document, string dDate, List<PatternDateFormat> patternsFormats) {
             CultureInfo ci = CultureInfo.InvariantCulture;
             MatchCollection mactches = null;
             string docResult = document;;
 
-            foreach (var pf in paternsFormats) {
+            foreach (var pf in patternsFormats) {
                 try {
                     Regex rgx = new Regex (pf.pattern);
 
