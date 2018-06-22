@@ -21,6 +21,8 @@
     using Utils;
 
     using KeyNotFoundException = Exceptions.KeyNotFoundException;
+    using System.Globalization;
+    using System.Web;
     using BouchonUniversel.Models;
     using BouchonUniversel.Utils.Extensions;
 
@@ -146,7 +148,7 @@
                 var requestIsActivated = this.ServiceIsActivated (cle, env);
 
                 /* Intégration de la mise à jour de la réponse */
-                var updateDatesResponseIsActivated = this.UpdateDatesForServiceIsActivated (cle, env);
+                var updateDatesResponseIsActivated = this.UpdateDatesForServiceIsActivated (cle);
                 /* =========================================== */
 
                 var bouchonDir = new DirectoryInfo (Path.Combine (this.settingsBouchonDAO.GetCheminFichier (), cle, env, route ?? string.Empty));
@@ -154,9 +156,9 @@
                     bouchonDir.Create ();
                 }
 
-                var queryStr = string.Join ("&", query.Select (pair => $"{pair.Key}={string.Join(",", pair.Value)}").ToArray ());
+                var queryStr = string.Join ("&", query.Select (pair => string.Join ("&", pair.Value.Select (value => $"{pair.Key}={HttpUtility.UrlEncode (value)}").ToArray ())).ToArray ());
 
-                var queryHash = queryStr.ComputeHash (ExtensionsString.HashType.SHA256);
+                var queryHash = string.Join ("&", query.Select (pair => string.Join ("&", pair.Value.Select (value => $"{pair.Key}={HttpUtility.UrlEncode (FormatIfDate(value, "yyyy-MM-dd"))}").ToArray ())).ToArray ()).ComputeHash (ExtensionsString.HashType.SHA256);
 
                 var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString ()}_{queryHash}")}.xml";
 
@@ -277,12 +279,23 @@
             return this.servicesDAO.IsActivated (cle) && this.environnementDAO.IsActivated (env);
         }
 
-        private bool UpdateDatesForServiceIsActivated (string cle, string env) {
+        /// <summary>Assert that update dates is activated.</summary>
+        /// <param name="cle">The cle.</param>
+        /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
+        /// <returns>The <see cref="bool" />.</returns>
+        private bool UpdateDatesForServiceIsActivated (string cle) {
             if (!this.servicesDAO.ExistsByCle (cle)) {
                 throw new KeyNotFoundException ("La clé n'existe pas");
             }
 
             return this.servicesDAO.IsEnabledToUpdateDates (cle);
+        }
+
+        private string FormatIfDate (string value, string format) {
+            DateTime date;
+            CultureInfo ci = CultureInfo.InvariantCulture;
+            //return DateTime.TryParse (value, out date) ? date.ToString (format, ci) : value;
+            return DateTime.TryParse (value, out date) ? "" : value;
         }
 
         #endregion
