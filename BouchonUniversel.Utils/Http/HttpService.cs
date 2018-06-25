@@ -220,6 +220,8 @@
                 }
 
                 var headersResponse = response.Headers.ToDictionary (pair => pair.Key, pair => pair.Value);
+                headersResponse.Concat (response.Content.Headers.ToDictionary (pair => pair.Key, pair => pair.Value));
+
                 return (response.StatusCode, response.ReasonPhrase, headersResponse, response.Content.ReadAsStringAsync ().Result.FromJson<TResponse> ());
             } catch (WebException ex) {
                 throw ex.ProcessWebException ();
@@ -247,7 +249,8 @@
 
                 var headersResponse = response.Headers.ToDictionary (pair => pair.Key, pair => pair.Value);
 
-                //headersResponse = headersResponse.Concat (response.Content.Headers.ToDictionary (pair => pair.Key, pair => pair.Value)).ToDictionary (pair => pair.Key, pair => pair.Value);
+                headersResponse.Add ("Content-type", new List<string> { response.Content.Headers.ContentType.ToString ().Split (';').FirstOrDefault () });
+
                 return (response.StatusCode, response.ReasonPhrase, headersResponse, await response.Content.ReadAsStringAsync ());
             } catch (WebException ex) {
                 throw ex.ProcessWebException ();

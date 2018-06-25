@@ -68,7 +68,7 @@
                 return this.StatusCode ((int) HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
             }
 
-            this.Response.Headers.Add ("Content-Type", "application/json");
+            //this.Response.Headers.Add ("Content-Type", "application/json");
             this.Response.Headers.Add ("Site", "Bouchon-Universel");
             this.Response.SetHeaders (result.Headers?.ToDictionary (kv => kv.Key, kv => kv.Value.AsEnumerable ()));
 
