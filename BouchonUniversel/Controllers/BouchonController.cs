@@ -10,6 +10,7 @@
     using System;
     using Metier;
     using Microsoft.AspNetCore.Mvc;
+    using Models;
     using Newtonsoft.Json;
     using Utils.Http;
 
@@ -73,7 +74,7 @@
 
             Console.WriteLine (this.Response.Headers);
 
-            return this.StatusCode (result.StatusCode, JsonConvert.DeserializeObject (result.Body ?? ""));
+            return this.StatusCode (result.StatusCode, result.Body.ResolveResponse (this.Response.ContentType));
         }
 
         /// <summary>The healthcheck.</summary>
@@ -109,7 +110,7 @@
             this.Response.Headers.Add ("Site", "Bouchon-Universel");
             this.Response.SetHeaders (result.Headers?.ToDictionary (kv => kv.Key, kv => kv.Value.AsEnumerable ()));
 
-            return this.StatusCode (result.StatusCode, JsonConvert.DeserializeObject (result.Body ?? ""));
+            return this.StatusCode (result.StatusCode, result.Body.ResolveResponse (this.Response.ContentType));
         }
 
         /// <summary>La méthode PUT n'est pas implémentée.</summary>
