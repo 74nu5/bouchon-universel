@@ -2,10 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BouchonUniversel.Models {
 
     public static class MockICVRealTime {
+
         /// <summary>The get value.</summary>
         /// <param name="dDate">Date to Ajust.</param>
         /// <param name="patternsFormats">Pattern used.</param>
@@ -54,5 +59,15 @@ namespace BouchonUniversel.Models {
                 return dResult.ToUniversalTime ();
             }
         }
+
+        public static Object ResolveResponse (this string response, string contentType) {
+            if (contentType == "application/json") {
+                return JsonConvert.DeserializeObject (response ?? "");
+            } else if (contentType == "application/xml") {
+                return XDocument.Parse (response ?? "");
+            }
+            return response;
+        }
+
     }
 }
