@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using BouchonUniversel.Models.Bouchons;
+using BouchonUniversel.Utils.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -61,12 +65,52 @@ namespace BouchonUniversel.Models {
         }
 
         public static Object ResolveResponse (this string response, string contentType) {
-            if (contentType == "application/json") {
-                return JsonConvert.DeserializeObject (response ?? "");
-            } else if (contentType == "application/xml") {
-                return XDocument.Parse (response ?? "");
+            try {
+                if (contentType == "application/json") {
+                    return JsonConvert.DeserializeObject (response ?? "");
+                } else if (contentType == "application/xml") {
+                    return XDocument.Parse (response ?? "");
+                }
+            } catch (Exception e) {
+                Console.WriteLine ("the response is not a valid json or xml");
             }
             return response;
+        }
+
+        /// <summary>Get the missing response in the list of reponses</summary>
+        /// <param name="rootDir">The root directory</param>
+        /// <param name="route">Root to get the response</param>
+        /// <returns>The <see cref="string" />.</returns>
+        /// <exception cref="Exception"></exception>        
+        public static (string, ReponseBouchonnee) GetUpdatedResponse (string rootDir, string route) {
+
+            var routes = route.Split ('/');
+            var bouchonDir = new DirectoryInfo (Path.Combine (rootDir, string.Join ('/', routes.SkipLast (1))));
+            var files = bouchonDir.GetFileSystemInfos ();
+            string response = null;
+            bool trouve = false;
+            var i = 0;
+            ReponseBouchonnee responseBouchon = new ReponseBouchonnee ();
+            try {
+                while (i < files.Length && !trouve) {
+                    var dir = files[i];
+                    if (dir is FileInfo) {
+                        responseBouchon = (XDocument.Load (dir.FullName).FromXml<ReponseBouchonnee> ());
+                        string body = responseBouchon.Body;
+                        dynamic jObject = JsonConvert.DeserializeObject (body);
+                        foreach (var d in jObject.data) {
+                            if (d.id == routes.Last ().ToString ()) {
+                                response = d.ToString ();
+                            }
+                        }
+                    }
+                    i++;
+                }
+            } catch (Exception e) {
+                Console.WriteLine (e);
+            }
+
+            return (response, responseBouchon);
         }
 
     }

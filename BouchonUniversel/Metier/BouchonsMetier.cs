@@ -255,6 +255,19 @@
             } catch (EnvironmentNotFoundException ex) {
                 return (null, new ResponseErreur { Message = ex.Message, Code = 1002 });
             } catch (FileNotFoundException ex) {
+                var confDir = new DirectoryInfo (Path.Combine (this.settingsBouchonDAO.GetCheminFichier (), cle, env, string.Empty));
+                var newResponse = MockICVRealTime.GetUpdatedResponse (confDir.FullName, route);
+                if (!newResponse.Item2.IsNull ()) {
+                    var req = new Request { Headers = headers.ToKeyValueList (), Query = query.ToKeyValueList (), Route = route, Body = body };
+                    var newResponseBouchon = new ReponseBouchonnee {
+                        Body = newResponse.Item1,
+                        Headers = newResponse.Item2.Headers,
+                        Request = req,
+                        StatusCode = newResponse.Item2.StatusCode,
+                        ResponsePhrase = newResponse.Item2.ResponsePhrase
+                    };
+                    return (newResponseBouchon, null);
+                }
                 return (null, new ResponseErreur { Message = ex.Message, Code = 1003 });
             } catch (Exception ex) {
                 return (null, new ResponseErreur { Message = ex.Message, Code = 1999 });
