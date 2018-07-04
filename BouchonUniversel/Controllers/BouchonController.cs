@@ -71,7 +71,7 @@
             this.Response.Headers.Add ("Site", "Bouchon-Universel");
             this.Response.SetHeaders (result.Headers?.ToDictionary (kv => kv.Key, kv => kv.Value.AsEnumerable ()));
 
-            Console.WriteLine (this.Response.Headers);
+            //Console.WriteLine (this.Response.Headers);
 
             return this.StatusCode (result.StatusCode, result.Body.ResolveResponse (this.Response.ContentType));
         }
