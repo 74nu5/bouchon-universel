@@ -1,4 +1,7 @@
-﻿@model BouchonUniversel.Models.Bouchons.Environnement
+﻿@using System.IO
+@using BouchonUniversel.Models.Bouchons
+@using Microsoft.AspNetCore.Mvc.Razor
+@model BouchonUniversel.Models.Bouchons.Environnement
 
 @{
     ViewData["Title"] = "Details";
@@ -9,7 +12,7 @@
 
 <div>
     <h4>Environnement</h4>
-    <hr />
+    <hr/>
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Nom)

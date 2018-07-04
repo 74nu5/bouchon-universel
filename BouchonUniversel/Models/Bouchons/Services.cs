@@ -1,6 +1,8 @@
-﻿namespace BouchonUniversel.Models.Bouchons {
+﻿namespace BouchonUniversel.Models.Bouchons
+{
     /// <summary>The services.</summary>
-    public class Service : IDto<long> {
+    public class Service : IDto<long>
+    {
         #region Propriétés et indexeurs
 
         /// <summary>Gets or sets the cle.</summary>

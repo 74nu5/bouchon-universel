@@ -27,7 +27,8 @@
 
         /// <summary>Initializes a new instance of the <see cref="HomeController"/> class.</summary>
         /// <param name="metier">The metier.</param>
-        public HomeController(SettingsBouchonMetier metier) => this.metier = metier;
+        public HomeController(SettingsBouchonMetier metier)
+            => this.metier = metier;
 
         #endregion
 
@@ -66,15 +67,18 @@
 
         /// <summary>The error.</summary>
         /// <returns>The <see cref="IActionResult" />.</returns>
-        public IActionResult Error() => this.View(new ErrorViewModel
-        {
-            RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
-        });
+        public IActionResult Error()
+            => this.View(
+                new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
+                });
 
         /// <summary>The get file.</summary>
         /// <param name="fileSelected">The file selected.</param>
         /// <returns>The <see cref="IActionResult"/>.</returns>
-        public IActionResult GetFile(string fileSelected) => this.File(this.metier.GetFile(fileSelected), "application/octet-stream", fileSelected);
+        public IActionResult GetFile(string fileSelected)
+            => this.File(this.metier.GetFile(fileSelected), "application/octet-stream", fileSelected);
 
         #endregion
     }
