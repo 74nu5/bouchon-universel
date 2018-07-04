@@ -29,8 +29,7 @@
         /// <param name="services">The services.</param>
         /// <param name="option">The option.</param>
         [UsedImplicitly]
-        public DataContext(IServiceProvider services, DbContextOptions option)
-            : base(option)
+        public DataContext(IServiceProvider services, DbContextOptions option) : base(option)
         {
         }
 

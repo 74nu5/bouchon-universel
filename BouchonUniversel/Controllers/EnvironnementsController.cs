@@ -28,7 +28,8 @@
 
         /// <summary>Initializes a new instance of the <see cref="EnvironnementsController" /> class.</summary>
         /// <param name="context">The context.</param>
-        public EnvironnementsController(DataContext context) => this.context = context;
+        public EnvironnementsController(DataContext context)
+            => this.context = context;
 
         #endregion
 
@@ -36,7 +37,8 @@
 
         /// <summary>The create.</summary>
         /// <returns>The <see cref="IActionResult" />.</returns>
-        public IActionResult Create() => this.View();
+        public IActionResult Create()
+            => this.View();
 
         /// <summary>The create.</summary>
         /// <param name="environnement">The environnement.</param>
@@ -164,7 +166,8 @@
 
         /// <summary>The index.</summary>
         /// <returns>The <see cref="Task" />.</returns>
-        public async Task<IActionResult> Index() => this.View(await this.context.Environnement.ToListAsync());
+        public async Task<IActionResult> Index()
+            => this.View(await this.context.Environnement.ToListAsync());
 
         #endregion
 
@@ -173,7 +176,8 @@
         /// <summary>The environnement exists.</summary>
         /// <param name="id">The id.</param>
         /// <returns>The <see cref="bool" />.</returns>
-        private bool EnvironnementExists(long id) => this.context.Environnement.Any(e => e.Id == id);
+        private bool EnvironnementExists(long id)
+            => this.context.Environnement.Any(e => e.Id == id);
 
         #endregion
     }

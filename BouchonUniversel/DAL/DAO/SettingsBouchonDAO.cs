@@ -19,8 +19,7 @@
 
         /// <summary>Initializes a new instance of the <see cref="SettingsBouchonDAO" /> class.</summary>
         /// <param name="context">The context.</param>
-        public SettingsBouchonDAO(DataContext context)
-            : base(context)
+        public SettingsBouchonDAO(DataContext context) : base(context)
         {
         }
 
@@ -30,11 +29,13 @@
 
         /// <summary>The get bouchon state.</summary>
         /// <returns>The <see cref="bool" />.</returns>
-        public bool GetBouchonState() => Convert.ToBoolean(this.Entities.FirstOrDefault(bouchon => bouchon.Key == "IsActivated")?.Value);
+        public bool GetBouchonState()
+            => Convert.ToBoolean(this.Entities.FirstOrDefault(bouchon => bouchon.Key == "IsActivated")?.Value);
 
         /// <summary>The get chemin fichier.</summary>
         /// <returns>The <see cref="string" />.</returns>
-        public string GetCheminFichier() => this.Entities.FirstOrDefault(bouchon => bouchon.Key == nameof(ApplicationSettings.CheminFichiers))?.Value;
+        public string GetCheminFichier()
+            => this.Entities.FirstOrDefault(bouchon => bouchon.Key == nameof(ApplicationSettings.CheminFichiers))?.Value;
 
         /// <summary>The update conf bouchon.</summary>
         /// <param name="isActivated">The is activated.</param>

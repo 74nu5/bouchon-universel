@@ -19,7 +19,8 @@
 
         /// <summary>The with choice.</summary>
         /// <param name="actions">The actions.</param>
-        public static void WithChoice([NotNull] params Action[] actions) => WithChoice(false, actions);
+        public static void WithChoice([NotNull] params Action[] actions)
+            => WithChoice(false, actions);
 
         /// <summary>The with choice.</summary>
         /// <param name="withExit">The with exit.</param>
@@ -61,7 +62,8 @@
                         enumerable[choix - 1].Invoke();
                     }
                 }
-            } while (true);
+            }
+            while (true);
         }
 
         #endregion

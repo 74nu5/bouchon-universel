@@ -42,7 +42,8 @@ namespace BouchonUniversel.Metier
         #region Méthodes publiques
 
         /// <summary>The initialize.</summary>
-        public void Initialize() => DbInitializer.Init(this.context, this.settings);
+        public void Initialize()
+            => DbInitializer.Init(this.context, this.settings);
 
         #endregion
     }

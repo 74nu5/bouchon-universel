@@ -1,15 +1,19 @@
-namespace BouchonUniversel.Models {
+namespace BouchonUniversel.Models
+{
     #region Usings
+
     using System.Collections.Generic;
+
     #endregion
 
-    public class PaternDateFormatConfig {
+    public class PaternDateFormatConfig
+    {
         /// <summary>The list of patterns.</summary>
         public List<PaternDateFormat> patterns { get; set; }
     }
 
-    public class PaternDateFormat {
-
+    public class PaternDateFormat
+    {
         /// <summary>A patern</summary>
         public string pattern { get; set; }
 

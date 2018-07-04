@@ -9,7 +9,8 @@ namespace BouchonUniversel.Models
         public string RequestId { get; set; }
 
         /// <summary>The show request id.</summary>
-        public bool ShowRequestId => !string.IsNullOrEmpty(this.RequestId);
+        public bool ShowRequestId
+            => !string.IsNullOrEmpty(this.RequestId);
 
         #endregion
     }

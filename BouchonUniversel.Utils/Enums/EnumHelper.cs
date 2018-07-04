@@ -60,7 +60,7 @@
 
             var field = type.GetTypeInfo().GetField(name);
 
-            return field.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute customAttribute?customAttribute.Description ?? string.Empty:name;
+            return field.GetCustomAttribute(typeof(DisplayAttribute)) is DisplayAttribute customAttribute ? customAttribute.Description ?? string.Empty : name;
         }
 
         #endregion
