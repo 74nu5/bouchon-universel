@@ -16,8 +16,6 @@
 
     using Utils;
 
-    using static ExtensionsString;
-
     #endregion
 
     /// <summary>The extensions string.</summary>
@@ -138,7 +136,8 @@
         /// <param name="stringFormat">The string format.</param>
         /// <param name="stringParams">The string params.</param>
         /// <returns>The <see cref="string" />.</returns>
-        public static string F(this string stringFormat, params object[] stringParams) => string.Format(stringFormat, stringParams);
+        public static string F(this string stringFormat, params object[] stringParams)
+            => string.Format(stringFormat, stringParams);
 
         /// <summary>The format.</summary>
         /// <param name="template">The template.</param>
@@ -183,7 +182,8 @@
         /// <summary>Random salt to comsume in hash generation</summary>
         /// <param name="length">Length of salt value should be even, hex string will be twice of the length</param>
         /// <returns>Hex string representation of salt value</returns>
-        public static string GenerateSalt(int length = 4) => GenerateSaltBytes(length).ToHexString();
+        public static string GenerateSalt(int length = 4)
+            => GenerateSaltBytes(length).ToHexString();
 
         /// <summary>Random salt to comsume in hash generation</summary>
         /// <param name="length">Length of salt value should be even, hex string will be twice of the length</param>
@@ -220,13 +220,15 @@
         /// <summary>The is null or empty.</summary>
         /// <param name="str">The str.</param>
         /// <returns>The <see cref="bool" />.</returns>
-        public static bool IsNullOrEmpty(this string str) => string.IsNullOrEmpty(str);
+        public static bool IsNullOrEmpty(this string str)
+            => string.IsNullOrEmpty(str);
 
         /// <summary>The join.</summary>
         /// <param name="strs">The strs.</param>
         /// <param name="separator">The separator.</param>
         /// <returns>The <see cref="string" />.</returns>
-        public static string Join(this string[] strs, string separator) => string.Join(separator, strs);
+        public static string Join(this string[] strs, string separator)
+            => string.Join(separator, strs);
 
         /// <summary>Converts string to enum object</summary>
         /// <typeparam name="T">Type of enum</typeparam>
@@ -234,15 +236,15 @@
         /// <returns>Returns enum object</returns>
         [System.Diagnostics.Contracts.Pure]
         public static T ToEnum<T>(this string value)
-            where T : struct =>
-            (T)Enum.Parse(typeof(T), value, true);
+            where T : struct
+            => (T)Enum.Parse(typeof(T), value, true);
 
         /// <summary>The to exception.</summary>
         /// <param name="message">The message.</param>
         /// <typeparam name="T">Type de l'exception</typeparam>
         public static void ToException<T>(this string message)
-            where T : Exception, new() =>
-            throw (T)Activator.CreateInstance(typeof(T), message);
+            where T : Exception, new()
+            => throw (T)Activator.CreateInstance(typeof(T), message);
 
         /// <summary>Validate password is equal to hashValue(Generated from Compute hash)</summary>
         /// <param name="hashValue">Computed hash value of actual password 'MD5$Salt$Hash'</param>

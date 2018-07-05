@@ -2,14 +2,12 @@
 {
     #region Usings
 
-    using System;
+    using BouchonUniversel.Models;
+    using BouchonUniversel.Models.Bouchons;
 
     using JetBrains.Annotations;
 
     using Microsoft.EntityFrameworkCore;
-
-    using Models;
-    using Models.Bouchons;
 
     #endregion
 
@@ -25,11 +23,10 @@
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="DataContext" /> class.</summary>
-        /// <param name="services">The services.</param>
+        /// <summary>Initializes a new instance of the <see cref="DataContext"/> class.</summary>
         /// <param name="option">The option.</param>
         [UsedImplicitly]
-        public DataContext(IServiceProvider services, DbContextOptions option)
+        public DataContext(DbContextOptions option)
             : base(option)
         {
         }
@@ -38,18 +35,18 @@
 
         #region Propriétés et indexeurs
 
-        /// <summary>Gets or sets the options bouchons.</summary>
-        public DbSet<SettingsBouchon> SettingsBouchon { get; [UsedImplicitly] set; }
+        /// <summary>Gets or sets the environnement.</summary>
+        public DbSet<Environnement> Environnement { get; set; }
 
         /// <summary>Gets or sets the services.</summary>
-        public DbSet<Service> Services { get; [UsedImplicitly] set; }
+        public DbSet<Service> Services { get; set; }
 
-        /// <summary>Gets or sets the environnement.</summary>
-        public DbSet<Environnement> Environnement { get; [UsedImplicitly] set; }
+        /// <summary>Gets or sets the options bouchons.</summary>
+        public DbSet<SettingsBouchon> SettingsBouchon { get; set; }
 
         #endregion
 
-        #region Méthodes protected
+        #region Méthodes protégées
 
         /// <summary>The on model creating.</summary>
         /// <param name="modelBuilder">The model builder.</param>

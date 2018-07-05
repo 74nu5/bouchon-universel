@@ -15,7 +15,7 @@
         #region Champs et constantes statiques
 
         /// <summary>The fonction.</summary>
-        private static Func<DateTime> Fonction;
+        private static Func<DateTime> fonction;
 
         #endregion
 
@@ -25,7 +25,8 @@
         ///     Initializes static members of the <see cref="Horloge" /> class. Initializes a new instance of the
         ///     <see cref="T:System.Object"></see> class.
         /// </summary>
-        static Horloge() => Fonction = () => DateTime.Now;
+        static Horloge()
+            => fonction = () => DateTime.Now;
 
         #endregion
 
@@ -33,13 +34,14 @@
 
         /// <summary>Gets the maintenant.</summary>
         /// <value>The maintenant.</value>
-        public static DateTime Maintenant => Fonction();
+        public static DateTime Maintenant
+            => fonction();
 
         /// <summary>Sets the fonction maintenant.</summary>
         /// <value>The fonction maintenant.</value>
         public static Func<DateTime> SetFonctionMaintenant
         {
-            set => Fonction = value ?? (() => DateTime.Now);
+            set => fonction = value ?? (() => DateTime.Now);
         }
 
         #endregion
@@ -47,7 +49,8 @@
         #region Méthodes publiques
 
         /// <summary>The reset.</summary>
-        public static void Reset() => SetFonctionMaintenant = null;
+        public static void Reset()
+            => SetFonctionMaintenant = null;
 
         #endregion
     }

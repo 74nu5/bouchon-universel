@@ -2,13 +2,12 @@ namespace BouchonUniversel.Metier
 {
     #region Usings
 
-    using DAL;
+    using BouchonUniversel.DAL;
+    using BouchonUniversel.Models;
 
     using JetBrains.Annotations;
 
     using Microsoft.Extensions.Options;
-
-    using Models;
 
     #endregion
 
@@ -28,7 +27,7 @@ namespace BouchonUniversel.Metier
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BouchonInitializer" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonInitializer"/> class.</summary>
         /// <param name="context">The context.</param>
         /// <param name="settings">The bouchon.</param>
         public BouchonInitializer(DataContext context, IOptions<ApplicationSettings> settings)
@@ -42,7 +41,8 @@ namespace BouchonUniversel.Metier
         #region Méthodes publiques
 
         /// <summary>The initialize.</summary>
-        public void Initialize() => DbInitializer.Init(this.context, this.settings);
+        public void Initialize()
+            => DbInitializer.Init(this.context, this.settings);
 
         #endregion
     }

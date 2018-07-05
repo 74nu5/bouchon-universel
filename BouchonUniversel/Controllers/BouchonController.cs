@@ -10,11 +10,12 @@
     using System.Threading.Tasks;
     using System.Web;
 
-    using Metier;
+    using BouchonUniversel.Metier;
+    using BouchonUniversel.Models;
+    using BouchonUniversel.Utils;
+    using BouchonUniversel.Utils.Http;
 
     using Microsoft.AspNetCore.Mvc;
-
-    using Utils.Http;
 
     #endregion
 
@@ -59,7 +60,7 @@
         ///     -   Si la clé du service n'a pas été trouvée (un méssage spécifique est associé au retour)
         ///     -   Si l'environnement n'a pas été trouve (un méssage spécifique est associé au retour)
         ///     -   Si le fichier de bouchon n'a pas été trouvé (un méssage spécifique est associé au retour)
-        ///     -   Si le service associé au bouchon répond 405
+        ///     -   Si le service associé au bouchon répond 405.
         /// </response>
         [HttpGet("{cle}/{env}/{*route}")]
         [ProducesResponseType(typeof(string), 200)]
@@ -69,6 +70,7 @@
             var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
             var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers);
 
+            // ReSharper disable once StyleCop.SA1126
             if (erreur != null)
             {
                 return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
@@ -77,7 +79,8 @@
             this.Response.Headers.Add("Site", "Bouchon-Universel");
             this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
 
-            return this.StatusCode(result.StatusCode, result.Body);
+            // Console.WriteLine (this.Response.Headers);
+            return this.StatusCode(result.StatusCode, result.Body.ResolveResponse(this.Response.ContentType));
         }
 
         /// <summary>The healthcheck.</summary>
@@ -98,7 +101,7 @@
         ///     -   Si la clé du service n'a pas été trouvée (un méssage spécifique est associé au retour)
         ///     -   Si l'environnement n'a pas été trouve (un méssage spécifique est associé au retour)
         ///     -   Si le fichier de bouchon n'a pas été trouvé (un méssage spécifique est associé au retour)
-        ///     -   Si le service associé au bouchon répond 405
+        ///     -   Si le service associé au bouchon répond 405.
         /// </response>
         [HttpPost("{cle}/{env}/{*route}")]
         public async Task<IActionResult> Post([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
@@ -106,8 +109,9 @@
             var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
 
             // On récupère le body de cette façon pour prendre en compte tous les genres de body (texte, json, binaires, ...).
-            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync());
+            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync().ConfigureAwait(false));
 
+            // ReSharper disable once StyleCop.SA1126
             if (erreur != null)
             {
                 return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
@@ -116,7 +120,7 @@
             this.Response.Headers.Add("Site", "Bouchon-Universel");
             this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
 
-            return this.StatusCode(result.StatusCode, result.Body);
+            return this.StatusCode(result.StatusCode, result.Body.ResolveResponse(this.Response.ContentType));
         }
 
         /// <summary>La méthode PUT n'est pas implémentée.</summary>
