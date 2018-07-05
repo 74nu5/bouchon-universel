@@ -8,7 +8,7 @@ namespace BouchonUniversel.Metier
     using System.IO;
     using System.Linq;
 
-    using DAL.DAO;
+    using BouchonUniversel.DAL.DAO;
 
     using JetBrains.Annotations;
 
@@ -27,7 +27,7 @@ namespace BouchonUniversel.Metier
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="SettingsBouchonMetier" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsBouchonMetier"/> class.</summary>
         /// <param name="dao">The context.</param>
         public SettingsBouchonMetier(SettingsBouchonDAO dao)
             => this.dao = dao;
@@ -83,7 +83,7 @@ namespace BouchonUniversel.Metier
 
         /// <summary>The get file.</summary>
         /// <param name="fileName">The file name.</param>
-        /// <returns>The <see cref="Stream" />.</returns>
+        /// <returns>The <see cref="Stream"/>.</returns>
         public Stream GetFile(string fileName)
             => new FileInfo(Path.Combine(this.dao.GetCheminFichier(), fileName)).OpenRead();
 
@@ -97,7 +97,7 @@ namespace BouchonUniversel.Metier
                 throw new DirectoryNotFoundException($"Le dossier {this.dao.GetCheminFichier()} est inexistant.");
             }
 
-            return dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(info => info.FullName.Replace(this.dao.GetCheminFichier() + "\\", string.Empty));
+            return dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(info => info.FullName.Replace($"{this.dao.GetCheminFichier()}\\", string.Empty));
         }
 
         #endregion

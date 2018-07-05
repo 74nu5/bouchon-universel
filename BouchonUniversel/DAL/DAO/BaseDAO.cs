@@ -8,21 +8,24 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
+    using BouchonUniversel.Models;
+
     using JetBrains.Annotations;
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Query;
 
-    using Models;
-
     #endregion
 
     /// <summary>The totem dao.</summary>
-    /// <typeparam name="TContext">Type du contexte</typeparam>
-    /// <typeparam name="TModel">Type du model</typeparam>
-    /// <typeparam name="TIdentity">Type de la clé primaire du model</typeparam>
+    /// <typeparam name="TContext">Type du contexte.</typeparam>
+    /// <typeparam name="TModel">Type du model.</typeparam>
+    /// <typeparam name="TIdentity">Type de la clé primaire du model.</typeparam>
+    [PublicAPI]
     public abstract class BaseDAO<TContext, TModel, TIdentity>
-        where TModel : class, IDto<TIdentity> where TIdentity : IComparable<TIdentity> where TContext : DbContext
+        where TModel : class, IDto<TIdentity>
+        where TIdentity : IComparable<TIdentity>
+        where TContext : DbContext
     {
         #region Champs
 
@@ -33,7 +36,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="BaseDAO{TContext,TModel,TIdentity}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BaseDAO{TContext,TModel,TIdentity}"/> class.</summary>
         /// <param name="context">The context.</param>
         protected BaseDAO(TContext context)
         {
@@ -45,8 +48,8 @@
 
         #region Propriétés et indexeurs
 
-        /// <summary>Gets or sets the entities.</summary>
-        public DbSet<TModel> Entities { get; set; }
+        /// <summary>Gets the entities.</summary>
+        protected DbSet<TModel> Entities { get; }
 
         #endregion
 
@@ -54,7 +57,7 @@
 
         /// <summary>The create.</summary>
         /// <param name="model">The model.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> Create([NotNull] TModel model)
         {
             this.context.Set<TModel>().Add(model);
@@ -63,13 +66,13 @@
 
         /// <summary>The exists.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="bool" />.</returns>
+        /// <returns>The <see cref="bool"/>.</returns>
         public bool Exists(TIdentity id)
             => this.context.Set<TModel>().Any(e => e.Id.CompareTo(id) == 0);
 
         /// <summary>The get all.</summary>
         /// <param name="includes">The includes.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<List<TModel>> GetAll([NotNull] params Expression<Func<TModel, object>>[] includes)
         {
             var set = this.context.Set<TModel>();
@@ -86,7 +89,7 @@
         /// <summary>The get details.</summary>
         /// <param name="id">The id.</param>
         /// <param name="includes">The includes.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<TModel> GetDetails(TIdentity id, [NotNull] params Expression<Func<TModel, object>>[] includes)
         {
             var set = this.context.Set<TModel>();
@@ -99,32 +102,36 @@
 
         /// <summary>The get details.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<TModel> GetDetails(TIdentity id)
             => await this.context.Set<TModel>().SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0);
 
         /// <summary>The remove.</summary>
         /// <param name="model">The model.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> Remove([NotNull] TModel model)
         {
             this.context.Set<TModel>().Remove(model);
             return await this.context.SaveChangesAsync();
         }
 
-        /// <summary>The save changes.</summary>
-        /// <returns>The <see cref="int" />.</returns>
-        public int SaveChanges()
-            => this.context.SaveChanges();
-
         /// <summary>The update.</summary>
         /// <param name="model">The model.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<int> Update([NotNull] TModel model)
         {
             this.context.Set<TModel>().Update(model);
             return await this.context.SaveChangesAsync();
         }
+
+        #endregion
+
+        #region Méthodes protégées
+
+        /// <summary>The save changes.</summary>
+        /// <returns>The <see cref="int" />.</returns>
+        protected int SaveChanges()
+            => this.context.SaveChanges();
 
         #endregion
     }
