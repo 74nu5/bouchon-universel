@@ -6,16 +6,14 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    using DAL;
-
-    using Metier;
+    using BouchonUniversel.DAL;
+    using BouchonUniversel.Metier;
+    using BouchonUniversel.Models.Bouchons;
+    using BouchonUniversel.Models.ModelsView;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.EntityFrameworkCore;
-
-    using Models.Bouchons;
-    using Models.ModelsView;
 
     #endregion
 
@@ -34,7 +32,7 @@
 
         #region Constructeurs et destructeurs
 
-        /// <summary>Initializes a new instance of the <see cref="ServicesController" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ServicesController"/> class.</summary>
         /// <param name="context">The context.</param>
         /// <param name="metier">The metier.</param>
         public ServicesController(DataContext context, BouchonsMetier metier)
@@ -57,7 +55,7 @@
 
         /// <summary>The create.</summary>
         /// <param name="service">The service.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -77,7 +75,7 @@
 
         /// <summary>The delete.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
@@ -96,7 +94,7 @@
 
         /// <summary>The delete confirmed.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -110,7 +108,7 @@
 
         /// <summary>The details.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
@@ -131,13 +129,13 @@
 
         /// <summary>The download file.</summary>
         /// <param name="name">The name.</param>
-        /// <returns>The <see cref="IActionResult" />.</returns>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
         public IActionResult DownloadFile(string name)
             => this.PhysicalFile(name, "application/xml", Path.GetFileName(name));
 
         /// <summary>The edit.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
@@ -158,7 +156,7 @@
         /// <summary>The edit.</summary>
         /// <param name="id">The id.</param>
         /// <param name="service">The service.</param>
-        /// <returns>The <see cref="Task" />.</returns>
+        /// <returns>The <see cref="Task"/>.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -209,7 +207,7 @@
 
         /// <summary>The service exists.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="bool" />.</returns>
+        /// <returns>The <see cref="bool"/>.</returns>
         private bool ServiceExists(long id)
             => this.context.Services.Any(e => e.Id == id);
 

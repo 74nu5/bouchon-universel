@@ -220,7 +220,7 @@
                 }
 
                 var headersResponse = response.Headers.ToDictionary(pair => pair.Key, pair => pair.Value);
-                headersResponse.Concat(response.Content.Headers.ToDictionary(pair => pair.Key, pair => pair.Value));
+                headersResponse = headersResponse.Concat(response.Content.Headers.ToDictionary(pair => pair.Key, pair => pair.Value)).ToDictionary(pair => pair.Key, pair => pair.Value);
 
                 return (response.StatusCode, response.ReasonPhrase, headersResponse, response.Content.ReadAsStringAsync().Result.FromJson<TResponse>());
             }

@@ -6,15 +6,14 @@ namespace BouchonUniversel.Models
 
     #endregion
 
+    /// <summary>The pattern date format config.</summary>
     public class PatternDateFormatConfig
     {
-        public List<PatternDateFormat> patterns { get; set; }
-    }
+        #region Propriétés et indexeurs
 
-    public class PatternDateFormat
-    {
-        public string pattern { get; set; }
+        /// <summary>Gets or sets the patterns.</summary>
+        public List<PatternDateFormat> Patterns { get; set; }
 
-        public string format { get; set; }
+        #endregion
     }
 }

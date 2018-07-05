@@ -132,7 +132,7 @@
 
             if (headers.ContainsKey("Content-Type") && headers["Content-Type"].FirstOrDefault() != null)
             {
-                client.Headers.ContentType = new MediaTypeHeaderValue(headers["Content-Type"].FirstOrDefault().Split(';').FirstOrDefault());
+                client.Headers.ContentType = new MediaTypeHeaderValue(headers["Content-Type"].FirstOrDefault()?.Split(';').FirstOrDefault());
             }
         }
 
