@@ -49,14 +49,16 @@
         /// <param name="authentification">The authentification.</param>
         /// <typeparam name="TResponse">Type de la réponse</typeparam>
         /// <returns>The TResponse.</returns>
-        public static TResponse Delete<TResponse>(string url, string authentification) => throw new NotImplementedException();
+        public static TResponse Delete<TResponse>(string url, string authentification)
+            => throw new NotImplementedException();
 
         /// <summary>The put.</summary>
         /// <param name="url">The url.</param>
         /// <param name="authentification">The authentification.</param>
         /// <typeparam name="TResponse">Type de la réponse</typeparam>
         /// <returns>The TResponse.</returns>
-        public static TResponse Put<TResponse>(string url, string authentification) => throw new NotImplementedException();
+        public static TResponse Put<TResponse>(string url, string authentification)
+            => throw new NotImplementedException();
 
         /// <summary>The get http response async.</summary>
         /// <typeparam name="TResponse">Type de la réponse</typeparam>
@@ -112,10 +114,7 @@
         public async Task<string> GetStringAsync(string url, string authentification)
         {
             var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, Task<string>>(this.GetStringAsyncInternal).TestPerf(
-                out var timestamp,
-                url,
-                null,
-                authentification);
+                out var timestamp, url, null, authentification);
             Debug.WriteLine($"GET {url} : {timestamp} ms");
             return result;
         }
@@ -128,10 +127,7 @@
         public async Task<string> GetStringAsync(string url, Dictionary<string, IEnumerable<string>> headers, string authentification)
         {
             var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, Task<string>>(this.GetStringAsyncInternal).TestPerf(
-                out var timestamp,
-                url,
-                headers,
-                authentification);
+                out var timestamp, url, headers, authentification);
             Debug.WriteLine($"GET {url} : {timestamp} ms");
             return result;
         }
@@ -145,11 +141,7 @@
         public async Task<TResponse> PostAsync<TResponse>(string url, string content, string authentification)
         {
             var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, string, Task<TResponse>>(this.PostAsyncInternal<TResponse>).TestPerf(
-                out var time,
-                url,
-                null,
-                content,
-                authentification);
+                out var time, url, null, content, authentification);
             Debug.WriteLine($"GET {url} : {time} ms");
             return result;
         }
@@ -162,11 +154,7 @@
         public async Task<string> PostAsync(string url, string content, string authentification)
         {
             var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(
-                out var time,
-                url,
-                null,
-                content,
-                authentification);
+                out var time, url, null, content, authentification);
             Debug.WriteLine($"GET {url} : {time} ms");
             return result;
         }
@@ -180,11 +168,7 @@
         public async Task<string> PostAsync(string url, Dictionary<string, IEnumerable<string>> headers, string content, string authentification)
         {
             var result = await new Func<string, Dictionary<string, IEnumerable<string>>, string, string, Task<string>>(this.PostAsyncInternal).TestPerf(
-                out var time,
-                url,
-                headers,
-                content,
-                authentification);
+                out var time, url, headers, content, authentification);
             Debug.WriteLine($"GET {url} : {time} ms");
             return result;
         }
@@ -236,6 +220,8 @@
                 }
 
                 var headersResponse = response.Headers.ToDictionary(pair => pair.Key, pair => pair.Value);
+                headersResponse = headersResponse.Concat(response.Content.Headers.ToDictionary(pair => pair.Key, pair => pair.Value)).ToDictionary(pair => pair.Key, pair => pair.Value);
+
                 return (response.StatusCode, response.ReasonPhrase, headersResponse, response.Content.ReadAsStringAsync().Result.FromJson<TResponse>());
             }
             catch (WebException ex)
@@ -267,6 +253,9 @@
                 }
 
                 var headersResponse = response.Headers.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+                headersResponse.Add("Content-type", new List<string> { response.Content.Headers.ContentType.ToString().Split(';').FirstOrDefault() });
+
                 return (response.StatusCode, response.ReasonPhrase, headersResponse, await response.Content.ReadAsStringAsync());
             }
             catch (WebException ex)

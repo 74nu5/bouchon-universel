@@ -32,13 +32,15 @@
         /// <summary>Converts bytes collection to hexadecimal representation</summary>
         /// <param name="bytes">Bytes to convert</param>
         /// <returns>Hexadecimal representation string</returns>
-        public static string ToHexString(this IEnumerable<byte> bytes) => string.Join(string.Empty, bytes.Select(b => ("0" + b.ToString("X")).Right(2)));
+        public static string ToHexString(this IEnumerable<byte> bytes)
+            => string.Join(string.Empty, bytes.Select(b => ("0" + b.ToString("X")).Right(2)));
 
         /// <summary>Read only collection of any enumeration</summary>
         /// <typeparam name="T">Type of enumeration</typeparam>
         /// <param name="collection">Enumerable collection</param>
         /// <returns>ReadOnlyCollection of the collection</returns>
-        public static ReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> collection) => new List<T>(collection).AsReadOnly();
+        public static ReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> collection)
+            => new List<T>(collection).AsReadOnly();
 
         #endregion
     }

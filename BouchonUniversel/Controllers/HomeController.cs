@@ -4,12 +4,11 @@
 
     using System.Diagnostics;
 
-    using Metier;
+    using BouchonUniversel.Metier;
+    using BouchonUniversel.Models;
+    using BouchonUniversel.Models.ModelsView;
 
     using Microsoft.AspNetCore.Mvc;
-
-    using Models;
-    using Models.ModelsView;
 
     #endregion
 
@@ -27,11 +26,27 @@
 
         /// <summary>Initializes a new instance of the <see cref="HomeController"/> class.</summary>
         /// <param name="metier">The metier.</param>
-        public HomeController(SettingsBouchonMetier metier) => this.metier = metier;
+        public HomeController(SettingsBouchonMetier metier)
+            => this.metier = metier;
 
         #endregion
 
         #region Méthodes publiques
+
+        /// <summary>The error.</summary>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        public IActionResult Error()
+            => this.View(
+                new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
+                });
+
+        /// <summary>The get file.</summary>
+        /// <param name="fileSelected">The file selected.</param>
+        /// <returns>The <see cref="IActionResult"/>.</returns>
+        public IActionResult GetFile(string fileSelected)
+            => this.File(this.metier.GetFile(fileSelected), "application/octet-stream", fileSelected);
 
         /// <summary>The index.</summary>
         /// <returns>The <see cref="IActionResult" />.</returns>
@@ -63,18 +78,6 @@
             var model = new IndexViewModel { IsBouchonActivated = isActivated, Files = this.metier.GetFiles() };
             return this.View(model);
         }
-
-        /// <summary>The error.</summary>
-        /// <returns>The <see cref="IActionResult" />.</returns>
-        public IActionResult Error() => this.View(new ErrorViewModel
-        {
-            RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
-        });
-
-        /// <summary>The get file.</summary>
-        /// <param name="fileSelected">The file selected.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
-        public IActionResult GetFile(string fileSelected) => this.File(this.metier.GetFile(fileSelected), "application/octet-stream", fileSelected);
 
         #endregion
     }

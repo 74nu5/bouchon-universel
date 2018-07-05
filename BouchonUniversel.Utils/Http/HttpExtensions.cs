@@ -31,8 +31,7 @@
         /// <summary>Retrieves the raw body as a byte array from the Request.Body stream</summary>
         /// <param name="request">The request.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public static async Task<byte[]> GetRawBodyBytesAsync(
-            this HttpRequest request)
+        public static async Task<byte[]> GetRawBodyBytesAsync(this HttpRequest request)
         {
             using (var ms = new MemoryStream(2048))
             {
@@ -45,9 +44,7 @@
         /// <param name="request">Request instance to apply to</param>
         /// <param name="encoding">Optional - Encoding, defaults to UTF8</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public static async Task<string> GetRawBodyStringAsync(
-            this HttpRequest request,
-            Encoding encoding = null)
+        public static async Task<string> GetRawBodyStringAsync(this HttpRequest request, Encoding encoding = null)
         {
             using (var reader = new StreamReader(request.Body, encoding ?? Encoding.UTF8))
             {
@@ -58,8 +55,7 @@
         /// <summary>The process web exception.</summary>
         /// <param name="exception">The exception.</param>
         /// <returns>The <see cref="System.Exception"/>.</returns>
-        public static Exception ProcessWebException(
-            this WebException exception)
+        public static Exception ProcessWebException(this WebException exception)
         {
             var errorResponse = exception.Response;
 
@@ -81,9 +77,7 @@
         /// <summary>The set authentication.</summary>
         /// <param name="client">The client.</param>
         /// <param name="authentication">The authentication.</param>
-        public static void SetAuthentication(
-            this HttpClient client,
-            string authentication)
+        public static void SetAuthentication(this HttpClient client, string authentication)
         {
             if (!string.IsNullOrEmpty(authentication))
             {
@@ -94,9 +88,7 @@
         /// <summary>The set headers.</summary>
         /// <param name="client">The client.</param>
         /// <param name="headers">The headers.</param>
-        public static void SetHeaders(
-            this HttpClient client,
-            Dictionary<string, IEnumerable<string>> headers)
+        public static void SetHeaders(this HttpClient client, Dictionary<string, IEnumerable<string>> headers)
         {
             if (headers == null)
             {
@@ -119,9 +111,7 @@
         /// <summary>The set headers.</summary>
         /// <param name="client">The client.</param>
         /// <param name="headers">The headers.</param>
-        public static void SetHeaders(
-            this HttpContent client,
-            Dictionary<string, IEnumerable<string>> headers)
+        public static void SetHeaders(this HttpContent client, Dictionary<string, IEnumerable<string>> headers)
         {
             if (headers == null)
             {
@@ -139,14 +129,17 @@
                     Console.Error.WriteLine(e);
                 }
             }
+
+            if (headers.ContainsKey("Content-Type") && headers["Content-Type"].FirstOrDefault() != null)
+            {
+                client.Headers.ContentType = new MediaTypeHeaderValue(headers["Content-Type"].FirstOrDefault()?.Split(';').FirstOrDefault());
+            }
         }
 
         /// <summary>The set headers.</summary>
         /// <param name="response">The response.</param>
         /// <param name="headers">The headers.</param>
-        public static void SetHeaders(
-            this HttpResponse response,
-            Dictionary<string, IEnumerable<string>> headers)
+        public static void SetHeaders(this HttpResponse response, Dictionary<string, IEnumerable<string>> headers)
         {
             if (headers == null)
             {
