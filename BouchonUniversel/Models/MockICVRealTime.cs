@@ -32,11 +32,12 @@ namespace BouchonUniversel.Models {
                     mactches = rgx.Matches (document);
 
                     if (mactches.Count > 0) {
+                        DateTime now = DateTime.Now;
                         foreach (var macthedDate in mactches) {
 
                             string separator = Regex.Match (macthedDate.ToString (), @"[/.-]").ToString ();
 
-                            DateTime dateAjusted = AjustDate (dDate, macthedDate.ToString ());
+                            DateTime dateAjusted = AjustDate (dDate, now, macthedDate.ToString ());
 
                             rgx = new Regex (@"-");
                             string test = rgx.Replace (pf.format, separator);
@@ -51,13 +52,13 @@ namespace BouchonUniversel.Models {
 
             return docResult;
 
-            DateTime AjustDate (string dDateParam, string macthedDate) {
+            DateTime AjustDate (string dDateParam, DateTime now, string macthedDate) {
                 DateTime dMacthedResult;
                 DateTime dateParam;
-                DateTime dResult = DateTime.Now;
+                DateTime dResult = now;
                 if (DateTime.TryParse (macthedDate, out dMacthedResult) && DateTime.TryParse (dDateParam, out dateParam)) {
-                    TimeSpan time = dateParam - dMacthedResult;
-                    dResult = dateParam.Add (time);
+                    TimeSpan time = now - dateParam.Date;
+                    dResult = dMacthedResult.Add (time);
                 }
 
                 return dResult.ToUniversalTime ();
@@ -100,6 +101,58 @@ namespace BouchonUniversel.Models {
                         dynamic jObject = JsonConvert.DeserializeObject (body);
                         foreach (var d in jObject.data) {
                             if (d.id == routes.Last ().ToString ()) {
+                                response = d.ToString ();
+                            }
+                        }
+                    }
+                    i++;
+                }
+            } catch (Exception e) {
+                Console.WriteLine (e);
+            }
+
+            return (response, responseBouchon);
+        }
+
+        public static (string, ReponseBouchonnee) GetUpdatedResponse (string methode, string rootDir, string route, List<KeyValue> query) {
+
+            string number = query.Where (pair => pair.Key == "number").FirstOrDefault ().Value.FirstOrDefault ();
+
+            var routes = route.Split ('/');
+            var bouchonDir = new DirectoryInfo (Path.Combine (rootDir, string.Join ('/', (routes.Last ().FirstOrDefault ().ToString () == "courses") ? routes.SkipLast (1) : routes)));
+            var files = bouchonDir.GetFileSystemInfos ();
+            string response = null;
+            bool trouve = false;
+            var i = 0;
+            ReponseBouchonnee responseBouchon = new ReponseBouchonnee ();
+            try {
+                while (i < files.Length && !trouve) {
+                    var dir = files[i];
+                    if (dir is FileInfo) {
+                        if (dir.FullName.Contains ("Get_e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.xml")) {
+                            Console.WriteLine ("trouve");
+                        }
+                        responseBouchon = (XDocument.Load (dir.FullName).FromXml<ReponseBouchonnee> ());
+                        string body = responseBouchon.Body;
+                        dynamic jObject = new List<Object> ();
+                        try {
+                            jObject = JsonConvert.DeserializeObject (body);
+                        } catch (Exception e) {
+                            Console.WriteLine (e);
+                        }
+                        dynamic data = jObject;
+                        try {
+                            data = jObject.data;
+                        } catch {
+                            data = jObject;
+                        }
+
+                        foreach (var d in data) {
+                            if (number != null) {
+                                if (d.number == number) {
+                                    response = d.ToString ();
+                                }
+                            } else if (d.id == routes.Last ().ToString ()) {
                                 response = d.ToString ();
                             }
                         }

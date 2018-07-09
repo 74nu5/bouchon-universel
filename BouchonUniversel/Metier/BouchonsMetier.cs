@@ -169,10 +169,17 @@
                 PatternDateFormatConfig pdfc = patterns.FromJson<PatternDateFormatConfig> ();
 
                 if (requestIsActivated) {
+
                     ReponseBouchonnee responseBouchonne = XDocument.Load (fileName).FromXml<ReponseBouchonnee> ();
                     if (updateDatesResponseIsActivated) {
-                        responseBouchonne.Body = responseBouchonne.Body.AjustDates (DateTime.Now.ToString (), pdfc.patterns);
+                        responseBouchonne.Body = responseBouchonne.Body.AjustDates (string.Join (" ", responseBouchonne.Headers.FirstOrDefault ().Value), pdfc.patterns);
                     }
+
+                    if (HttpMethod.Post == method && route.Contains ("callback/API_PROD/courses")) {
+                        responseBouchonne.Request.Body = body;
+                        File.WriteAllText (fileName, responseBouchonne.ToXml ());
+                    }
+
                     return (responseBouchonne, null);
                 }
 
@@ -243,11 +250,7 @@
                         throw new ArgumentOutOfRangeException (nameof (method), method, null);
                 }
 
-                File.WriteAllText (fileName, reponse.ToXml ());
-
-                if (updateDatesResponseIsActivated) {
-                    reponse.Body = reponse.Body.AjustDates (DateTime.Now.ToString (), pdfc.patterns);
-                }
+                if (!requestIsActivated) File.WriteAllText (fileName, reponse.ToXml ());
 
                 return (reponse, null);
             } catch (KeyNotFoundException ex) {
@@ -256,7 +259,7 @@
                 return (null, new ResponseErreur { Message = ex.Message, Code = 1002 });
             } catch (FileNotFoundException ex) {
                 var confDir = new DirectoryInfo (Path.Combine (this.settingsBouchonDAO.GetCheminFichier (), cle, env, string.Empty));
-                var newResponse = MockICVRealTime.GetUpdatedResponse (confDir.FullName, route);
+                var newResponse = MockICVRealTime.GetUpdatedResponse ("get", confDir.FullName, route, query.ToKeyValueList ());
                 if (!newResponse.Item2.IsNull ()) {
                     var req = new Request { Headers = headers.ToKeyValueList (), Query = query.ToKeyValueList (), Route = route, Body = body };
                     var newResponseBouchon = new ReponseBouchonnee {
