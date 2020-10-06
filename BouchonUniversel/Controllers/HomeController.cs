@@ -16,36 +16,22 @@
     /// <summary>The home controller.</summary>
     public sealed class HomeController : Controller
     {
-        #region Champs
-
         /// <summary>The metier.</summary>
         private readonly SettingsBouchonMetier metier;
 
-        #endregion
-
-        #region Constructeurs et destructeurs
-
-        /// <summary>Initializes a new instance of the <see cref="HomeController"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="HomeController" /> class.</summary>
         /// <param name="metier">The metier.</param>
         public HomeController(SettingsBouchonMetier metier)
             => this.metier = metier;
 
-        #endregion
-
-        #region Méthodes publiques
-
         /// <summary>The error.</summary>
         /// <returns>The <see cref="IActionResult" />.</returns>
         public IActionResult Error()
-            => this.View(
-                new ErrorViewModel
-                {
-                    RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier
-                });
+            => this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
 
         /// <summary>The get file.</summary>
         /// <param name="fileSelected">The file selected.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
+        /// <returns>The <see cref="IActionResult" />.</returns>
         public IActionResult GetFile(string fileSelected)
             => this.File(this.metier.GetFile(fileSelected), "application/octet-stream", fileSelected);
 
@@ -59,7 +45,7 @@
 
         /// <summary>The index.</summary>
         /// <param name="isActivated">The is activated.</param>
-        /// <returns>The <see cref="IActionResult"/>.</returns>
+        /// <returns>The <see cref="IActionResult" />.</returns>
         [HttpPost]
         public async Task<IActionResult> Index(bool isActivated)
         {
@@ -79,7 +65,5 @@
             var model = new IndexViewModel { IsBouchonActivated = isActivated, Files = this.metier.GetFiles() };
             return this.View(model);
         }
-
-        #endregion
     }
 }

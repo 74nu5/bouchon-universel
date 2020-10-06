@@ -78,11 +78,6 @@ namespace BouchonUniversel.Metier
         public Stream GetFile(string fileName)
             => new FileInfo(Path.Combine(this.dao.GetCheminFichier(), fileName)).OpenRead();
 
-        /// <summary>The get file.</summary>
-        /// <returns>The <see cref="string" />.</returns>
-        public string GetFilesPath()
-            => this.dao.GetCheminFichier();
-
         /// <summary>The get files.</summary>
         /// <returns>The files list.</returns>
         public IEnumerable<string> GetFiles()
@@ -95,5 +90,10 @@ namespace BouchonUniversel.Metier
 
             return dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(info => info.FullName.Replace($"{this.dao.GetCheminFichier()}\\", string.Empty));
         }
+
+        /// <summary>The get file.</summary>
+        /// <returns>The <see cref="string" />.</returns>
+        public string GetFilesPath()
+            => this.dao.GetCheminFichier();
     }
 }

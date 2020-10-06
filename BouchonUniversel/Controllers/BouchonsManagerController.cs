@@ -1,4 +1,4 @@
-namespace BouchonUniversel.Controllers
+﻿namespace BouchonUniversel.Controllers
 {
     #region Usings
 
@@ -8,7 +8,6 @@ namespace BouchonUniversel.Controllers
 
     using BouchonUniversel.DAL;
     using BouchonUniversel.Metier;
-    using BouchonUniversel.Models;
     using BouchonUniversel.Models.Bouchons;
     using BouchonUniversel.Utils;
 
@@ -111,6 +110,19 @@ namespace BouchonUniversel.Controllers
             return this.View(bouchon);
         }
 
+        [HttpGet("download")]
+        public IActionResult DownloadFiles()
+        {
+            var filesDirectrory = this.settingsBouchon.GetFilesPath();
+            var directoryInfo = new DirectoryInfo(filesDirectrory);
+
+            var tempFileName = Path.GetTempFileName();
+            ZipUtils.CreateTarGZ(tempFileName, directoryInfo.FullName);
+            var fileStream = System.IO.File.OpenRead(tempFileName);
+
+            return this.File(fileStream, "application/gzip", "files.tar.gz");
+        }
+
         /// <summary>GET: Bouchons/Edit/5.</summary>
         /// <param name="id">The id.</param>
         /// <returns>The <see cref="Task" />.</returns>
@@ -173,20 +185,6 @@ namespace BouchonUniversel.Controllers
         /// <summary>GET: Bouchons.</summary>
         /// <returns>The <see cref="Task" />.</returns>
         public async Task<IActionResult> Index() => this.View(await this.context.Bouchons.ToListAsync());
-
-        [HttpGet("download")]
-        public IActionResult DownloadFiles()
-        {
-            var filesDirectrory = this.settingsBouchon.GetFilesPath();
-            var directoryInfo = new DirectoryInfo(filesDirectrory);
-
-            var tempFileName = Path.GetTempFileName();
-            ZipUtils.CreateTarGZ(tempFileName, directoryInfo.FullName);
-            var fileStream = System.IO.File.OpenRead(tempFileName);
-
-            return this.File(fileStream, "application/gzip", "files.tar.gz");
-        }
-
 
         /// <summary>The bouchon exists.</summary>
         /// <param name="id">The id.</param>

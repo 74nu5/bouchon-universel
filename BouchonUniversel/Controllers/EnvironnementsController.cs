@@ -16,23 +16,13 @@
     /// <summary>The environnements controller.</summary>
     public class EnvironnementsController : Controller
     {
-        #region Champs
-
         /// <summary>The context.</summary>
         private readonly DataContext context;
 
-        #endregion
-
-        #region Constructeurs et destructeurs
-
-        /// <summary>Initializes a new instance of the <see cref="EnvironnementsController"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="EnvironnementsController" /> class.</summary>
         /// <param name="context">The context.</param>
         public EnvironnementsController(DataContext context)
             => this.context = context;
-
-        #endregion
-
-        #region Méthodes publiques
 
         /// <summary>The create.</summary>
         /// <returns>The <see cref="IActionResult" />.</returns>
@@ -41,7 +31,7 @@
 
         /// <summary>The create.</summary>
         /// <param name="environnement">The environnement.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nom,IsEnabled")] Environnement environnement)
@@ -58,7 +48,7 @@
 
         /// <summary>The delete.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
@@ -77,7 +67,7 @@
 
         /// <summary>The delete confirmed.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -91,7 +81,7 @@
 
         /// <summary>The details.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
@@ -110,7 +100,7 @@
 
         /// <summary>The edit.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
@@ -130,7 +120,7 @@
         /// <summary>The edit.</summary>
         /// <param name="id">The id.</param>
         /// <param name="environnement">The environnement.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, [Bind("Id,Nom,IsEnabled")] Environnement environnement)
@@ -168,16 +158,10 @@
         public async Task<IActionResult> Index()
             => this.View(await this.context.Environnement.ToListAsync());
 
-        #endregion
-
-        #region Méthodes privées
-
         /// <summary>The environnement exists.</summary>
         /// <param name="id">The id.</param>
-        /// <returns>The <see cref="bool"/>.</returns>
+        /// <returns>The <see cref="bool" />.</returns>
         private bool EnvironnementExists(long id)
             => this.context.Environnement.Any(e => e.Id == id);
-
-        #endregion
     }
 }

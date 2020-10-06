@@ -27,14 +27,8 @@
         where TIdentity : IComparable<TIdentity>
         where TContext : DbContext
     {
-        #region Champs
-
         /// <summary>Gets or sets the context.</summary>
         private readonly TContext context;
-
-        #endregion
-
-        #region Constructeurs et destructeurs
 
         /// <summary>Initializes a new instance of the <see cref="BaseDAO{TContext,TModel,TIdentity}" /> class.</summary>
         /// <param name="context">The context.</param>
@@ -44,16 +38,8 @@
             this.Querable = this.context.Set<TModel>().AsQueryable();
         }
 
-        #endregion
-
-        #region Propriétés et indexeurs
-
         /// <summary>Gets the entities.</summary>
         protected IQueryable<TModel> Querable { get; }
-
-        #endregion
-
-        #region Méthodes publiques
 
         /// <summary>The create.</summary>
         /// <param name="model">The model.</param>
@@ -126,15 +112,9 @@
             return this.context.SaveChangesAsync();
         }
 
-        #endregion
-
-        #region Méthodes protected
-
         /// <summary>The save changes.</summary>
         /// <returns>The <see cref="int" />.</returns>
         protected int SaveChanges()
             => this.context.SaveChanges();
-
-        #endregion
     }
 }

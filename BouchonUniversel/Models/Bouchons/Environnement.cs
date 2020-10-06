@@ -9,8 +9,6 @@
     /// <summary>The environnemment.</summary>
     public class Environnement : IDto<long>
     {
-        #region Propriétés et indexeurs
-
         /// <summary>Gets or sets the environnement id.</summary>
         public long Id { get; set; }
 
@@ -22,7 +20,5 @@
 
         /// <summary>Gets or sets the services.</summary>
         public List<Service> Services { get; set; }
-
-        #endregion
     }
 }
