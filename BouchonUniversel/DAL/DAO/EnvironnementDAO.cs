@@ -32,7 +32,7 @@
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="bool"/>.</returns>
         public bool ExistsByName(string name)
-            => this.Entities.Any(environnement => environnement.Nom == name);
+            => this.Querable.Any(environnement => environnement.Nom == name);
 
         #endregion
 
@@ -42,7 +42,7 @@
         /// <param name="env">The env.</param>
         /// <returns>The <see cref="bool"/>.</returns>
         internal bool IsActivated(string env)
-            => this.Entities.FirstOrDefault(environnement => environnement.Nom == env)?.IsEnabled ?? false;
+            => this.Querable.FirstOrDefault(environnement => environnement.Nom == env)?.IsEnabled ?? false;
 
         #endregion
     }

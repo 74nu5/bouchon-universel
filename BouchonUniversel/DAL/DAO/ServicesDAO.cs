@@ -38,20 +38,20 @@
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool"/>.</returns>
         public bool ExistsByCle(string cle)
-            => this.Entities.Any(service => service.Cle == cle);
+            => this.Querable.Any(service => service.Cle == cle);
 
         /// <summary>The get url.</summary>
         /// <param name="cle">The cle.</param>
         /// <param name="environnement">The environnement.</param>
         /// <returns>The <see cref="string"/>.</returns>
         public Uri GetUrl(string cle, string environnement)
-            => new Uri(this.Entities.Include(service => service.Environnement).FirstOrDefault(service => service.Cle == cle && service.Environnement.Nom == environnement)?.Url);
+            => new Uri(this.Querable.Include(service => service.Environnement).FirstOrDefault(service => service.Cle == cle && service.Environnement.Nom == environnement)?.Url);
 
         /// <summary>Update dates is enable.</summary>
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool"/>.</returns>
         public bool IsEnabledToUpdateDates(string cle)
-            => this.Entities.FirstOrDefault(service => service.Cle == cle)?.UpdateDates ?? false;
+            => this.Querable.FirstOrDefault(service => service.Cle == cle)?.UpdateDates ?? false;
 
         #endregion
 
@@ -61,7 +61,7 @@
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool"/>.</returns>
         internal bool IsActivated(string cle)
-            => this.Entities.FirstOrDefault(service => service.Cle == cle)?.IsEnabled ?? false;
+            => this.Querable.FirstOrDefault(service => service.Cle == cle)?.IsEnabled ?? false;
 
         #endregion
     }

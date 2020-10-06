@@ -1,4 +1,4 @@
-﻿namespace BouchonUniversel
+namespace BouchonUniversel
 {
     #region Usings
 
@@ -11,6 +11,7 @@
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     #endregion
@@ -37,24 +38,25 @@
         /// <summary>The build web host.</summary>
         /// <param name="args">The args.</param>
         /// <returns>The <see cref="IWebHost"/>.</returns>
-        private static IWebHost BuildWebHost(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().UseUrls("http://*:5555").Build();
+        private static IHost BuildWebHost(string[] args) => Host.CreateDefaultBuilder(args)
+                                                                   .ConfigureWebHostDefaults(
+                                                                       builder => builder.UseStartup<Startup>().UseUrls("https://*:5555"))
+                                                                   .Build();
 
         /// <summary>The initialize data.</summary>
         /// <param name="host">The host.</param>
-        private static void InitializeData(IWebHost host)
+        private static void InitializeData(IHost host)
         {
-            using (var scope = host.Services.CreateScope())
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            try
             {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    services.GetRequiredService<BouchonInitializer>().Initialize();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while seeding the database.");
-                }
+                services.GetRequiredService<BouchonInitializer>().Initialize();
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred while seeding the database.");
             }
         }
 

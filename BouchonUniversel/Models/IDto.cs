@@ -1,7 +1,7 @@
 ﻿namespace BouchonUniversel.Models
 {
     /// <summary>The Dto interface.</summary>
-    /// <typeparam name="TIdentity">Type de la clé primaire</typeparam>
+    /// <typeparam name="TIdentity">Type de la clé primaire.</typeparam>
     public interface IDto<TIdentity>
     {
         #region Propriétés et indexeurs

@@ -44,6 +44,9 @@
         /// <summary>Gets or sets the options bouchons.</summary>
         public DbSet<SettingsBouchon> SettingsBouchon { get; set; }
 
+        /// <summary>Gets or sets the bouchons.</summary>
+        public DbSet<Bouchon> Bouchons { get; set; }
+
         #endregion
 
         #region Méthodes protégées
