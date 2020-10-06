@@ -3,17 +3,13 @@
     /// <summary>The options.</summary>
     public class ApplicationSettings
     {
-        #region Propriétés et indexeurs
+        /// <summary>Gets or sets the chemin fichier.</summary>
+        public string CheminFichiers { get; set; }
 
         /// <summary>Gets or sets a value indicating whether defaut activation.</summary>
         public bool DefautActivation { get; set; }
 
-        /// <summary>Gets or sets the chemin fichier.</summary>
-        public string CheminFichiers { get; set; }
-
         /// <summary>Gets or sets the url service.</summary>
         public string UrlService { get; set; }
-
-        #endregion
     }
 }

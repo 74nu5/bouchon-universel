@@ -4,43 +4,31 @@
 
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using System.Web;
 
     using BouchonUniversel.Metier;
-    using BouchonUniversel.Models;
     using BouchonUniversel.Utils;
-    using BouchonUniversel.Utils.Http;
 
     using Microsoft.AspNetCore.Mvc;
+
+    using Ustilz.Http;
 
     #endregion
 
     /// <summary>The bouchon controller.</summary>
     [Route("api/bouchon")]
-    [SuppressMessage("ReSharper", "StyleCop.SA1008", Justification = "Stylecop Issue with Tuple")]
     public sealed class BouchonController : Controller
     {
-        #region Champs
-
         /// <summary>The metier.</summary>
         private readonly BouchonsMetier metier;
 
-        #endregion
-
-        #region Constructeurs et destructeurs
-
-        /// <summary>Initializes a new instance of the <see cref="BouchonController"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonController" /> class.</summary>
         /// <param name="metier">The metier.</param>
         public BouchonController(BouchonsMetier metier)
             => this.metier = metier;
-
-        #endregion
-
-        #region Méthodes publiques
 
         /// <summary>La méthode DELETE n'est pas implémentée.</summary>
         /// <param name="id">The id.</param>
@@ -49,8 +37,10 @@
             => throw new NotImplementedException();
 
         /// <summary>Méthode get du bouchon (ne gère pas l'envoi d'un body en get).</summary>
-        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
-        ///     écrits dans la réponse.</remarks>
+        /// <remarks>
+        ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.
+        /// </remarks>
         /// <param name="cle">La clé du service créé.</param>
         /// <param name="env">L'environnement créé.</param>
         /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
@@ -68,9 +58,8 @@
         public async Task<IActionResult> Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
             var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
-            var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers);
+            var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers).ConfigureAwait(false);
 
-            // ReSharper disable once StyleCop.SA1126
             if (erreur != null)
             {
                 return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
@@ -90,8 +79,10 @@
             => "OK";
 
         /// <summary>Méthode post du bouchon.</summary>
-        /// <remarks>Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
-        ///     écrits dans la réponse.</remarks>
+        /// <remarks>
+        ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
+        ///     écrits dans la réponse.
+        /// </remarks>
         /// <param name="cle">La clé du service créé.</param>
         /// <param name="env">L'environnement créé.</param>
         /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
@@ -128,7 +119,5 @@
         [HttpPut("NotImplemented")]
         public void Put([FromBody] string value)
             => throw new NotImplementedException();
-
-        #endregion
     }
 }

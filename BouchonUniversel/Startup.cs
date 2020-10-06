@@ -5,12 +5,12 @@
     using System;
     using System.IO;
 
-    using DAL;
-    using DAL.DAO;
+    using BouchonUniversel.DAL;
+    using BouchonUniversel.DAL.DAO;
+    using BouchonUniversel.Metier;
+    using BouchonUniversel.Models;
 
     using JetBrains.Annotations;
-
-    using Metier;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -18,12 +18,12 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-
-    using Models;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.OpenApi.Models;
 
     using Swashbuckle.AspNetCore.Swagger;
 
-    using Utils.Http;
+    using Ustilz.Http;
 
     #endregion
 
@@ -62,11 +62,10 @@
         /// <param name="app">The app.</param>
         /// <param name="env">The env.</param>
         [UsedImplicitly]
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -80,7 +79,14 @@
 
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/{VersionSwagger}/swagger.json", TitreSwagger); });
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseEndpoints(
+                endpoints => endpoints.MapControllerRoute(
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}"));
         }
 
         /// <summary>The configure services.</summary>
@@ -101,12 +107,12 @@
                 {
                     c.SwaggerDoc(
                         VersionSwagger,
-                        new Info
+                        new OpenApiInfo
                         {
                             Title = TitreSwagger,
                             Description = "Une api permettant de créer des bouchons.",
                             Version = VersionSwagger,
-                            Contact = new Contact { Name = "Romain Avonde", Email = "romain@avonde.eu" }
+                            Contact = new OpenApiContact { Name = "Romain Avonde", Email = "romain@avonde.eu" }
                         });
 
                     var basePath = AppContext.BaseDirectory;

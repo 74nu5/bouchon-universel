@@ -12,8 +12,6 @@
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public sealed class Request
     {
-        #region Propriétés et indexeurs
-
         /// <summary>Gets or sets the body.</summary>
         public string Body { get; set; }
 
@@ -25,7 +23,5 @@
 
         /// <summary>Gets or sets the route.</summary>
         public string Route { get; set; }
-
-        #endregion
     }
 }

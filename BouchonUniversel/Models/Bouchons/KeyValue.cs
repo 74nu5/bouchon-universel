@@ -12,8 +12,6 @@
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public sealed class KeyValue
     {
-        #region Propriétés et indexeurs
-
         /// <summary>Gets or sets the key.</summary>
         [XmlAttribute]
         public string Key { get; set; }
@@ -21,7 +19,5 @@
         /// <summary>Gets or sets the value.</summary>
         [XmlAttribute]
         public string[] Value { get; set; }
-
-        #endregion
     }
 }
