@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30516.212
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BouchonUniversel", "BouchonUniversel\BouchonUniversel.csproj", "{185620D8-1237-4695-A53B-014F3FEC01C5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{539F5FA6-13D8-4A91-995C-4DBD230542BB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BouchonUniversel.ApiTest", "BouchonUniversel.ApiTest\BouchonUniversel.ApiTest.csproj", "{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{01667C9D-DE75-453A-9381-C0F2DB4D355F}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.gitlab-ci.yml = .gitlab-ci.yml
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{185620D8-1237-4695-A53B-014F3FEC01C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{185620D8-1237-4695-A53B-014F3FEC01C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{185620D8-1237-4695-A53B-014F3FEC01C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{185620D8-1237-4695-A53B-014F3FEC01C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D5AA5187-5F88-44AE-8791-8F2C5B22F7BE} = {539F5FA6-13D8-4A91-995C-4DBD230542BB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8FD93305-DFB4-4F96-A390-0AD1EED0507A}
+	EndGlobalSection
+EndGlobal

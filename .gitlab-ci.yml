@@ -1,0 +1,11 @@
+image : microsoft/aspnetcore-build:latest
+stages:
+  - build
+
+before_script:
+  - 'dotnet restore'
+
+build:
+ stage: build
+ script:
+  - 'dotnet build'
