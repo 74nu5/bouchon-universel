@@ -1,0 +1,56 @@
+﻿@model BouchonUniversel.Models.ModelsView.DetailsServiceViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Service</h4>
+    <hr/>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Cle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Service.Cle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Url)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Service.Url)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.IsEnabled)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Service.IsEnabled)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.UpdateDates)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Service.UpdateDates)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Service.Environnement)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Service.Environnement.Nom)
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <p>Url du bouchon : <a href="http://@Context.Request.Host/api/bouchon/@Model.Service.Cle/@Model.Service.Environnement.Nom/">http://@Context.Request.Host/api/bouchon/@Model.Service.Cle/@Model.Service.Environnement.Nom/</a></p>
+    <h4>Liste des fichiers pour ce bouchon :</h4>
+    @Html.DisplayFor(model => model.ListeFichiers)
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Service.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

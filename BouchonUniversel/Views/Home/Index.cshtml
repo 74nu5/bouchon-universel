@@ -1,0 +1,35 @@
+﻿@model BouchonUniversel.Models.ModelsView.IndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="container flexbox">
+    <a asp-controller="Services" asp-action="Index">
+        <img width="300" src="images/API-icon.png" alt="Services"/>
+        <span>Services</span>
+    </a>
+    <a asp-controller="Environnements" asp-action="Index">
+        <img width="300" src="images/env.png" alt="Evironnement"/>
+        <span>Environnements</span>
+    </a>
+</div>
+
+@*
+    @if (Model != null)
+    {
+        <form asp-action="GetFile">
+            <h2>Liste des fichiers de bouchon</h2>
+            <ul class="list-group">
+                @foreach (var item in Model.Files)
+                {
+                    <li class="list-group-item">
+                        <button type="submit" name="fileSelected" class="btn btn-link" value="@item">@item</button>
+                    </li>
+                }
+            </ul>
+        </form>
+    }
+*@
