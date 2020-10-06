@@ -15,15 +15,13 @@
     [UsedImplicitly]
     public class DataContext : DbContext
     {
-        #region Constructeurs et destructeurs
-
         /// <summary>Initializes a new instance of the <see cref="DataContext" /> class.</summary>
         [UsedImplicitly]
         public DataContext()
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="DataContext"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="DataContext" /> class.</summary>
         /// <param name="option">The option.</param>
         [UsedImplicitly]
         public DataContext(DbContextOptions option)
@@ -31,9 +29,8 @@
         {
         }
 
-        #endregion
-
-        #region Propriétés et indexeurs
+        /// <summary>Gets or sets the bouchons.</summary>
+        public DbSet<Bouchon> Bouchons { get; set; }
 
         /// <summary>Gets or sets the environnement.</summary>
         public DbSet<Environnement> Environnement { get; set; }
@@ -44,10 +41,6 @@
         /// <summary>Gets or sets the options bouchons.</summary>
         public DbSet<SettingsBouchon> SettingsBouchon { get; set; }
 
-        #endregion
-
-        #region Méthodes protégées
-
         /// <summary>The on model creating.</summary>
         /// <param name="modelBuilder">The model builder.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,7 +50,5 @@
             modelBuilder.Entity<Service>().HasIndex(serv => new { serv.Cle, serv.EnvironnementId }).IsUnique();
             base.OnModelCreating(modelBuilder);
         }
-
-        #endregion
     }
 }

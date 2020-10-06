@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - BouchonUniversel</title>
+    <title>@(this.ViewData["Title"]) - BouchonUniversel</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css"/>
@@ -39,12 +39,16 @@
                 <li>
                     <a asp-area="" asp-controller="Environnements" asp-action="Index">Gestion des environnements</a>
                 </li>
+
+                <li>
+                    <a asp-area="" asp-controller="BouchonsManager" asp-action="DownloadFiles">Télécharger les fichiers</a>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
 <div class="container">
-    @RenderBody()
+    @(this.RenderBody())
     <hr/>
     <footer>
         <p>&copy; 2018 - BouchonUniversel</p>
@@ -72,6 +76,6 @@
     <script src="~/js/site.min.js" asp-append-version="true"></script>
 </environment>
 
-@RenderSection("Scripts", required: false)
+@(this.RenderSection("Scripts", false))
 </body>
 </html>

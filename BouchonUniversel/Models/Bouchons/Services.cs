@@ -3,8 +3,6 @@
     /// <summary>The services.</summary>
     public class Service : IDto<long>
     {
-        #region Propriétés et indexeurs
-
         /// <summary>Gets or sets the cle.</summary>
         public string Cle { get; set; }
 
@@ -25,7 +23,5 @@
 
         /// <summary>Gets or sets the url.</summary>
         public string Url { get; set; }
-
-        #endregion
     }
 }
