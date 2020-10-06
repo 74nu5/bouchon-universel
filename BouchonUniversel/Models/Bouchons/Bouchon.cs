@@ -1,5 +1,7 @@
 ﻿namespace BouchonUniversel.Models.Bouchons
 {
+    using System;
+
     /// <summary>The bouchon.</summary>
     public class Bouchon : IDto<long>
     {

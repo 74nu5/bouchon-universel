@@ -3,6 +3,7 @@
     #region Usings
 
     using System.Diagnostics;
+    using System.Threading.Tasks;
 
     using BouchonUniversel.Metier;
     using BouchonUniversel.Models;
@@ -60,14 +61,14 @@
         /// <param name="isActivated">The is activated.</param>
         /// <returns>The <see cref="IActionResult"/>.</returns>
         [HttpPost]
-        public IActionResult Index(bool isActivated)
+        public async Task<IActionResult> Index(bool isActivated)
         {
             if (!this.ModelState.IsValid)
             {
                 return this.BadRequest(this.ModelState);
             }
 
-            var result = isActivated ? this.metier.ActivateBouchon() : this.metier.DesactivateBouchon();
+            var result = isActivated ? await this.metier.ActivateBouchonAsync() : await this.metier.DesactivateBouchonAsync();
 
             if (!result)
             {

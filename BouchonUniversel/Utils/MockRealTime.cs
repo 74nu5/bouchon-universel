@@ -12,23 +12,22 @@ namespace BouchonUniversel.Utils
 
     using BouchonUniversel.Models;
     using BouchonUniversel.Models.Bouchons;
-    using BouchonUniversel.Utils.Xml;
 
     using Newtonsoft.Json;
+
+    using Ustilz.Xml;
 
     #endregion
 
     /// <summary>The mock icv real time.</summary>
     public static class MockRealTime
     {
-        #region Méthodes publiques
-
         /// <summary>The get value.</summary>
         /// <param name="document">The document.</param>
         /// <param name="date">Date to Ajust.</param>
         /// <param name="patternsFormats">Pattern used.</param>
-        /// <returns>The <see cref="string"/>.</returns>
-        /// <exception cref="ArgumentException">Lève une exception lorsque la propriété et/ou la valeur n'est pas trouvé</exception>
+        /// <returns>The <see cref="string" />.</returns>
+        /// <exception cref="ArgumentException">Lève une exception lorsque la propriété et/ou la valeur n'est pas trouvé.</exception>
         public static string AjustDates(this string document, string date, IEnumerable<PatternDateFormat> patternsFormats)
         {
             var ci = CultureInfo.InvariantCulture;
@@ -81,13 +80,13 @@ namespace BouchonUniversel.Utils
             }
         }
 
-        /// <summary>Get the missing response in the list of reponses</summary>
-        /// <param name="rootDir">The root directory</param>
-        /// <param name="route">Root to get the response</param>
-        /// <returns>The <see cref="string"/>.</returns>
-        public static (string, ReponseBouchonnee) GetUpdatedResponse(string rootDir, string route)
+        /// <summary>Get the missing response in the list of reponses.</summary>
+        /// <param name="rootDir">The root directory.</param>
+        /// <param name="route">Root to get the response.</param>
+        /// <returns>The <see cref="string" />.</returns>
+        public static (string Reponse, ReponseBouchonnee ReponseBouchonnee) GetUpdatedResponse(string rootDir, string route)
         {
-            var routes = route.Split('/');
+            var routes = route?.Split('/') ?? Array.Empty<string>();
             var bouchonDir = new DirectoryInfo(Path.Combine(rootDir, string.Join('/', routes.SkipLast(1))));
             var files = bouchonDir.GetFileSystemInfos();
             string response = null;
@@ -130,7 +129,7 @@ namespace BouchonUniversel.Utils
         /// <summary>The resolve response.</summary>
         /// <param name="response">The response.</param>
         /// <param name="contentType">The content type.</param>
-        /// <returns>The <see cref="object"/>.</returns>
+        /// <returns>The <see cref="object" />.</returns>
         public static object ResolveResponse(this string response, string contentType)
         {
             try
@@ -150,7 +149,5 @@ namespace BouchonUniversel.Utils
 
             return response;
         }
-
-        #endregion
     }
 }

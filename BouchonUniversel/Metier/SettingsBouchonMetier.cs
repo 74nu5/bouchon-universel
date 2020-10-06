@@ -7,6 +7,7 @@ namespace BouchonUniversel.Metier
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using BouchonUniversel.DAL.DAO;
 
@@ -18,31 +19,21 @@ namespace BouchonUniversel.Metier
     [UsedImplicitly]
     public class SettingsBouchonMetier
     {
-        #region Champs
-
         /// <summary>The context.</summary>
         private readonly SettingsBouchonDAO dao;
 
-        #endregion
-
-        #region Constructeurs et destructeurs
-
-        /// <summary>Initializes a new instance of the <see cref="SettingsBouchonMetier"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SettingsBouchonMetier" /> class.</summary>
         /// <param name="dao">The context.</param>
         public SettingsBouchonMetier(SettingsBouchonDAO dao)
             => this.dao = dao;
 
-        #endregion
-
-        #region Méthodes publiques
-
         /// <summary>The activate bouchon.</summary>
         /// <returns>The <see cref="bool" />.</returns>
-        public bool ActivateBouchon()
+        public async Task<bool> ActivateBouchonAsync()
         {
             try
             {
-                return this.dao.UpdateConfBouchon(true);
+                return await this.dao.UpdateConfBouchonAsync(true);
             }
             catch (Exception e)
             {
@@ -53,11 +44,11 @@ namespace BouchonUniversel.Metier
 
         /// <summary>The desactivate bouchon.</summary>
         /// <returns>The <see cref="bool" />.</returns>
-        public bool DesactivateBouchon()
+        public async Task<bool> DesactivateBouchonAsync()
         {
             try
             {
-                return this.dao.UpdateConfBouchon(false);
+                return await this.dao.UpdateConfBouchonAsync(false);
             }
             catch (Exception e)
             {
@@ -83,9 +74,14 @@ namespace BouchonUniversel.Metier
 
         /// <summary>The get file.</summary>
         /// <param name="fileName">The file name.</param>
-        /// <returns>The <see cref="Stream"/>.</returns>
+        /// <returns>The <see cref="Stream" />.</returns>
         public Stream GetFile(string fileName)
             => new FileInfo(Path.Combine(this.dao.GetCheminFichier(), fileName)).OpenRead();
+
+        /// <summary>The get file.</summary>
+        /// <returns>The <see cref="string" />.</returns>
+        public string GetFilesPath()
+            => this.dao.GetCheminFichier();
 
         /// <summary>The get files.</summary>
         /// <returns>The files list.</returns>
@@ -99,7 +95,5 @@ namespace BouchonUniversel.Metier
 
             return dirInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(info => info.FullName.Replace($"{this.dao.GetCheminFichier()}\\", string.Empty));
         }
-
-        #endregion
     }
 }

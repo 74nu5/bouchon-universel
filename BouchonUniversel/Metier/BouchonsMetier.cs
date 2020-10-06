@@ -18,14 +18,16 @@
     using BouchonUniversel.Models.Bouchons;
     using BouchonUniversel.Models.ModelsView;
     using BouchonUniversel.Utils;
-    using BouchonUniversel.Utils.Extensions;
-    using BouchonUniversel.Utils.Http;
-    using BouchonUniversel.Utils.Json;
-    using BouchonUniversel.Utils.Xml;
 
     using JetBrains.Annotations;
 
     using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+
+    using Ustilz.Extensions;
+    using Ustilz.Extensions.String;
+    using Ustilz.Http;
+    using Ustilz.Json;
+    using Ustilz.Xml;
 
     using KeyNotFoundException = BouchonUniversel.Exceptions.KeyNotFoundException;
 
@@ -33,8 +35,6 @@
 
     /// <summary>The bouchon metier.</summary>
     [UsedImplicitly]
-    [SuppressMessage("ReSharper", "StyleCop.SA1008", Justification = "Stylecop Issue with Tuple")]
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1009:ClosingParenthesisMustBeSpacedCorrectly", Justification = "Reviewed. Suppression is OK here.")]
     public sealed class BouchonsMetier
     {
         #region Champs
@@ -183,7 +183,7 @@
 
                 var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryHash}")}.xml";
 
-                var pdfc = File.ReadAllText(@"./PatternDateFormatConfig.json").FromJson<PatternDateFormatConfig>();
+                var pdfc = (await File.ReadAllTextAsync(@"./PatternDateFormatConfig.json")).FromJson<PatternDateFormatConfig>();
 
                 if (requestIsActivated)
                 {
@@ -286,17 +286,17 @@
             catch (FileNotFoundException ex)
             {
                 var confDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, string.Empty));
-                var newResponse = MockRealTime.GetUpdatedResponse(confDir.FullName, route);
-                if (!newResponse.Item2.IsNull())
+                var (reponse, reponseBouchonnee) = MockRealTime.GetUpdatedResponse(confDir.FullName, route);
+                if (!reponseBouchonnee.IsNull())
                 {
                     var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
                     var newResponseBouchon = new ReponseBouchonnee
                     {
-                        Body = newResponse.Item1,
-                        Headers = newResponse.Item2.Headers,
+                        Body = reponse,
+                        Headers = reponseBouchonnee.Headers,
                         Request = req,
-                        StatusCode = newResponse.Item2.StatusCode,
-                        ResponsePhrase = newResponse.Item2.ResponsePhrase
+                        StatusCode = reponseBouchonnee.StatusCode,
+                        ResponsePhrase = reponseBouchonnee.ResponsePhrase
                     };
                     return (newResponseBouchon, null);
                 }
@@ -322,12 +322,9 @@
                 throw new KeyNotFoundException("La clé n'existe pas");
             }
 
-            if (!this.environnementDAO.ExistsByName(env))
-            {
-                throw new EnvironmentNotFoundException("L'environnement n'existe pas");
-            }
-
-            return this.servicesDAO.IsActivated(cle) && this.environnementDAO.IsActivated(env);
+            return this.environnementDAO.ExistsByName(env)
+                       ? this.servicesDAO.IsActivated(cle) && this.environnementDAO.IsActivated(env)
+                       : throw new EnvironmentNotFoundException("L'environnement n'existe pas");
         }
 
         /// <summary>Assert that update dates is activated.</summary>
