@@ -54,7 +54,7 @@
             }
 
             this.context.Add(bouchon);
-            await this.context.SaveChangesAsync();
+            await this.context.SaveChangesAsync().ConfigureAwait(false);
             return this.RedirectToAction(nameof(this.Index));
         }
 
@@ -68,7 +68,7 @@
                 return this.NotFound();
             }
 
-            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id);
+            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id).ConfigureAwait(false);
             if (bouchon == null)
             {
                 return this.NotFound();
@@ -85,9 +85,9 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id);
+            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id).ConfigureAwait(false);
             this.context.Bouchons.Remove(bouchon);
-            await this.context.SaveChangesAsync();
+            await this.context.SaveChangesAsync().ConfigureAwait(false);
             return this.RedirectToAction(nameof(this.Index));
         }
 
@@ -101,7 +101,7 @@
                 return this.NotFound();
             }
 
-            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id);
+            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id).ConfigureAwait(false);
             if (bouchon == null)
             {
                 return this.NotFound();
@@ -133,7 +133,7 @@
                 return this.NotFound();
             }
 
-            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id);
+            var bouchon = await this.context.Bouchons.SingleOrDefaultAsync(m => m.BaseUrl == id).ConfigureAwait(false);
             if (bouchon == null)
             {
                 return this.NotFound();
@@ -167,7 +167,7 @@
             try
             {
                 this.context.Update(bouchon);
-                await this.context.SaveChangesAsync();
+                await this.context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -184,7 +184,7 @@
 
         /// <summary>GET: Bouchons.</summary>
         /// <returns>The <see cref="Task" />.</returns>
-        public async Task<IActionResult> Index() => this.View(await this.context.Bouchons.ToListAsync());
+        public async Task<IActionResult> Index() => this.View(await this.context.Bouchons.ToListAsync().ConfigureAwait(false));
 
         /// <summary>The bouchon exists.</summary>
         /// <param name="id">The id.</param>

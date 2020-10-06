@@ -44,7 +44,7 @@
             }
 
             isActivatedSetting.Value = isActivated.ToString();
-            await this.UpdateAsync(isActivatedSetting);
+            await this.UpdateAsync(isActivatedSetting).ConfigureAwait(false);
             this.SaveChanges();
             return true;
         }

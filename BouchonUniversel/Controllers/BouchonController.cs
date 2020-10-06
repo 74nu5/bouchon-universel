@@ -1,4 +1,4 @@
-﻿namespace BouchonUniversel.Controllers
+namespace BouchonUniversel.Controllers
 {
     #region Usings
 
@@ -57,7 +57,7 @@
         [ProducesResponseType(typeof(string), 405)]
         public async Task<IActionResult> Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
-            var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
+            var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
             var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers).ConfigureAwait(false);
 
             if (erreur != null)
@@ -100,7 +100,7 @@
             var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
 
             // On récupère le body de cette façon pour prendre en compte tous les genres de body (texte, json, binaires, ...).
-            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync().ConfigureAwait(false));
+            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
             // ReSharper disable once StyleCop.SA1126
             if (erreur != null)

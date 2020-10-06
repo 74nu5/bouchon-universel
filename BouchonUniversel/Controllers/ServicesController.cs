@@ -55,7 +55,7 @@
             if (this.ModelState.IsValid)
             {
                 this.context.Add(service);
-                await this.context.SaveChangesAsync();
+                await this.context.SaveChangesAsync().ConfigureAwait(false);
                 return this.RedirectToAction(nameof(this.Index));
             }
 
@@ -73,7 +73,7 @@
                 return this.NotFound();
             }
 
-            var service = await this.context.Services.Include(s => s.Environnement).SingleOrDefaultAsync(m => m.Id == id);
+            var service = await this.context.Services.Include(s => s.Environnement).SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             if (service == null)
             {
                 return this.NotFound();
@@ -90,9 +90,9 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var service = await this.context.Services.SingleOrDefaultAsync(m => m.Id == id);
+            var service = await this.context.Services.SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             this.context.Services.Remove(service);
-            await this.context.SaveChangesAsync();
+            await this.context.SaveChangesAsync().ConfigureAwait(false);
             return this.RedirectToAction(nameof(this.Index));
         }
 
@@ -106,7 +106,7 @@
                 return this.NotFound("Id null.");
             }
 
-            var model = new DetailsServiceViewModel { Service = await this.context.Services.Include(s => s.Environnement).SingleOrDefaultAsync(m => m.Id == id) };
+            var model = new DetailsServiceViewModel { Service = await this.context.Services.Include(s => s.Environnement).SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(false) };
             model.ListeFichiers = this.metier.GetFilesOfService(model.Service);
 
             if (model.Service == null)
@@ -133,7 +133,7 @@
                 return this.NotFound();
             }
 
-            var service = await this.context.Services.SingleOrDefaultAsync(m => m.Id == id);
+            var service = await this.context.Services.SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             if (service == null)
             {
                 return this.NotFound();
@@ -164,7 +164,7 @@
                 try
                 {
                     this.context.Update(service);
-                    await this.context.SaveChangesAsync();
+                    await this.context.SaveChangesAsync().ConfigureAwait(false);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -188,7 +188,7 @@
         public async Task<IActionResult> Index()
         {
             var dataContext = this.context.Services.Include(s => s.Environnement);
-            return this.View(await dataContext.ToListAsync());
+            return this.View(await dataContext.ToListAsync().ConfigureAwait(false));
         }
 
         /// <summary>The service exists.</summary>

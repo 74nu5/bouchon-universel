@@ -1,4 +1,4 @@
-﻿namespace BouchonUniversel.Metier
+namespace BouchonUniversel.Metier
 {
     #region Usings
 
@@ -21,6 +21,7 @@
     using JetBrains.Annotations;
 
     using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+    using Microsoft.Extensions.Logging;
 
     using Ustilz.Extensions;
     using Ustilz.Extensions.String;
@@ -42,6 +43,8 @@
         /// <summary>The http.</summary>
         private readonly HttpService http;
 
+        private readonly ILogger<BouchonsMetier> logger;
+
         /// <summary>The services dao.</summary>
         private readonly ServicesDAO servicesDAO;
 
@@ -53,8 +56,9 @@
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
         /// <param name="http">The http.</param>
-        public BouchonsMetier(ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, HttpService http)
+        public BouchonsMetier(ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, HttpService http)
         {
+            this.logger = logger;
             this.servicesDAO = servicesDAO;
             this.environnementDAO = environnementDAO;
             this.settingsBouchonDAO = settingsBouchonDAO;
@@ -85,7 +89,7 @@
             string route,
             Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers)
-            => await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null);
+            => await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null).ConfigureAwait(false);
 
         /// <summary>The process post request async.</summary>
         /// <param name="cle">The cle.</param>
@@ -104,7 +108,7 @@
             Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers,
             string body)
-            => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body);
+            => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body).ConfigureAwait(false);
 
         /// <summary>The format if date.</summary>
         /// <param name="value">The value.</param>
@@ -120,7 +124,7 @@
             var result = new DirectoryBouchon
             {
                 Name = dir.Name,
-                FileBouchons = dir.GetFileSystemInfos().Select(file => new FileBouchon { Name = file.Name, FullName = file.FullName }).ToList(),
+                FileBouchons = dir.GetFiles().Select(file => new FileBouchon { Name = file.Name, FullName = file.FullName }).ToList(),
                 Directories = dir.GetDirectories().Select(this.GetFileAndDirectory).ToList()
             };
             return result;
@@ -171,7 +175,7 @@
 
                 var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryHash}")}.xml";
 
-                var pdfc = (await File.ReadAllTextAsync(@"./PatternDateFormatConfig.json")).FromJson<PatternDateFormatConfig>();
+                var pdfc = (await File.ReadAllTextAsync(@"./PatternDateFormatConfig.json").ConfigureAwait(false)).FromJson<PatternDateFormatConfig>();
 
                 if (requestIsActivated)
                 {
@@ -192,7 +196,7 @@
                 {
                     case HttpMethod.Get:
                     {
-                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null);
+                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null).ConfigureAwait(false);
                         reponse = new ReponseBouchonnee
                         {
                             Body = response,
@@ -214,7 +218,7 @@
                         break;
                     case HttpMethod.Post:
                     {
-                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null);
+                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null).ConfigureAwait(false);
                         reponse = new ReponseBouchonnee
                         {
                             Body = response,
@@ -250,11 +254,14 @@
 
                         // TODO Gérer le verbe CUSTOM
                         break;
+                    case HttpMethod.None:
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(method), method, null);
                 }
 
-                File.WriteAllText(fileName, reponse?.ToXml());
+                var contents = reponse?.ToXml();
+                await File.WriteAllTextAsync(fileName, contents).ConfigureAwait(false);
 
                 if (updateDatesResponseIsActivated && reponse != null)
                 {
@@ -265,14 +272,17 @@
             }
             catch (KeyNotFoundException ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 return (null, new ResponseErreur { Message = ex.Message, Code = 1001 });
             }
             catch (EnvironmentNotFoundException ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 return (null, new ResponseErreur { Message = ex.Message, Code = 1002 });
             }
             catch (FileNotFoundException ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 var confDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, string.Empty));
                 var (reponse, reponseBouchonnee) = MockRealTime.GetUpdatedResponse(confDir.FullName, route);
                 if (!reponseBouchonnee.IsNull())
@@ -293,6 +303,7 @@
             }
             catch (Exception ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 return (null, new ResponseErreur { Message = ex.Message, Code = 1999 });
             }
         }
