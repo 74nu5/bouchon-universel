@@ -12,8 +12,6 @@
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public sealed class ReponseBouchonnee
     {
-        #region Propriétés et indexeurs
-
         /// <summary>Gets or sets the body.</summary>
         public string Body { get; set; }
 
@@ -28,7 +26,5 @@
 
         /// <summary>Gets or sets the status code.</summary>
         public int StatusCode { get; set; }
-
-        #endregion
     }
 }

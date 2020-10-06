@@ -4,7 +4,6 @@
 
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -37,8 +36,6 @@
     [UsedImplicitly]
     public sealed class BouchonsMetier
     {
-        #region Champs
-
         /// <summary>The environnement dao.</summary>
         private readonly EnvironnementDAO environnementDAO;
 
@@ -51,11 +48,7 @@
         /// <summary>The settings bouchon dao.</summary>
         private readonly SettingsBouchonDAO settingsBouchonDAO;
 
-        #endregion
-
-        #region Constructeurs et destructeurs
-
-        /// <summary>Initializes a new instance of the <see cref="BouchonsMetier"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BouchonsMetier" /> class.</summary>
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
@@ -68,13 +61,9 @@
             this.http = http;
         }
 
-        #endregion
-
-        #region Méthodes internes
-
         /// <summary>The get files of service.</summary>
         /// <param name="service">The service.</param>
-        /// <returns>The <see cref="DirectoryBouchon"/>.</returns>
+        /// <returns>The <see cref="DirectoryBouchon" />.</returns>
         internal DirectoryBouchon GetFilesOfService(Service service)
         {
             var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), service.Cle, service.Environnement.Nom));
@@ -89,7 +78,7 @@
         /// <param name="headers">The headers.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="ReponseBouchonnee"/>.</returns>
+        /// <returns>The <see cref="ReponseBouchonnee" />.</returns>
         internal async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessGetRequestAsync(
             string cle,
             string env,
@@ -107,7 +96,7 @@
         /// <param name="body">The body.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         internal async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessPostRequestAsync(
             string cle,
             string env,
@@ -117,19 +106,15 @@
             string body)
             => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body);
 
-        #endregion
-
-        #region Méthodes privées
-
         /// <summary>The format if date.</summary>
         /// <param name="value">The value.</param>
-        /// <returns>The <see cref="string"/>.</returns>
+        /// <returns>The <see cref="string" />.</returns>
         private static string FormatIfDate(string value)
             => DateTime.TryParse(value, out _) ? string.Empty : value;
 
         /// <summary>The get file and directory.</summary>
         /// <param name="dir">The dir.</param>
-        /// <returns>The <see cref="DirectoryBouchon"/>.</returns>
+        /// <returns>The <see cref="DirectoryBouchon" />.</returns>
         private DirectoryBouchon GetFileAndDirectory(DirectoryInfo dir)
         {
             var result = new DirectoryBouchon
@@ -149,7 +134,7 @@
         /// <param name="query">The query.</param>
         /// <param name="headers">The headers.</param>
         /// <param name="body">The body.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The <see cref="Task" />.</returns>
         private async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessRequestAsync(
             HttpMethod method,
             string cle,
@@ -175,11 +160,14 @@
                 }
 
                 var queryStr = string.Join(
-                    "&", query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(value)}").ToArray())).ToArray());
+                    "&",
+                    query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(value)}").ToArray())).ToArray());
 
                 var queryHash = string.Join(
-                        "&", query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(FormatIfDate(value))}").ToArray())).ToArray())
-                    .ComputeHash(ExtensionsString.HashType.SHA256);
+                                          "&",
+                                          query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(FormatIfDate(value))}").ToArray()))
+                                               .ToArray())
+                                      .ComputeHash(ExtensionsString.HashType.SHA256);
 
                 var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryHash}")}.xml";
 
@@ -314,7 +302,7 @@
         /// <param name="env">The env.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
-        /// <returns>The <see cref="bool"/>.</returns>
+        /// <returns>The <see cref="bool" />.</returns>
         private bool ServiceIsActivated(string cle, string env)
         {
             if (!this.servicesDAO.ExistsByCle(cle))
@@ -330,7 +318,7 @@
         /// <summary>Assert that update dates is activated.</summary>
         /// <param name="cle">The cle.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
-        /// <returns>The <see cref="bool"/>.</returns>
+        /// <returns>The <see cref="bool" />.</returns>
         private bool UpdateDatesForServiceIsActivated(string cle)
         {
             if (!this.servicesDAO.ExistsByCle(cle))
@@ -340,7 +328,5 @@
 
             return this.servicesDAO.IsEnabledToUpdateDates(cle);
         }
-
-        #endregion
     }
 }
