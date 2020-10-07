@@ -1,0 +1,23 @@
+@model BouchonUniversel.Models.ModelsView.SettingsViewModel
+
+@{
+    this.ViewBag.Title = "Installation";
+    this.Layout = "_Layout";
+}
+
+<h2>Installation du bouchon universel</h2>
+<form asp-controller="Install" asp-action="SaveSettings" method="post" class="d-flex w50">
+  <div class="alert alert-danger"  asp-validation-summary="All"></div>
+
+  <div class="form-group">
+    <label asp-for="FilesPath"></label>
+    <input class="form-control" asp-for="FilesPath" required>
+    <span asp-validation-for="FilesPath"></span>
+  </div>
+  <div class="form-group form-check">
+    <input class="form-check-input" asp-for="DefaultActivation">
+    <label class="form-check-label" asp-for="DefaultActivation"></label>
+    <span asp-validation-for="DefaultActivation"></span>
+  </div>
+  <button type="submit" class="btn btn-primary">Valider</button>
+</form>

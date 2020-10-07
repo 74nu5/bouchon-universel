@@ -45,6 +45,11 @@
         /// <param name="modelBuilder">The model builder.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (modelBuilder == null)
+            {
+                return;
+            }
+
             modelBuilder.Entity<Service>().HasOne(service => service.Environnement).WithMany(environnement => environnement.Services);
 
             modelBuilder.Entity<Service>().HasIndex(serv => new { serv.Cle, serv.EnvironnementId }).IsUnique();

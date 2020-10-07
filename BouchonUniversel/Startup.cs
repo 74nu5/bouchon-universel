@@ -8,6 +8,8 @@
     using BouchonUniversel.DAL;
     using BouchonUniversel.DAL.DAO;
     using BouchonUniversel.Metier;
+    using BouchonUniversel.Middlewares;
+    using BouchonUniversel.Middlewares.Extensions;
     using BouchonUniversel.Models;
 
     using JetBrains.Annotations;
@@ -21,8 +23,6 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
 
-    using Swashbuckle.AspNetCore.Swagger;
-
     using Ustilz.Http;
 
     #endregion
@@ -31,32 +31,18 @@
     [UsedImplicitly]
     public sealed class Startup
     {
-        #region Champs et constantes statiques
-
         /// <summary>The titre swagger.</summary>
         private const string TitreSwagger = "API du bouchon";
 
         /// <summary>The version swagger.</summary>
         private const string VersionSwagger = "v1";
 
-        #endregion
-
-        #region Constructeurs et destructeurs
-
         /// <summary>Initializes a new instance of the <see cref="Startup" /> class.</summary>
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration) => this.Configuration = configuration;
 
-        #endregion
-
-        #region Propriétés et indexeurs
-
         /// <summary>Gets the configuration.</summary>
         private IConfiguration Configuration { get; }
-
-        #endregion
-
-        #region Méthodes publiques
 
         /// <summary>The configure.</summary>
         /// <param name="app">The app.</param>
@@ -75,8 +61,9 @@
 
             app.UseStaticFiles();
 
-            app.UseSwagger();
+            app.UseInstall();
 
+            app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/{VersionSwagger}/swagger.json", TitreSwagger); });
 
             app.UseHttpsRedirection();
@@ -128,11 +115,8 @@
             services.AddTransient<ServicesDAO>();
             services.AddTransient<EnvironnementDAO>();
             services.AddTransient<BouchonsMetier>();
+            services.AddTransient<InstallMiddleware>();
         }
-
-        #endregion
-
-        #region Méthodes privées
 
         /// <summary>The get sqlite connection.</summary>
         /// <returns>The <see cref="SqliteConnection" />.</returns>
@@ -141,7 +125,5 @@
             var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = this.Configuration.GetConnectionString("BDDConnection") };
             return new SqliteConnection(connectionStringBuilder.ToString());
         }
-
-        #endregion
     }
 }
