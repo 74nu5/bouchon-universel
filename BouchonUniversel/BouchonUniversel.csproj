@@ -3,7 +3,18 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <!-- Enable single file -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- Determine self-contained or framework-dependent -->
+    <SelfContained>true</SelfContained>
+    <!-- The OS and CPU type you are targeting -->
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <!-- Enable use of assemby trimming - only supported for self-contained apps -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <!-- Enable AOT compilation -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
   <PropertyGroup>
   <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
 </PropertyGroup>
@@ -11,6 +22,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net5.0\BouchonUniversel.xml</DocumentationFile>
     <OutputPath>bin\Debug</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\net5.0\win-x64\BouchonUniversel.xml</DocumentationFile>
+    <OutputPath>bin\Release</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

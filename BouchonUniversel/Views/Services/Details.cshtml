@@ -1,4 +1,4 @@
-﻿@model BouchonUniversel.Models.ModelsView.DetailsServiceViewModel
+@model BouchonUniversel.Models.ModelsView.DetailsServiceViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -45,7 +45,7 @@
 </div>
 
 <div>
-    <p>Url du bouchon : <a href="http://@Context.Request.Host/api/bouchon/@Model.Service.Cle/@Model.Service.Environnement.Nom/">http://@Context.Request.Host/api/bouchon/@Model.Service.Cle/@Model.Service.Environnement.Nom/</a></p>
+    <p>Url du bouchon : <a href="https://@Context.Request.Host/api/bouchon/@Model.Service.Cle/@Model.Service.Environnement.Nom/">https://@Context.Request.Host/api/bouchon/@Model.Service.Cle/@Model.Service.Environnement.Nom/</a></p>
     <h4>Liste des fichiers pour ce bouchon :</h4>
     @Html.DisplayFor(model => model.ListeFichiers)
 </div>
