@@ -1,8 +1,8 @@
 ﻿@model IEnumerable<BouchonUniversel.Models.Bouchons.Service>
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    this.ViewData["Title"] = "Index";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Index</h2>
@@ -14,41 +14,41 @@
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Cle)
+            @(this.Html.DisplayNameFor(model => model.Cle))
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Url)
+            @(this.Html.DisplayNameFor(model => model.Url))
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.IsEnabled)
+            @(this.Html.DisplayNameFor(model => model.IsEnabled))
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.UpdateDates)
+            @(this.Html.DisplayNameFor(model => model.UpdateDates))
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Environnement)
+            @(this.Html.DisplayNameFor(model => model.Environnement))
         </th>
         <th></th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model)
+    @foreach (var item in this.Model)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Cle)
+                @(this.Html.DisplayFor(modelItem => item.Cle))
             </td>
             <td>
                 <a href="@item.Url" target="_blank">@item.Url</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsEnabled)
+                @(this.Html.DisplayFor(modelItem => item.IsEnabled))
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UpdateDates)
+                @(this.Html.DisplayFor(modelItem => item.UpdateDates))
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Environnement.Nom)
+                @(this.Html.DisplayFor(modelItem => item.Environnement.Nom))
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

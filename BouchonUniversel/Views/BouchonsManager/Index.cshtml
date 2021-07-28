@@ -1,8 +1,8 @@
 ﻿@model IEnumerable<BouchonUniversel.Models.Bouchons.Bouchon>
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    this.ViewData["Title"] = "Index";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Index</h2>
@@ -12,25 +12,26 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsEnabled)
-                </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @(this.Html.DisplayNameFor(model => model.IsEnabled))
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in this.Model)
+    {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.IsEnabled)
+                @(this.Html.DisplayFor(modelItem => item.IsEnabled))
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { item.BaseUrl, item.ServiceUrl }) |
-                @Html.ActionLink("Details", "Details", new { item.BaseUrl, item.ServiceUrl }) |
-                @Html.ActionLink("Delete", "Delete", new { item.BaseUrl, item.ServiceUrl })
+                @(this.Html.ActionLink("Edit", "Edit", new { item.BaseUrl, item.ServiceUrl })) |
+                @(this.Html.ActionLink("Details", "Details", new { item.BaseUrl, item.ServiceUrl })) |
+                @(this.Html.ActionLink("Delete", "Delete", new { item.BaseUrl, item.ServiceUrl }))
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

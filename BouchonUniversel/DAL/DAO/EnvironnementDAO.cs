@@ -1,12 +1,14 @@
-﻿namespace BouchonUniversel.DAL.DAO
+namespace BouchonUniversel.DAL.DAO
 {
     #region Usings
 
     #region Usings
 
-    using System.Linq;
+    using System.Threading.Tasks;
 
     using BouchonUniversel.Models.Bouchons;
+
+    using Microsoft.EntityFrameworkCore;
 
     #endregion
 
@@ -25,13 +27,13 @@
         /// <summary>The exists by name.</summary>
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="bool" />.</returns>
-        public bool ExistsByName(string name)
-            => this.Querable.Any(environnement => environnement.Nom == name);
+        public async Task<bool> ExistsByNameAsync(string name)
+            => await this.Querable.AnyAsync(environnement => environnement.Nom == name);
 
         /// <summary>The is activated.</summary>
         /// <param name="env">The env.</param>
         /// <returns>The <see cref="bool" />.</returns>
-        internal bool IsActivated(string env)
-            => this.Querable.FirstOrDefault(environnement => environnement.Nom == env)?.IsEnabled ?? false;
+        internal async Task<bool> IsActivatedAsync(string env)
+            => (await this.Querable.FirstOrDefaultAsync(environnement => environnement.Nom == env))?.IsEnabled ?? false;
     }
 }

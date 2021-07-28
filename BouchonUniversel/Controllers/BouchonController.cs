@@ -1,4 +1,4 @@
-﻿namespace BouchonUniversel.Controllers
+namespace BouchonUniversel.Controllers
 {
     #region Usings
 
@@ -68,7 +68,6 @@
             this.Response.Headers.Add("Site", "Bouchon-Universel");
             this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
 
-            // Console.WriteLine (this.Response.Headers);
             return this.StatusCode(result.StatusCode, result.Body.ResolveResponse(this.Response.ContentType));
         }
 
@@ -100,7 +99,7 @@
             var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
 
             // On récupère le body de cette façon pour prendre en compte tous les genres de body (texte, json, binaires, ...).
-            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync().ConfigureAwait(false));
+            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
             // ReSharper disable once StyleCop.SA1126
             if (erreur != null)

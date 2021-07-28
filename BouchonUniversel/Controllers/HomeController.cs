@@ -54,7 +54,7 @@
                 return this.BadRequest(this.ModelState);
             }
 
-            var result = isActivated ? await this.metier.ActivateBouchonAsync() : await this.metier.DesactivateBouchonAsync();
+            var result = isActivated ? await this.metier.ActivateBouchonAsync().ConfigureAwait(false) : await this.metier.DesactivateBouchonAsync().ConfigureAwait(false);
 
             if (!result)
             {

@@ -2,20 +2,20 @@
 
 <ul style="list-style: none;">
     <li>
-        <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span><span style="padding-left: 10px;">@Model.Name</span>
+        <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span><span style="padding-left: 10px;">@(this.Model.Name)</span>
     </li>
-    @if (Model.FileBouchons != null && Model.FileBouchons.Any())
+    @if (this.Model.FileBouchons != null && this.Model.FileBouchons.Any())
     {
         <li>
             <ul style="list-style: none;">
-                @Html.DisplayFor(bouchon => bouchon.FileBouchons)
+                @(this.Html.DisplayFor(bouchon => bouchon.FileBouchons))
             </ul>
         </li>
     }
-    @if (Model.Directories != null && Model.Directories.Any())
+    @if (this.Model.Directories != null && this.Model.Directories.Any())
     {
         <li>
-            @Html.DisplayFor(bouchon => bouchon.Directories)
+            @(this.Html.DisplayFor(bouchon => bouchon.Directories))
         </li>
     }
 </ul>

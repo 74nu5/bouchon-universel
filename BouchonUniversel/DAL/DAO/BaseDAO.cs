@@ -63,9 +63,9 @@
         {
             var set = this.context.Set<TModel>();
             var includeSet = includes.Aggregate<Expression<Func<TModel, object>>, IIncludableQueryable<TModel, object>>(
-                null,
-                (current, include) => current == null ? set.Include(include) : current.Include(include));
-            return includeSet == null ? await set.ToListAsync() : await includeSet.ToListAsync();
+                                                                                                                        null,
+                                                                                                                        (current, include) => current == null ? set.Include(include) : current.Include(include));
+            return includeSet == null ? await set.ToListAsync().ConfigureAwait(false) : await includeSet.ToListAsync().ConfigureAwait(false);
         }
 
         /// <summary>The get all.</summary>
@@ -81,11 +81,11 @@
         {
             var set = this.context.Set<TModel>();
             var includeSet = includes.Aggregate<Expression<Func<TModel, object>>, IIncludableQueryable<TModel, object>>(
-                null,
-                (current, include) => current == null ? set.Include(include) : current.Include(include));
+                                                                                                                        null,
+                                                                                                                        (current, include) => current == null ? set.Include(include) : current.Include(include));
             return includeSet == null
-                       ? await set.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0)
-                       : await includeSet.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0);
+                       ? await set.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0).ConfigureAwait(false)
+                       : await includeSet.SingleOrDefaultAsync(model => model.Id.CompareTo(id) == 0).ConfigureAwait(false);
         }
 
         /// <summary>The get details.</summary>

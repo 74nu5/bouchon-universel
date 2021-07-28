@@ -33,7 +33,7 @@ namespace BouchonUniversel.Metier
         {
             try
             {
-                return await this.dao.UpdateConfBouchonAsync(true);
+                return await this.dao.UpdateConfBouchonAsync(true).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -48,7 +48,7 @@ namespace BouchonUniversel.Metier
         {
             try
             {
-                return await this.dao.UpdateConfBouchonAsync(false);
+                return await this.dao.UpdateConfBouchonAsync(false).ConfigureAwait(false);
             }
             catch (Exception e)
             {

@@ -42,7 +42,7 @@
             }
 
             this.context.Add(environnement);
-            await this.context.SaveChangesAsync();
+            await this.context.SaveChangesAsync().ConfigureAwait(false);
             return this.RedirectToAction(nameof(this.Index));
         }
 
@@ -56,7 +56,7 @@
                 return this.NotFound();
             }
 
-            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             if (environnement == null)
             {
                 return this.NotFound();
@@ -73,9 +73,9 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             this.context.Environnement.Remove(environnement);
-            await this.context.SaveChangesAsync();
+            await this.context.SaveChangesAsync().ConfigureAwait(false);
             return this.RedirectToAction(nameof(this.Index));
         }
 
@@ -89,7 +89,7 @@
                 return this.NotFound();
             }
 
-            var environnement = await this.context.Environnement.SingleOrDefaultAsync(env => env.Id == id);
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(env => env.Id == id).ConfigureAwait(false);
             if (environnement == null)
             {
                 return this.NotFound();
@@ -108,7 +108,7 @@
                 return this.NotFound();
             }
 
-            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id);
+            var environnement = await this.context.Environnement.SingleOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
             if (environnement == null)
             {
                 return this.NotFound();
@@ -135,7 +135,7 @@
                 try
                 {
                     this.context.Update(environnement);
-                    await this.context.SaveChangesAsync();
+                    await this.context.SaveChangesAsync().ConfigureAwait(false);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -156,7 +156,7 @@
         /// <summary>The index.</summary>
         /// <returns>The <see cref="Task" />.</returns>
         public async Task<IActionResult> Index()
-            => this.View(await this.context.Environnement.ToListAsync());
+            => this.View(await this.context.Environnement.ToListAsync().ConfigureAwait(false));
 
         /// <summary>The environnement exists.</summary>
         /// <param name="id">The id.</param>

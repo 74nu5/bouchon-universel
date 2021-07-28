@@ -1,4 +1,4 @@
-﻿namespace BouchonUniversel.DAL.DAO
+namespace BouchonUniversel.DAL.DAO
 {
     #region Usings
 
@@ -6,6 +6,7 @@
 
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using BouchonUniversel.Models.Bouchons;
 
@@ -31,26 +32,26 @@
         /// <summary>The exists by cle.</summary>
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool" />.</returns>
-        public bool ExistsByCle(string cle)
-            => this.Querable.Any(service => service.Cle == cle);
+        public async Task<bool> ExistsByCleAsync(string cle)
+            => await this.Querable.AnyAsync(service => service.Cle == cle);
 
         /// <summary>The get url.</summary>
         /// <param name="cle">The cle.</param>
         /// <param name="environnement">The environnement.</param>
         /// <returns>The <see cref="string" />.</returns>
-        public Uri GetUrl(string cle, string environnement)
-            => new Uri(this.Querable.Include(service => service.Environnement).FirstOrDefault(service => service.Cle == cle && service.Environnement.Nom == environnement)?.Url);
+        public async Task<Uri> GetUrlAsync(string cle, string environnement)
+            => new ((await this.Querable.Include(service => service.Environnement).FirstOrDefaultAsync(service => service.Cle == cle && service.Environnement.Nom == environnement))?.Url ?? string.Empty);
 
         /// <summary>Update dates is enable.</summary>
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool" />.</returns>
-        public bool IsEnabledToUpdateDates(string cle)
-            => this.Querable.FirstOrDefault(service => service.Cle == cle)?.UpdateDates ?? false;
+        public async Task<bool> IsEnabledToUpdateDatesAsync(string cle)
+            => (await this.Querable.FirstOrDefaultAsync(service => service.Cle == cle))?.UpdateDates ?? false;
 
         /// <summary>The is activated.</summary>
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool" />.</returns>
-        internal bool IsActivated(string cle)
-            => this.Querable.FirstOrDefault(service => service.Cle == cle)?.IsEnabled ?? false;
+        internal async Task<bool> IsActivated(string cle)
+            => (await this.Querable.FirstOrDefaultAsync(service => service.Cle == cle))?.IsEnabled ?? false;
     }
 }

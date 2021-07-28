@@ -1,8 +1,8 @@
 ﻿@model BouchonUniversel.Models.Bouchons.Environnement
 
 @{
-    ViewData["Title"] = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    this.ViewData["Title"] = "Edit";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Edit</h2>
@@ -22,7 +22,7 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="IsEnabled"/> @Html.DisplayNameFor(model => model.IsEnabled)
+                        <input asp-for="IsEnabled"/> @(this.Html.DisplayNameFor(model => model.IsEnabled))
                     </label>
                 </div>
             </div>
@@ -38,5 +38,5 @@
 </div>
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{ await this.Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

@@ -3,5 +3,5 @@
 
 <li>
     <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-    <a asp-controller="Services" asp-action="DownloadFile" asp-route-name="@Model.FullName">@HttpUtility.UrlDecode(Model.Name)</a>
+    <a asp-controller="Services" asp-action="DownloadFile" asp-route-name="@(this.Model.FullName)">@HttpUtility.UrlDecode(this.Model.Name)</a>
 </li>

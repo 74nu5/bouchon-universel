@@ -13,6 +13,8 @@ namespace BouchonUniversel.Utils
     using BouchonUniversel.Models;
     using BouchonUniversel.Models.Bouchons;
 
+    using JetBrains.Annotations;
+
     using Newtonsoft.Json;
 
     using Ustilz.Xml;
@@ -28,8 +30,10 @@ namespace BouchonUniversel.Utils
         /// <param name="patternsFormats">Pattern used.</param>
         /// <returns>The <see cref="string" />.</returns>
         /// <exception cref="ArgumentException">Lève une exception lorsque la propriété et/ou la valeur n'est pas trouvé.</exception>
-        public static string AjustDates(this string document, string date, IEnumerable<PatternDateFormat> patternsFormats)
+        public static string AjustDates(this string document, string date, [NotNull] IEnumerable<PatternDateFormat> patternsFormats)
         {
+            var _ = patternsFormats ?? throw new ArgumentNullException(nameof(patternsFormats));
+
             var ci = CultureInfo.InvariantCulture;
             var docResult = document;
 
@@ -46,15 +50,21 @@ namespace BouchonUniversel.Utils
                         continue;
                     }
 
-                    foreach (var macthedDate in matches)
+                    foreach (var matchedDate in matches)
                     {
-                        var separator = Regex.Match(macthedDate.ToString(), @"[/.-]").ToString();
+                        var matchedDateStr = matchedDate.ToString();
+                        if (matchedDateStr is null)
+                        {
+                            continue;
+                        }
 
-                        var dateAjusted = AjustDate(date, macthedDate.ToString());
+                        var separator = Regex.Match(matchedDateStr, @"[/.-]").ToString();
 
-                        rgx = new Regex(@"-");
+                        var dateAjusted = AjustDate(date, matchedDateStr);
+
+                        rgx = new (@"-");
                         var test = rgx.Replace(pf.Format, separator);
-                        docResult = docResult.Replace(macthedDate.ToString(), dateAjusted.ToString(test, ci));
+                        docResult = docResult.Replace(matchedDateStr, dateAjusted.ToString(test, ci));
                     }
                 }
                 catch (Exception e)
@@ -65,20 +75,22 @@ namespace BouchonUniversel.Utils
 
             return docResult;
 
-            DateTime AjustDate(string dDateParam, string macthedDate)
+        }
+
+        private static DateTime AjustDate(string dDateParam, string macthedDate)
+        {
+            var result = DateTime.Now;
+            if (!DateTime.TryParse(macthedDate, out var dMacthedResult) || !DateTime.TryParse(dDateParam, out var dateParam))
             {
-                var result = DateTime.Now;
-                if (!DateTime.TryParse(macthedDate, out var dMacthedResult) || !DateTime.TryParse(dDateParam, out var dateParam))
-                {
-                    return result.ToUniversalTime();
-                }
-
-                var time = dateParam - dMacthedResult;
-                result = dateParam.Add(time);
-
                 return result.ToUniversalTime();
             }
+
+            var time = dateParam - dMacthedResult;
+            result = dateParam.Add(time);
+
+            return result.ToUniversalTime();
         }
+
 
         /// <summary>Get the missing response in the list of reponses.</summary>
         /// <param name="rootDir">The root directory.</param>

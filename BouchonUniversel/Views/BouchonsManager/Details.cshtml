@@ -1,25 +1,25 @@
 ﻿@model BouchonUniversel.Models.Bouchons.Bouchon
 
 @{
-    ViewData["Title"] = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    this.ViewData["Title"] = "Details";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Details</h2>
 
 <div>
     <h4>Bouchon</h4>
-    <hr />
+    <hr/>
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.IsEnabled)
+            @(this.Html.DisplayNameFor(model => model.IsEnabled))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.IsEnabled)
+            @(this.Html.DisplayFor(model => model.IsEnabled))
         </dd>
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { Model.BaseUrl, Model.ServiceUrl }) |
+    @(this.Html.ActionLink("Edit", "Edit", new { this.Model.BaseUrl, this.Model.ServiceUrl })) |
     <a asp-action="Index">Back to List</a>
 </div>

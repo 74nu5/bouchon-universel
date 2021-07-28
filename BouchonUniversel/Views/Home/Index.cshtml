@@ -1,10 +1,10 @@
 ﻿@model BouchonUniversel.Models.ModelsView.IndexViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    this.ViewData["Title"] = "Index";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>@(this.ViewData["Title"])</h2>
 
 <div class="container flexbox">
     <a asp-controller="Services" asp-action="Index">

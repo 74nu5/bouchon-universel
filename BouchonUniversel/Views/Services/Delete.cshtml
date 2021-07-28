@@ -1,8 +1,8 @@
 ﻿@model BouchonUniversel.Models.Bouchons.Service
 
 @{
-    ViewData["Title"] = "Delete";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    this.ViewData["Title"] = "Delete";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Delete</h2>
@@ -13,34 +13,34 @@
     <hr/>
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Cle)
+            @(this.Html.DisplayNameFor(model => model.Cle))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Cle)
+            @(this.Html.DisplayFor(model => model.Cle))
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Url)
+            @(this.Html.DisplayNameFor(model => model.Url))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Url)
+            @(this.Html.DisplayFor(model => model.Url))
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.IsEnabled)
+            @(this.Html.DisplayNameFor(model => model.IsEnabled))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.IsEnabled)
+            @(this.Html.DisplayFor(model => model.IsEnabled))
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.UpdateDates)
+            @(this.Html.DisplayNameFor(model => model.UpdateDates))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.UpdateDates)
+            @(this.Html.DisplayFor(model => model.UpdateDates))
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Environnement)
+            @(this.Html.DisplayNameFor(model => model.Environnement))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Environnement.Id)
+            @(this.Html.DisplayFor(model => model.Environnement.Id))
         </dd>
     </dl>
 

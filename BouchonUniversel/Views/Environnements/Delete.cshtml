@@ -1,8 +1,8 @@
 ﻿@model BouchonUniversel.Models.Bouchons.Environnement
 
 @{
-    ViewData["Title"] = "Delete";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    this.ViewData["Title"] = "Delete";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Delete</h2>
@@ -13,16 +13,16 @@
     <hr/>
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Nom)
+            @(this.Html.DisplayNameFor(model => model.Nom))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Nom)
+            @(this.Html.DisplayFor(model => model.Nom))
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.IsEnabled)
+            @(this.Html.DisplayNameFor(model => model.IsEnabled))
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.IsEnabled)
+            @(this.Html.DisplayFor(model => model.IsEnabled))
         </dd>
     </dl>
 

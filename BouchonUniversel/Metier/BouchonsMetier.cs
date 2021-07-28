@@ -1,4 +1,4 @@
-﻿namespace BouchonUniversel.Metier
+namespace BouchonUniversel.Metier
 {
     #region Usings
 
@@ -16,6 +16,7 @@
     using BouchonUniversel.Models;
     using BouchonUniversel.Models.Bouchons;
     using BouchonUniversel.Models.ModelsView;
+    using BouchonUniversel.Services;
     using BouchonUniversel.Utils;
 
     using JetBrains.Annotations;
@@ -48,16 +49,19 @@
         /// <summary>The settings bouchon dao.</summary>
         private readonly SettingsBouchonDAO settingsBouchonDAO;
 
+        private readonly FileService fileService;
+
         /// <summary>Initializes a new instance of the <see cref="BouchonsMetier" /> class.</summary>
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
         /// <param name="http">The http.</param>
-        public BouchonsMetier(ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, HttpService http)
+        public BouchonsMetier(HttpService http, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService)
         {
             this.servicesDAO = servicesDAO;
             this.environnementDAO = environnementDAO;
             this.settingsBouchonDAO = settingsBouchonDAO;
+            this.fileService = fileService;
             this.http = http;
         }
 
@@ -67,7 +71,7 @@
         internal DirectoryBouchon GetFilesOfService(Service service)
         {
             var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), service.Cle, service.Environnement.Nom));
-            return !bouchonDir.Exists ? new DirectoryBouchon() : this.GetFileAndDirectory(bouchonDir);
+            return !bouchonDir.Exists ? new () : this.GetFileAndDirectory(bouchonDir);
         }
 
         /// <summary>The process request.</summary>
@@ -79,13 +83,13 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="ReponseBouchonnee" />.</returns>
-        internal async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessGetRequestAsync(
+        internal async Task<(ReponseBouchonnee reponse, ResponseErreur? erreur)> ProcessGetRequestAsync(
             string cle,
             string env,
             string route,
             Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers)
-            => await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null);
+            => await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null).ConfigureAwait(false);
 
         /// <summary>The process post request async.</summary>
         /// <param name="cle">The cle.</param>
@@ -97,20 +101,20 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="Task" />.</returns>
-        internal async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessPostRequestAsync(
+        internal async Task<(ReponseBouchonnee reponse, ResponseErreur? erreur)> ProcessPostRequestAsync(
             string cle,
             string env,
             string route,
             Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers,
             string body)
-            => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body);
+            => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body).ConfigureAwait(false);
 
         /// <summary>The format if date.</summary>
         /// <param name="value">The value.</param>
         /// <returns>The <see cref="string" />.</returns>
         private static string FormatIfDate(string value)
-            => DateTime.TryParse(value, out _) ? string.Empty : value;
+            => DateTime.TryParse(value, out var _) ? string.Empty : value;
 
         /// <summary>The get file and directory.</summary>
         /// <param name="dir">The dir.</param>
@@ -118,11 +122,11 @@
         private DirectoryBouchon GetFileAndDirectory(DirectoryInfo dir)
         {
             var result = new DirectoryBouchon
-            {
-                Name = dir.Name,
-                FileBouchons = dir.GetFileSystemInfos().Select(file => new FileBouchon { Name = file.Name, FullName = file.FullName }).ToList(),
-                Directories = dir.GetDirectories().Select(this.GetFileAndDirectory).ToList()
-            };
+                         {
+                             Name = dir.Name,
+                             FileBouchons = dir.GetFileSystemInfos().Select(file => new FileBouchon { Name = file.Name, FullName = file.FullName }).ToList(),
+                             Directories = dir.GetDirectories().Select(this.GetFileAndDirectory).ToList()
+                         };
             return result;
         }
 
@@ -135,7 +139,7 @@
         /// <param name="headers">The headers.</param>
         /// <param name="body">The body.</param>
         /// <returns>The <see cref="Task" />.</returns>
-        private async Task<(ReponseBouchonnee reponse, ResponseErreur erreur)> ProcessRequestAsync(
+        private async Task<(ReponseBouchonnee? reponse, ResponseErreur? erreur)> ProcessRequestAsync(
             HttpMethod method,
             string cle,
             string env,
@@ -147,35 +151,26 @@
             try
             {
                 var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
-                var requestIsActivated = this.ServiceIsActivated(cle, env);
+                var requestIsActivated = await this.ServiceIsActivatedAsync(cle, env).ConfigureAwait(false);
 
                 /* Intégration de la mise à jour de la réponse */
-                var updateDatesResponseIsActivated = this.UpdateDatesForServiceIsActivated(cle);
+                var updateDatesResponseIsActivated = await this.UpdateDatesForServiceIsActivatedAsync(cle).ConfigureAwait(false);
 
                 /* =========================================== */
-                var bouchonDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, route ?? string.Empty));
-                if (!bouchonDir.Exists)
-                {
-                    bouchonDir.Create();
-                }
+                var bouchonDir = this.fileService.CreateBouchonDirectory(cle, env, route);
 
                 var queryStr = string.Join(
-                    "&",
-                    query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(value)}").ToArray())).ToArray());
+                                           "&",
+                                           query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(value)}").ToArray())).ToArray());
 
-                var queryHash = string.Join(
-                                          "&",
-                                          query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(FormatIfDate(value))}").ToArray()))
-                                               .ToArray())
-                                      .ComputeHash(ExtensionsString.HashType.SHA256);
+                var fileName = GetFileName(method, query, bouchonDir);
 
-                var fileName = $"{Path.Combine(bouchonDir.FullName, $"{method.ToString()}_{queryHash}")}.xml";
-
-                var pdfc = (await File.ReadAllTextAsync(@"./PatternDateFormatConfig.json")).FromJson<PatternDateFormatConfig>();
+                var pdfc = (await File.ReadAllTextAsync(@"./PatternDateFormatConfig.json").ConfigureAwait(false)).FromJson<PatternDateFormatConfig>();
 
                 if (requestIsActivated)
                 {
                     var responseBouchonne = XDocument.Load(fileName).FromXml<ReponseBouchonnee>();
+
                     if (updateDatesResponseIsActivated)
                     {
                         responseBouchonne.Body = responseBouchonne.Body.AjustDates(DateTime.Now.ToString(CultureInfo.CurrentCulture), pdfc.Patterns);
@@ -184,7 +179,7 @@
                     return (responseBouchonne, null);
                 }
 
-                var urlBase = this.servicesDAO.GetUrl(cle, env);
+                var urlBase = await this.servicesDAO.GetUrlAsync(cle, env).ConfigureAwait(false);
                 var url = new Uri(urlBase, new Uri(route + (!string.IsNullOrEmpty(queryStr) ? $"?{queryStr}" : string.Empty), UriKind.Relative));
 
                 var reponse = default(ReponseBouchonnee);
@@ -192,15 +187,15 @@
                 {
                     case HttpMethod.Get:
                     {
-                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null);
-                        reponse = new ReponseBouchonnee
-                        {
-                            Body = response,
-                            Headers = responseHeaders.ToKeyValueList(),
-                            Request = req,
-                            StatusCode = (int)httpCode,
-                            ResponsePhrase = responsePhrase
-                        };
+                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null).ConfigureAwait(false);
+                        reponse = new ()
+                                  {
+                                      Body = response,
+                                      Headers = responseHeaders.ToKeyValueList(),
+                                      Request = req,
+                                      StatusCode = (int)httpCode,
+                                      ResponsePhrase = responsePhrase
+                                  };
                         break;
                     }
 
@@ -214,15 +209,15 @@
                         break;
                     case HttpMethod.Post:
                     {
-                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null);
-                        reponse = new ReponseBouchonnee
-                        {
-                            Body = response,
-                            Headers = responseHeaders.ToKeyValueList(),
-                            Request = req,
-                            StatusCode = (int)httpCode,
-                            ResponsePhrase = responsePhrase
-                        };
+                        var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null).ConfigureAwait(false);
+                        reponse = new ()
+                                  {
+                                      Body = response,
+                                      Headers = responseHeaders.ToKeyValueList(),
+                                      Request = req,
+                                      StatusCode = (int)httpCode,
+                                      ResponsePhrase = responsePhrase
+                                  };
                         break;
                     }
 
@@ -250,11 +245,13 @@
 
                         // TODO Gérer le verbe CUSTOM
                         break;
+                    case HttpMethod.None:
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(method), method, null);
                 }
 
-                File.WriteAllText(fileName, reponse?.ToXml());
+                await File.WriteAllTextAsync(fileName, reponse?.ToXml()).ConfigureAwait(false);
 
                 if (updateDatesResponseIsActivated && reponse != null)
                 {
@@ -265,36 +262,43 @@
             }
             catch (KeyNotFoundException ex)
             {
-                return (null, new ResponseErreur { Message = ex.Message, Code = 1001 });
+                return (null, new () { Message = ex.Message, Code = 1001 });
             }
             catch (EnvironmentNotFoundException ex)
             {
-                return (null, new ResponseErreur { Message = ex.Message, Code = 1002 });
+                return (null, new () { Message = ex.Message, Code = 1002 });
             }
             catch (FileNotFoundException ex)
             {
                 var confDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, string.Empty));
                 var (reponse, reponseBouchonnee) = MockRealTime.GetUpdatedResponse(confDir.FullName, route);
-                if (!reponseBouchonnee.IsNull())
-                {
-                    var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
-                    var newResponseBouchon = new ReponseBouchonnee
-                    {
-                        Body = reponse,
-                        Headers = reponseBouchonnee.Headers,
-                        Request = req,
-                        StatusCode = reponseBouchonnee.StatusCode,
-                        ResponsePhrase = reponseBouchonnee.ResponsePhrase
-                    };
-                    return (newResponseBouchon, null);
-                }
 
-                return (null, new ResponseErreur { Message = ex.Message, Code = 1003 });
+                var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
+                var newResponseBouchon = new ReponseBouchonnee
+                                         {
+                                             Body = reponse,
+                                             Headers = reponseBouchonnee.Headers,
+                                             Request = req,
+                                             StatusCode = reponseBouchonnee.StatusCode,
+                                             ResponsePhrase = reponseBouchonnee.ResponsePhrase
+                                         };
+                return (newResponseBouchon, null);
             }
             catch (Exception ex)
             {
-                return (null, new ResponseErreur { Message = ex.Message, Code = 1999 });
+                return (null, new () { Message = ex.Message, Code = 1999 });
             }
+        }
+
+        private static string GetFileName(HttpMethod method, Dictionary<string, IEnumerable<string>> query, FileSystemInfo bouchonDir)
+        {
+            var queryHash = string.Join(
+                                        "&",
+                                        query.Select(pair => string.Join("&", pair.Value.Select(value => $"{pair.Key}={HttpUtility.UrlEncode(FormatIfDate(value))}").ToArray()))
+                                             .ToArray())
+                                  .ComputeHash(ExtensionsString.HashType.SHA256);
+
+            return $"{Path.Combine(bouchonDir.FullName, $"{method}_{queryHash}")}.xml";
         }
 
         /// <summary>The assert service exists.</summary>
@@ -303,15 +307,15 @@
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <exception cref="EnvironmentNotFoundException">Lève une exception si l'environnement n'existe pas.</exception>
         /// <returns>The <see cref="bool" />.</returns>
-        private bool ServiceIsActivated(string cle, string env)
+        private async Task<bool> ServiceIsActivatedAsync(string cle, string env)
         {
-            if (!this.servicesDAO.ExistsByCle(cle))
+            if (!await this.servicesDAO.ExistsByCleAsync(cle).ConfigureAwait(false))
             {
                 throw new KeyNotFoundException("La clé n'existe pas");
             }
 
-            return this.environnementDAO.ExistsByName(env)
-                       ? this.servicesDAO.IsActivated(cle) && this.environnementDAO.IsActivated(env)
+            return await this.environnementDAO.ExistsByNameAsync(env).ConfigureAwait(false)
+                       ? await this.servicesDAO.IsActivated(cle).ConfigureAwait(false) && await this.environnementDAO.IsActivatedAsync(env).ConfigureAwait(false)
                        : throw new EnvironmentNotFoundException("L'environnement n'existe pas");
         }
 
@@ -319,14 +323,14 @@
         /// <param name="cle">The cle.</param>
         /// <exception cref="Exceptions.KeyNotFoundException">Lève une exception si la clé n'existe pas.</exception>
         /// <returns>The <see cref="bool" />.</returns>
-        private bool UpdateDatesForServiceIsActivated(string cle)
+        private async Task<bool> UpdateDatesForServiceIsActivatedAsync(string cle)
         {
-            if (!this.servicesDAO.ExistsByCle(cle))
+            if (!await this.servicesDAO.ExistsByCleAsync(cle).ConfigureAwait(false))
             {
                 throw new KeyNotFoundException("La clé n'existe pas");
             }
 
-            return this.servicesDAO.IsEnabledToUpdateDates(cle);
+            return await this.servicesDAO.IsEnabledToUpdateDatesAsync(cle).ConfigureAwait(false);
         }
     }
 }
