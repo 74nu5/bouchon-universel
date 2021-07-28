@@ -17,6 +17,7 @@
     <!-- Enable AOT compilation -->
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
+
   <PropertyGroup>
   <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
 </PropertyGroup>
@@ -29,6 +30,14 @@
     <DocumentationFile>bin\Release\net5.0\win-x64\BouchonUniversel.xml</DocumentationFile>
     <OutputPath>bin\Release</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />

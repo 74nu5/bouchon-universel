@@ -48,5 +48,12 @@
             this.SaveChanges();
             return true;
         }
+
+        /// <summary>
+        /// Method that determines if there are settings in database.
+        /// </summary>
+        /// <returns>Returns True if the database is empty, Fasle otherwise.</returns>
+        public bool IsSettingsMissing()
+            => this.Querable.Count() < 2;
     }
 }

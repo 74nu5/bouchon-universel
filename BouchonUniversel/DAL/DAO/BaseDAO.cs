@@ -63,8 +63,8 @@
         {
             var set = this.context.Set<TModel>();
             var includeSet = includes.Aggregate<Expression<Func<TModel, object>>, IIncludableQueryable<TModel, object>>(
-                                                                                                                        null,
-                                                                                                                        (current, include) => current == null ? set.Include(include) : current.Include(include));
+                null,
+                (current, include) => current == null ? set.Include(include) : current.Include(include));
             return includeSet == null ? await set.ToListAsync().ConfigureAwait(false) : await includeSet.ToListAsync().ConfigureAwait(false);
         }
 

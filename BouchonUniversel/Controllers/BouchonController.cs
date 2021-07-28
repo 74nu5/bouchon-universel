@@ -57,7 +57,7 @@ namespace BouchonUniversel.Controllers
         [ProducesResponseType(typeof(string), 405)]
         public async Task<IActionResult> Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
-            var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
+            var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
             var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers).ConfigureAwait(false);
 
             if (erreur != null)

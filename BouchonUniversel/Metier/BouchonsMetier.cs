@@ -22,6 +22,7 @@ namespace BouchonUniversel.Metier
     using JetBrains.Annotations;
 
     using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+    using Microsoft.Extensions.Logging;
 
     using Ustilz.Extensions;
     using Ustilz.Extensions.String;
@@ -43,6 +44,8 @@ namespace BouchonUniversel.Metier
         /// <summary>The http.</summary>
         private readonly HttpService http;
 
+        private readonly ILogger<BouchonsMetier> logger;
+
         /// <summary>The services dao.</summary>
         private readonly ServicesDAO servicesDAO;
 
@@ -56,8 +59,9 @@ namespace BouchonUniversel.Metier
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
         /// <param name="http">The http.</param>
-        public BouchonsMetier(HttpService http, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService)
+        public BouchonsMetier(HttpService http, ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService)
         {
+            this.logger = logger;
             this.servicesDAO = servicesDAO;
             this.environnementDAO = environnementDAO;
             this.settingsBouchonDAO = settingsBouchonDAO;
@@ -262,14 +266,17 @@ namespace BouchonUniversel.Metier
             }
             catch (KeyNotFoundException ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 return (null, new () { Message = ex.Message, Code = 1001 });
             }
             catch (EnvironmentNotFoundException ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 return (null, new () { Message = ex.Message, Code = 1002 });
             }
             catch (FileNotFoundException ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 var confDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, string.Empty));
                 var (reponse, reponseBouchonnee) = MockRealTime.GetUpdatedResponse(confDir.FullName, route);
 
@@ -286,6 +293,7 @@ namespace BouchonUniversel.Metier
             }
             catch (Exception ex)
             {
+                this.logger.LogError("Erreur lors de la requete", ex);
                 return (null, new () { Message = ex.Message, Code = 1999 });
             }
         }

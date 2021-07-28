@@ -18,6 +18,7 @@
     "BouchonUniversel": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "https://localhost:5555/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

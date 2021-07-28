@@ -48,3 +48,7 @@
     margin: auto 10px;
     max-width: 250px;
 }
+
+.validation-summary-valid {
+    display: none;
+}

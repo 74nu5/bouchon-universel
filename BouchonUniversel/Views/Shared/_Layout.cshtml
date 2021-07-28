@@ -43,6 +43,9 @@
                 <li>
                     <a asp-area="" asp-controller="BouchonsManager" asp-action="DownloadFiles">Télécharger les fichiers</a>
                 </li>
+                <li>
+                    <a asp-area="" asp-controller="Install" asp-action="Index">Installation</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -51,7 +54,7 @@
     @(this.RenderBody())
     <hr/>
     <footer>
-        <p>&copy; 2018 - BouchonUniversel</p>
+        <p>&copy; 2020 - BouchonUniversel</p>
     </footer>
 </div>
 
@@ -67,6 +70,17 @@
             crossorigin="anonymous"
             integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
     </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"
+            asp-fallback-src="~/lib/jquery-validation/dist/jquery.validate.js"
+            crossorigin="anonymous">
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"
+            asp-fallback-src="~/lib/jquery-validation-unobstrusive/jquery.validate.unobstrusive.js"
+            crossorigin="anonymous">
+    </script>
+
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
             asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
             asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"

@@ -9,6 +9,8 @@ using System.Linq;
     using BouchonUniversel.DAL;
     using BouchonUniversel.DAL.DAO;
     using BouchonUniversel.Metier;
+    using BouchonUniversel.Middlewares;
+    using BouchonUniversel.Middlewares.Extensions;
     using BouchonUniversel.Models;
     using BouchonUniversel.Services;
 
@@ -60,8 +62,9 @@ using System.Linq;
 
             app.UseStaticFiles();
 
-            app.UseSwagger();
+            app.UseInstall();
 
+            app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint($"/swagger/{VersionSwagger}/swagger.json", TitreSwagger); });
 
             app.UseHttpsRedirection();
@@ -114,6 +117,7 @@ using System.Linq;
             services.AddTransient<ServicesDAO>();
             services.AddTransient<EnvironnementDAO>();
             services.AddTransient<BouchonsMetier>();
+            services.AddTransient<InstallMiddleware>();
             services.AddTransient<FileService>();
         }
 

@@ -24,7 +24,7 @@ namespace BouchonUniversel
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
-            InitializeData(host);
+            // InitializeData(host);
             host.Run();
         }
 

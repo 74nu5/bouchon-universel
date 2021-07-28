@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema":
     "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
   "settings": {
@@ -6,7 +6,7 @@
       "allowBuiltInTypeAliases": false
     },
     "documentationRules": {
-      "documentationCulture": "fr-FR",
+      "documentationCulture": "en-US",
       "xmlHeader": false
     },
     "orderingRules": {
