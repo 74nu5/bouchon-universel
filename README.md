@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="BouchonUniversel.Docs/wwwroot/logo-dark.svg">
-    <img alt="Bouchon Universel" src="BouchonUniversel.Docs/wwwroot/logo.svg" height="72">
-  </picture>
+  <img alt="Bouchon Universel" src="BouchonUniversel.Docs/wwwroot/banner.png" width="100%">
 </p>
 
 <p align="center">
