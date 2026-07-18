@@ -156,6 +156,16 @@
     </ul>
   </div>
 
+  <div class="card" style="border-left:4px solid var(--green); margin-top:16px">
+    <h3 style="color:var(--green)">✅ Mise à jour — recommandations long terme appliquées</h3>
+    <ul class="clean">
+      <li><strong>Ingénierie du chaos</strong> : latence simulée et injection d'erreurs (probabilité + code HTTP) configurables par service</li>
+      <li><strong>Import / export de jeux de mocks</strong> : export tar.gz existant complété par un import avec extraction protégée contre la traversée de répertoire</li>
+      <li><strong>Authentification de l'administration</strong> : login par cookie activable par configuration ; l'API de bouchonnage reste ouverte</li>
+      <li>Nouvelle migration EF (<code>AddChaosSettingsToService</code>) et couverture portée à <strong>33 tests</strong> (chaos, aller-retour archive)</li>
+    </ul>
+  </div>
+
   <!-- ================= FONCTIONNEMENT ================= -->
   <h2><span class="ic">⚙️</span> Comment ça marche</h2>
   <p class="lead">Chaque appel entrant suit la route <code>/api/bouchon/{clé}/{env}/{*route}</code>. Le comportement dépend de l'activation du service&nbsp;:</p>
@@ -249,6 +259,8 @@
         <li><strong>MockRealTime</strong> : réajustement automatique des dates, rare chez les mocks classiques</li>
         <li>Segmentation native par <strong>clé × environnement</strong></li>
         <li>Activation fine, service par service et environnement par environnement</li>
+        <li><strong>Chaos</strong> : latence &amp; erreurs simulées par service</li>
+        <li><strong>Import/export</strong> de jeux de mocks + <strong>éditeur</strong> intégré des réponses</li>
       </ul>
     </div>
   </div>
@@ -286,7 +298,7 @@
     <div class="score-row"><div class="name">Concept &amp; utilité</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Architecture / lisibilité</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
     <div class="score-row"><div class="name">Couverture fonctionnelle</div><div class="bar"><span style="width:85%"></span></div><div class="val">8.5/10</div></div>
-    <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:65%"></span></div><div class="val">6.5/10</div></div>
+    <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:75%"></span></div><div class="val">7.5/10</div></div>
     <div class="score-row"><div class="name">Actualité technique</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Industrialisation (CI/Docker)</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
   </div>
@@ -296,7 +308,7 @@
   <div class="grid g3">
     <div class="card" style="border-left:4px solid var(--green)"><h3 style="color:var(--green)">Court terme ✅ fait</h3><ul class="clean"><li><s>Migrer vers une version LTS</s> → .NET 10</li><li><s>Mettre en cache la config des patterns</s></li><li><s>Ajouter des tests unitaires sur le métier</s></li></ul></div>
     <div class="card" style="border-left:4px solid var(--green)"><h3 style="color:var(--green)">Moyen terme ✅ fait</h3><ul class="clean"><li><s>Implémenter PUT / DELETE / PATCH</s></li><li><s>Codes HTTP d'erreur sémantiques (404/500)</s></li><li><s>Interface d'édition des réponses mockées</s></li></ul></div>
-    <div class="card"><h3>Long terme</h3><ul class="clean"><li>Latence/erreurs simulées (chaos)</li><li>Import/export de jeux de mocks</li><li>Authentification de l'admin</li></ul></div>
+    <div class="card" style="border-left:4px solid var(--green)"><h3 style="color:var(--green)">Long terme ✅ fait</h3><ul class="clean"><li><s>Latence/erreurs simulées (chaos)</s></li><li><s>Import/export de jeux de mocks</s></li><li><s>Authentification de l'admin</s></li></ul></div>
   </div>
 
   <footer>

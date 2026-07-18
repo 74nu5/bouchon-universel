@@ -10,8 +10,10 @@ namespace BouchonUniversel.Controllers
 
     using JetBrains.Annotations;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
+    [AllowAnonymous]
     [Route("install")]
     public class InstallController : Controller
     {

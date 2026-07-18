@@ -218,6 +218,13 @@ namespace BouchonUniversel.Metier
                 var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
                 var requestIsActivated = await this.ServiceIsActivatedAsync(cle, env).ConfigureAwait(false);
 
+                /* Ingénierie du chaos : latence et injection d'erreurs configurées sur le service. */
+                var chaosResponse = await this.ApplyChaosAsync(cle, env, req).ConfigureAwait(false);
+                if (chaosResponse != null)
+                {
+                    return (chaosResponse, null);
+                }
+
                 /* Intégration de la mise à jour de la réponse */
                 var updateDatesResponseIsActivated = await this.UpdateDatesForServiceIsActivatedAsync(cle).ConfigureAwait(false);
 
@@ -360,6 +367,39 @@ namespace BouchonUniversel.Metier
             string body,
             Request req)
             => await PassthroughHttp.SendAsync(this.httpClientFactory.CreateClient(), httpMethod, url, headers, body, req).ConfigureAwait(false);
+
+        /// <summary>Applique la latence simulée puis, selon la probabilité configurée, retourne une réponse d'erreur injectée.</summary>
+        /// <param name="cle">La clé du service.</param>
+        /// <param name="env">L'environnement.</param>
+        /// <param name="req">La requête d'origine.</param>
+        /// <returns>Une <see cref="ReponseBouchonnee" /> d'erreur si le chaos l'impose ; sinon <c>null</c>.</returns>
+        private async Task<ReponseBouchonnee> ApplyChaosAsync(string cle, string env, Request req)
+        {
+            var service = await this.servicesDAO.GetByCleEnvAsync(cle, env).ConfigureAwait(false);
+            if (service == null)
+            {
+                return null;
+            }
+
+            if (service.LatencyMs > 0)
+            {
+                await Task.Delay(service.LatencyMs).ConfigureAwait(false);
+            }
+
+            if (!ChaosPlan.ShouldInjectError(service.ErrorProbability, Random.Shared.Next(100)))
+            {
+                return null;
+            }
+
+            return new ReponseBouchonnee
+                   {
+                       Body = "Erreur simulée (chaos).",
+                       Headers = new List<KeyValue>(),
+                       Request = req,
+                       StatusCode = ChaosPlan.ResolveErrorStatusCode(service.ErrorStatusCode),
+                       ResponsePhrase = "Chaos",
+                   };
+        }
 
         private static string GetFileName(HttpVerb method, Dictionary<string, IEnumerable<string>> query, FileSystemInfo bouchonDir)
         {

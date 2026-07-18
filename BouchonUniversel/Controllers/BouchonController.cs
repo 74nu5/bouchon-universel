@@ -11,6 +11,7 @@ namespace BouchonUniversel.Controllers
     using BouchonUniversel.Models.Bouchons;
     using BouchonUniversel.Utils;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     using Ustilz.Http;
@@ -18,6 +19,7 @@ namespace BouchonUniversel.Controllers
     #endregion
 
     /// <summary>The bouchon controller.</summary>
+    [AllowAnonymous]
     [Route("api/bouchon")]
     public sealed class BouchonController : Controller
     {

@@ -44,8 +44,22 @@
                     <a asp-area="" asp-controller="BouchonsManager" asp-action="DownloadFiles">Télécharger les fichiers</a>
                 </li>
                 <li>
+                    <a asp-area="" asp-controller="BouchonsManager" asp-action="ImportFiles">Importer des fichiers</a>
+                </li>
+                <li>
                     <a asp-area="" asp-controller="Install" asp-action="Index">Installation</a>
                 </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                @if (this.User?.Identity?.IsAuthenticated == true)
+                {
+                    <li><a class="navbar-text">@(this.User.Identity.Name)</a></li>
+                    <li>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="navbar-form">
+                            <button type="submit" class="btn btn-link" style="padding:0;">Déconnexion</button>
+                        </form>
+                    </li>
+                }
             </ul>
         </div>
     </div>

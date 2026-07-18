@@ -11,6 +11,7 @@
     using BouchonUniversel.Models.Bouchons;
     using BouchonUniversel.Utils;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
@@ -121,6 +122,37 @@
             var fileStream = System.IO.File.OpenRead(tempFileName);
 
             return this.File(fileStream, "application/gzip", "files.tar.gz");
+        }
+
+        /// <summary>Affiche le formulaire d'import d'un jeu de mocks (archive tar.gz).</summary>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        [HttpGet("import")]
+        public IActionResult ImportFiles()
+            => this.View();
+
+        /// <summary>Importe un jeu de mocks depuis une archive tar.gz, extraite dans le répertoire des bouchons.</summary>
+        /// <param name="archive">L'archive tar.gz téléversée.</param>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        [HttpPost("import")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportFiles(IFormFile archive)
+        {
+            if (archive == null || archive.Length == 0)
+            {
+                this.ModelState.AddModelError("archive", "Veuillez sélectionner une archive tar.gz.");
+                return this.View();
+            }
+
+            var destination = this.settingsBouchon.GetFilesPath();
+            Directory.CreateDirectory(destination);
+
+            await using (var stream = archive.OpenReadStream())
+            {
+                ZipUtils.ExtractTarGZ(stream, destination);
+            }
+
+            this.TempData["Message"] = "Jeu de mocks importé avec succès.";
+            return this.RedirectToAction(nameof(this.ImportFiles));
         }
 
         /// <summary>GET: Bouchons/Edit/5.</summary>

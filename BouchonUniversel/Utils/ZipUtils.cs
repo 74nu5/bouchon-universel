@@ -3,6 +3,7 @@ namespace BouchonUniversel.Utils
     #region Usings
 
     using System.IO;
+    using System.Text;
 
     using ICSharpCode.SharpZipLib.GZip;
     using ICSharpCode.SharpZipLib.Tar;
@@ -11,6 +12,17 @@ namespace BouchonUniversel.Utils
 
     public static class ZipUtils
     {
+        /// <summary>Extrait une archive tar.gz dans un répertoire de destination.</summary>
+        /// <param name="gzStream">Flux de l'archive tar.gz.</param>
+        /// <param name="destinationDirectory">Répertoire cible.</param>
+        /// <remarks>La traversée de répertoire parent est interdite (protection contre le « tar slip »).</remarks>
+        public static void ExtractTarGZ(Stream gzStream, string destinationDirectory)
+        {
+            using var gzipStream = new GZipInputStream(gzStream);
+            using var tarArchive = TarArchive.CreateInputTarArchive(gzipStream, Encoding.UTF8);
+            tarArchive.ExtractContents(destinationDirectory, false);
+        }
+
         public static void CreateTarGZ(string tgzFilename, string sourceDirectory)
         {
             var outStream = File.Create(tgzFilename);

@@ -1,0 +1,35 @@
+@{
+    this.ViewData["Title"] = "Importer un jeu de mocks";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Importer un jeu de mocks</h2>
+<hr/>
+
+@if (this.TempData["Message"] != null)
+{
+    <div class="alert alert-success">@(this.TempData["Message"])</div>
+}
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<div class="row">
+    <div class="col-md-6">
+        <p class="text-muted">
+            Téléversez une archive <code>tar.gz</code> (au format produit par « Télécharger les fichiers »).
+            Son contenu sera extrait dans le répertoire des bouchons.
+        </p>
+        <form asp-action="ImportFiles" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="archive" accept=".gz,.tgz,application/gzip" class="form-control-file"/>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Importer" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Retour à l'accueil</a>
+</div>

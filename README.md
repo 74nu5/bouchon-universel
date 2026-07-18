@@ -31,6 +31,30 @@ dotnet ef migrations add <NomDeLaMigration> --project BouchonUniversel
 
 La migration est appliquée au prochain lancement de l'application (ou via `dotnet ef database update`).
 
+## Ingénierie du chaos
+
+Chaque service peut simuler une **latence** (en millisecondes) et l'**injection d'erreurs**
+(probabilité 0-100 % + code HTTP renvoyé), configurables depuis les écrans de création/édition d'un service.
+
+## Import / export de jeux de mocks
+
+- **Export** : « Télécharger les fichiers » produit une archive `tar.gz` de toutes les réponses mockées.
+- **Import** : « Importer des fichiers » téléverse une archive `tar.gz` et l'extrait dans le répertoire des bouchons
+  (extraction protégée contre la traversée de répertoire).
+
+## Authentification de l'administration
+
+Les écrans d'administration peuvent être protégés par une authentification par cookie. Elle est **activée
+uniquement** si un identifiant et un mot de passe sont configurés dans la section `Admin` :
+
+```bash
+# via variables d'environnement (recommandé plutôt que appsettings.json)
+Admin__Username=admin
+Admin__Password=<mot-de-passe>
+```
+
+L'API de bouchonnage (`/api/bouchon/*`) et la page d'installation restent toujours accessibles sans authentification.
+
 ## Tests
 
 ```bash

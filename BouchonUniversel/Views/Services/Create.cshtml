@@ -41,6 +41,20 @@
                     </label>
                 </div>
             </div>
+            <hr/>
+            <p class="text-muted">Ingénierie du chaos (facultatif)</p>
+            <div class="form-group">
+                <label asp-for="LatencyMs" class="control-label">Latence simulée (ms)</label>
+                <input asp-for="LatencyMs" class="form-control" type="number" min="0"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="ErrorProbability" class="control-label">Probabilité d'erreur (0-100)</label>
+                <input asp-for="ErrorProbability" class="form-control" type="number" min="0" max="100"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="ErrorStatusCode" class="control-label">Code d'erreur simulé (500 par défaut)</label>
+                <input asp-for="ErrorStatusCode" class="form-control" type="number" min="0"/>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default"/>
             </div>

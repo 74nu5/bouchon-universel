@@ -23,5 +23,14 @@
 
         /// <summary>Gets or sets the url.</summary>
         public string Url { get; set; }
+
+        /// <summary>Gets or sets la latence simulée (en millisecondes) ajoutée avant chaque réponse.</summary>
+        public int LatencyMs { get; set; }
+
+        /// <summary>Gets or sets la probabilité (0-100) d'injecter une erreur simulée.</summary>
+        public int ErrorProbability { get; set; }
+
+        /// <summary>Gets or sets le code HTTP renvoyé lors d'une erreur simulée (500 par défaut si non renseigné).</summary>
+        public int ErrorStatusCode { get; set; }
     }
 }

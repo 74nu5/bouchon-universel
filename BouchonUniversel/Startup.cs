@@ -16,8 +16,11 @@ using System.Linq;
 
     using JetBrains.Annotations;
 
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc.Authorization;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -71,6 +74,9 @@ using System.Linq;
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(
                              endpoints => endpoints.MapControllerRoute(
                                                                        "default",
@@ -82,7 +88,28 @@ using System.Linq;
         [UsedImplicitly]
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            // Authentification admin : activée uniquement si un identifiant et un mot de passe sont configurés (section « Admin »).
+            services.Configure<AdminSettings>(this.Configuration.GetSection("Admin"));
+            var adminSettings = this.Configuration.GetSection("Admin").Get<AdminSettings>() ?? new AdminSettings();
+            var adminAuthEnabled = adminSettings.IsEnabled;
+
+            services.AddMvc(options =>
+            {
+                if (adminAuthEnabled)
+                {
+                    // Toutes les pages d'administration exigent une authentification ; l'API et le compte sont [AllowAnonymous].
+                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                    options.Filters.Add(new AuthorizeFilter(policy));
+                }
+            });
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(options =>
+                    {
+                        options.LoginPath = "/account/login";
+                        options.LogoutPath = "/account/logout";
+                        options.AccessDeniedPath = "/account/login";
+                    });
 
             services.AddOptions();
             services.Configure<ApplicationSettings>(this.Configuration.GetSection("Bouchon"));

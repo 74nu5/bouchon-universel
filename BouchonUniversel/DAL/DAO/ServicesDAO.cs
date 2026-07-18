@@ -42,6 +42,13 @@ namespace BouchonUniversel.DAL.DAO
         public async Task<Uri> GetUrlAsync(string cle, string environnement)
             => new ((await this.Querable.Include(service => service.Environnement).FirstOrDefaultAsync(service => service.Cle == cle && service.Environnement.Nom == environnement))?.Url ?? string.Empty);
 
+        /// <summary>Récupère le service correspondant à une clé et un environnement (avec ses paramètres de chaos).</summary>
+        /// <param name="cle">The cle.</param>
+        /// <param name="environnement">The environnement.</param>
+        /// <returns>The <see cref="Service" /> ou <c>null</c>.</returns>
+        public async Task<Service> GetByCleEnvAsync(string cle, string environnement)
+            => await this.Querable.Include(service => service.Environnement).FirstOrDefaultAsync(service => service.Cle == cle && service.Environnement.Nom == environnement);
+
         /// <summary>Update dates is enable.</summary>
         /// <param name="cle">The cle.</param>
         /// <returns>The <see cref="bool" />.</returns>
