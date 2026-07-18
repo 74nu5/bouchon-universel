@@ -21,6 +21,10 @@ jobs:
         dotnet-version: '10.0.x'
     - name: Restore
       run: dotnet restore
+    - name: Vulnerability scan
+      run: |
+        dotnet list package --vulnerable --include-transitive 2>&1 | tee vuln.txt
+        ! grep -q "has the following vulnerable" vuln.txt
     - name: Build
       run: dotnet build --configuration Debug --no-restore
     - name: Restore tools

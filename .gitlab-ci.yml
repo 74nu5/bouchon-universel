@@ -18,6 +18,12 @@ migrations-check:
     - 'dotnet tool restore'
     - 'dotnet ef migrations has-pending-model-changes --project BouchonUniversel --startup-project BouchonUniversel'
 
+vuln-scan:
+  stage: test
+  script:
+    - 'dotnet list package --vulnerable --include-transitive | tee vuln.txt'
+    - '! grep -q "has the following vulnerable" vuln.txt'
+
 test:
   stage: test
   script:

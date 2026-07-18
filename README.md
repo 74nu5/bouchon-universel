@@ -18,9 +18,27 @@ permissif (appel depuis n'importe quelle origine, préflight OPTIONS géré). En
 un code HTTP sémantique (404 si la clé ou l'environnement est introuvable, 500 sinon). Le contenu des
 réponses mockées peut être édité depuis la page de détail d'un service.
 
+Les réponses rejouées peuvent être **templatées** (activable par service) : jetons `{{route}}`,
+`{{query.NOM}}`, `{{header.NOM}}`, `{{guid}}`, `{{now}}` / `{{now:FORMAT}}`. L'ingénierie du chaos couvre
+aussi la **coupure de connexion** et la **réponse tronquée**.
+
 Une sonde de santé est exposée sur `/health` (vérifie aussi l'accès à la base). Toutes les réponses
 portent des en-têtes de sécurité (CSP, `X-Content-Type-Options`, `X-Frame-Options`, HSTS hors développement).
 Une sauvegarde de la base peut être téléchargée depuis « Sauvegarder la base » (copie SQLite cohérente).
+Les journaux sont **structurés** (Serilog) et les modifications d'administration sont **auditées**.
+
+## Conteneur
+
+```bash
+# Lancement complet avec volume persistant (base + fichiers de bouchons)
+docker compose up --build            # écoute sur http://localhost:8080
+
+# Image multi-architecture
+docker buildx build --platform linux/amd64,linux/arm64 -t bouchon-universel:latest .
+```
+
+En conteneur, l'application écoute selon `ASPNETCORE_URLS` (ex. `http://+:8080`) ; en local sans cette
+variable, elle écoute sur `https://*:5555`.
 
 ## Base de données
 
@@ -68,6 +86,9 @@ Admin__PasswordHash=<hash-généré>
 
 Un mot de passe en clair (`Admin:Password`) reste accepté en dépannage/développement (comparaison à temps
 constant), mais `Admin:PasswordHash` est le chemin recommandé.
+
+Un **compte lecteur** facultatif (`Admin:ViewerUsername` / `Admin:ViewerPasswordHash`) donne un accès en
+**lecture seule** : les modifications (création/édition/suppression, import) exigent le rôle administrateur.
 
 L'API de bouchonnage (`/api/bouchon/*`) et la page d'installation restent toujours accessibles sans authentification.
 

@@ -52,8 +52,16 @@ namespace BouchonUniversel
                                                                                                                  .ReadFrom.Configuration(context.Configuration)
                                                                                                                  .Enrich.FromLogContext()
                                                                                                                  .WriteTo.Console(new CompactJsonFormatter()))
-                                                                          .ConfigureWebHostDefaults(
-                                                                                                    builder => builder.UseStartup<Startup>().UseUrls("https://*:5555"));
+                                                                          .ConfigureWebHostDefaults(builder =>
+                                                                          {
+                                                                              builder.UseStartup<Startup>();
+
+                                                                              // URL par défaut si ASPNETCORE_URLS n'est pas fourni (permet la configuration en conteneur, ex. http://+:8080).
+                                                                              if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+                                                                              {
+                                                                                  builder.UseUrls("https://*:5555");
+                                                                              }
+                                                                          });
 
         /// <summary>The initialize data.</summary>
         /// <param name="host">The host.</param>
