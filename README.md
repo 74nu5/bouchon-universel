@@ -1,3 +1,15 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="BouchonUniversel.Docs/wwwroot/logo-dark.svg">
+    <img alt="Bouchon Universel" src="BouchonUniversel.Docs/wwwroot/logo.svg" height="72">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://bouchon-universel.74nu5.dev">Documentation</a> ·
+  <a href="https://github.com/74nu5/bouchon-universel/releases">Releases</a>
+</p>
+
 # bouchon-universel
 
 Application web ASP.NET Core permettant de créer et gérer des « bouchons » HTTP (services simulés / mocks). Elle expose une API pour définir des services, des environnements et leurs réponses, avec un stockage SQLite via Entity Framework Core et une documentation Swagger.

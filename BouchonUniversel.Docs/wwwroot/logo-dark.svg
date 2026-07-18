@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 80" role="img" aria-label="Bouchon Universel">
+  <defs>
+    <linearGradient id="bu-logo-grad-d" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f8cff"/>
+      <stop offset="1" stop-color="#6610f2"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(8,8)">
+    <rect width="64" height="64" rx="14" fill="url(#bu-logo-grad-d)"/>
+    <g fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24 13v11M40 13v11"/>
+      <path d="M17 24h30v5a15 15 0 0 1-30 0z"/>
+      <path d="M32 44v8"/>
+    </g>
+  </g>
+  <text x="88" y="49" font-family="'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif" font-size="30" font-weight="600" fill="#f0f3f6">Bouchon Universel</text>
+</svg>
