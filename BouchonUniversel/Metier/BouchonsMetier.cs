@@ -22,6 +22,7 @@ namespace BouchonUniversel.Metier
 
     using JetBrains.Annotations;
 
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
 
     using Ustilz.Extensions;
@@ -58,6 +59,8 @@ namespace BouchonUniversel.Metier
 
         private readonly IHttpClientFactory httpClientFactory;
 
+        private readonly IHttpContextAccessor httpContextAccessor;
+
         /// <summary>Initializes a new instance of the <see cref="BouchonsMetier" /> class.</summary>
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
@@ -67,7 +70,8 @@ namespace BouchonUniversel.Metier
         /// <param name="fileService">The file service.</param>
         /// <param name="patternDateFormatProvider">Fournit (en cache) la configuration des patterns de dates.</param>
         /// <param name="httpClientFactory">Fabrique de clients HTTP pour les verbes PUT/DELETE/PATCH (non gérés par Ustilz.Http).</param>
-        public BouchonsMetier(HttpService http, ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService, PatternDateFormatProvider patternDateFormatProvider, IHttpClientFactory httpClientFactory)
+        /// <param name="httpContextAccessor">Accès au contexte HTTP (coupure de connexion simulée).</param>
+        public BouchonsMetier(HttpService http, ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService, PatternDateFormatProvider patternDateFormatProvider, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.servicesDAO = servicesDAO;
@@ -76,6 +80,7 @@ namespace BouchonUniversel.Metier
             this.fileService = fileService;
             this.patternDateFormatProvider = patternDateFormatProvider;
             this.httpClientFactory = httpClientFactory;
+            this.httpContextAccessor = httpContextAccessor;
             this.http = http;
         }
 
@@ -218,11 +223,26 @@ namespace BouchonUniversel.Metier
                 var req = new Request { Headers = headers.ToKeyValueList(), Query = query.ToKeyValueList(), Route = route, Body = body };
                 var requestIsActivated = await this.ServiceIsActivatedAsync(cle, env).ConfigureAwait(false);
 
-                /* Ingénierie du chaos : latence et injection d'erreurs configurées sur le service. */
-                var chaosResponse = await this.ApplyChaosAsync(cle, env, req).ConfigureAwait(false);
-                if (chaosResponse != null)
+                var service = await this.servicesDAO.GetByCleEnvAsync(cle, env).ConfigureAwait(false);
+
+                /* Ingénierie du chaos : latence, coupure de connexion et injection d'erreurs configurées sur le service. */
+                if (service != null)
                 {
-                    return (chaosResponse, null);
+                    if (service.LatencyMs > 0)
+                    {
+                        await Task.Delay(service.LatencyMs).ConfigureAwait(false);
+                    }
+
+                    if (ChaosPlan.ShouldResetConnection(service.ConnectionResetProbability, Random.Shared.Next(100)))
+                    {
+                        this.httpContextAccessor.HttpContext?.Abort();
+                        return (null, null);
+                    }
+
+                    if (ChaosPlan.ShouldInjectError(service.ErrorProbability, Random.Shared.Next(100)))
+                    {
+                        return (BuildChaosError(service, req), null);
+                    }
                 }
 
                 /* Intégration de la mise à jour de la réponse */
@@ -248,6 +268,12 @@ namespace BouchonUniversel.Metier
                         responseBouchonne.Body = responseBouchonne.Body.AjustDates(DateTime.Now.ToString(CultureInfo.CurrentCulture), pdfc.Patterns);
                     }
 
+                    if (service?.Templating == true)
+                    {
+                        responseBouchonne.Body = ResponseTemplate.Apply(responseBouchonne.Body, route, FirstValues(query), FirstValues(headers));
+                    }
+
+                    ApplyResponseChaos(service, responseBouchonne);
                     return (responseBouchonne, null);
                 }
 
@@ -327,6 +353,7 @@ namespace BouchonUniversel.Metier
                     reponse.Body = reponse.Body.AjustDates(DateTime.Now.ToString(CultureInfo.CurrentCulture), pdfc.Patterns);
                 }
 
+                ApplyResponseChaos(service, reponse);
                 return (reponse, null);
             }
             catch (FileNotFoundException ex)
@@ -368,38 +395,36 @@ namespace BouchonUniversel.Metier
             Request req)
             => await PassthroughHttp.SendAsync(this.httpClientFactory.CreateClient(), httpMethod, url, headers, body, req).ConfigureAwait(false);
 
-        /// <summary>Applique la latence simulée puis, selon la probabilité configurée, retourne une réponse d'erreur injectée.</summary>
-        /// <param name="cle">La clé du service.</param>
-        /// <param name="env">L'environnement.</param>
+        /// <summary>Construit la réponse d'erreur injectée par le chaos.</summary>
+        /// <param name="service">Le service concerné.</param>
         /// <param name="req">La requête d'origine.</param>
-        /// <returns>Une <see cref="ReponseBouchonnee" /> d'erreur si le chaos l'impose ; sinon <c>null</c>.</returns>
-        private async Task<ReponseBouchonnee> ApplyChaosAsync(string cle, string env, Request req)
+        /// <returns>The <see cref="ReponseBouchonnee" />.</returns>
+        private static ReponseBouchonnee BuildChaosError(Service service, Request req)
+            => new ()
+               {
+                   Body = "Erreur simulée (chaos).",
+                   Headers = new List<KeyValue>(),
+                   Request = req,
+                   StatusCode = ChaosPlan.ResolveErrorStatusCode(service.ErrorStatusCode),
+                   ResponsePhrase = "Chaos",
+               };
+
+        /// <summary>Applique une éventuelle troncature (réponse partielle/corrompue) selon la configuration du service.</summary>
+        /// <param name="service">Le service concerné (peut être nul).</param>
+        /// <param name="reponse">La réponse à altérer (peut être nulle).</param>
+        private static void ApplyResponseChaos(Service service, ReponseBouchonnee reponse)
         {
-            var service = await this.servicesDAO.GetByCleEnvAsync(cle, env).ConfigureAwait(false);
-            if (service == null)
+            if (service != null && reponse != null && ChaosPlan.ShouldTruncate(service.TruncateResponseProbability, Random.Shared.Next(100)))
             {
-                return null;
+                reponse.Body = ChaosPlan.Truncate(reponse.Body);
             }
-
-            if (service.LatencyMs > 0)
-            {
-                await Task.Delay(service.LatencyMs).ConfigureAwait(false);
-            }
-
-            if (!ChaosPlan.ShouldInjectError(service.ErrorProbability, Random.Shared.Next(100)))
-            {
-                return null;
-            }
-
-            return new ReponseBouchonnee
-                   {
-                       Body = "Erreur simulée (chaos).",
-                       Headers = new List<KeyValue>(),
-                       Request = req,
-                       StatusCode = ChaosPlan.ResolveErrorStatusCode(service.ErrorStatusCode),
-                       ResponsePhrase = "Chaos",
-                   };
         }
+
+        /// <summary>Réduit un dictionnaire multi-valeurs à sa première valeur par clé (pour le templating).</summary>
+        /// <param name="source">Le dictionnaire source.</param>
+        /// <returns>Un dictionnaire clé -&gt; première valeur.</returns>
+        private static IReadOnlyDictionary<string, string> FirstValues(Dictionary<string, IEnumerable<string>> source)
+            => source.ToDictionary(pair => pair.Key, pair => pair.Value?.FirstOrDefault() ?? string.Empty);
 
         private static string GetFileName(HttpVerb method, Dictionary<string, IEnumerable<string>> query, FileSystemInfo bouchonDir)
         {

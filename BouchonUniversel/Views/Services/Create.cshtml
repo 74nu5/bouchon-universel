@@ -56,6 +56,21 @@
                 <input asp-for="ErrorStatusCode" class="form-control" type="number" min="0"/>
             </div>
             <div class="form-group">
+                <label asp-for="ConnectionResetProbability" class="control-label">Probabilité de coupure de connexion (0-100)</label>
+                <input asp-for="ConnectionResetProbability" class="form-control" type="number" min="0" max="100"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="TruncateResponseProbability" class="control-label">Probabilité de réponse tronquée (0-100)</label>
+                <input asp-for="TruncateResponseProbability" class="form-control" type="number" min="0" max="100"/>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Templating"/> Activer le templating des réponses ({{query.x}}, {{header.x}}, {{guid}}, {{now}})
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default"/>
             </div>
         </form>

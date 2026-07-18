@@ -32,5 +32,14 @@
 
         /// <summary>Gets or sets le code HTTP renvoyé lors d'une erreur simulée (500 par défaut si non renseigné).</summary>
         public int ErrorStatusCode { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether le templating des réponses est activé (substitution de jetons {{...}}).</summary>
+        public bool Templating { get; set; }
+
+        /// <summary>Gets or sets la probabilité (0-100) de couper brutalement la connexion (panne réseau simulée).</summary>
+        public int ConnectionResetProbability { get; set; }
+
+        /// <summary>Gets or sets la probabilité (0-100) de renvoyer une réponse tronquée (partielle/corrompue).</summary>
+        public int TruncateResponseProbability { get; set; }
     }
 }

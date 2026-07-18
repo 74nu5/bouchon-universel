@@ -55,7 +55,7 @@
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("Cle,EnvironnementId,Url,Id,IsEnabled,UpdateDates,LatencyMs,ErrorProbability,ErrorStatusCode")]
+            [Bind("Cle,EnvironnementId,Url,Id,IsEnabled,UpdateDates,LatencyMs,ErrorProbability,ErrorStatusCode,Templating,ConnectionResetProbability,TruncateResponseProbability")]
             Service service)
         {
             if (this.ModelState.IsValid)
@@ -202,7 +202,7 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             long id,
-            [Bind("Cle,EnvironnementId,Url,Id,IsEnabled,UpdateDates,LatencyMs,ErrorProbability,ErrorStatusCode")]
+            [Bind("Cle,EnvironnementId,Url,Id,IsEnabled,UpdateDates,LatencyMs,ErrorProbability,ErrorStatusCode,Templating,ConnectionResetProbability,TruncateResponseProbability")]
             Service service)
         {
             if (id != service.Id)

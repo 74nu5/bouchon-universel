@@ -165,6 +165,12 @@ namespace BouchonUniversel.Controllers
                 return this.StatusCode((int)erreur.StatusCode, erreur.CodeMessage);
             }
 
+            if (result == null)
+            {
+                // La connexion a été coupée par le chaos : rien à écrire.
+                return new EmptyResult();
+            }
+
             this.Response.Headers["Site"] = "Bouchon-Universel";
             this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
 
