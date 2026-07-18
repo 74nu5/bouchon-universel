@@ -214,7 +214,7 @@
 
   <div class="grid g3" style="margin-top:16px">
     <div class="card"><h3>🧩 Stack</h3><p class="kv">C# / ASP.NET Core MVC sur <strong>.NET 10</strong>, EF Core 10 + SQLite, Swashbuckle 9 (Swagger), Newtonsoft.Json 13, SharpZipLib, xUnit, et la librairie maison <strong>Ustilz</strong> (Http/Json/Xml/Extensions).</p></div>
-    <div class="card"><h3>🗄️ Persistance</h3><p class="kv">Métadonnées (services, environnements, settings) en <strong>SQLite</strong> via EF Core. Réponses mockées stockées en <strong>fichiers XML</strong> sur le disque, hors base.</p></div>
+    <div class="card"><h3>🗄️ Persistance</h3><p class="kv">Métadonnées (services, environnements, settings) en <strong>SQLite</strong> via EF Core, schéma géré par <strong>migrations EF</strong> (appliquées au démarrage). Réponses mockées stockées en <strong>fichiers XML</strong> sur le disque, hors base.</p></div>
     <div class="card"><h3>🚀 Industrialisation</h3><p class="kv"><strong>Docker</strong>, publication single-file self-contained (linux-x64, trimming + ReadyToRun), CI <strong>GitHub Actions</strong> + <strong>GitLab CI</strong>, StyleCop &amp; analyseurs activés.</p></div>
   </div>
 
@@ -262,7 +262,7 @@
         <li><span class="tag t-ok">Résolu</span> <s>lecture disque à chaque requête</s> — config mise en cache</li>
         <li><span class="tag t-ok">Résolu</span> <s>pas de tests unitaires</s> — projet xUnit ajouté</li>
         <li><span class="tag t-warn">Couverture verbes</span> seuls GET/POST ; PUT/DELETE/PATCH en TODO</li>
-        <li><span class="tag t-ok">Résolu</span> <s>init base cassée au 1<sup>er</sup> lancement</s> — schéma auto au démarrage + seed config</li>
+        <li><span class="tag t-ok">Résolu</span> <s>init base cassée au 1<sup>er</sup> lancement</s> — migrations EF appliquées au démarrage + seed config</li>
         <li><span class="tag t-warn">Gestion d'erreurs</span> tout renvoyé en <code>405</code> avec code interne</li>
       </ul>
     </div>

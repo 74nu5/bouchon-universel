@@ -6,6 +6,7 @@
 
     using BouchonUniversel.Models;
 
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
 
     #endregion
@@ -18,7 +19,9 @@
         /// <param name="options">The options.</param>
         public static void Init(DataContext context, IOptions<ApplicationSettings> options)
         {
-            context.Database.EnsureCreated();
+            // Applique les migrations en attente (crée le schéma et la table d'historique __EFMigrationsHistory).
+            // NB : ne jamais appeler EnsureCreated() avant Migrate() — cela court-circuiterait les migrations.
+            context.Database.Migrate();
 
             if (context.SettingsBouchon.Any())
             {

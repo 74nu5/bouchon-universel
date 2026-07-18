@@ -13,6 +13,20 @@ dotnet run --project BouchonUniversel
 
 L'interface Swagger de l'API est disponible sur `/swagger`. Un `Dockerfile` est également fourni pour une exécution en conteneur.
 
+## Base de données
+
+Le schéma SQLite est géré par les **migrations Entity Framework Core**. Les migrations en attente
+sont appliquées automatiquement au démarrage (`Database.Migrate()`), et les paramètres initiaux sont
+amorcés depuis `appsettings.json`.
+
+Pour faire évoluer le schéma après modification du modèle :
+
+```bash
+dotnet ef migrations add <NomDeLaMigration> --project BouchonUniversel
+```
+
+La migration est appliquée au prochain lancement de l'application (ou via `dotnet ef database update`).
+
 ## Tests
 
 ```bash
