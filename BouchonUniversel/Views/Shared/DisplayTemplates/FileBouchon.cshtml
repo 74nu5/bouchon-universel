@@ -1,7 +1,8 @@
-﻿@using System.Web
+@using System.Web
 @model BouchonUniversel.Models.ModelsView.FileBouchon
 
 <li>
     <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
     <a asp-controller="Services" asp-action="DownloadFile" asp-route-name="@(this.Model.FullName)">@HttpUtility.UrlDecode(this.Model.Name)</a>
+    <a asp-controller="Services" asp-action="EditFile" asp-route-path="@(this.Model.FullName)" class="small">(éditer)</a>
 </li>

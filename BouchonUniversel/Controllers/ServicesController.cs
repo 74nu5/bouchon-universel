@@ -10,6 +10,7 @@
     using BouchonUniversel.Metier;
     using BouchonUniversel.Models.Bouchons;
     using BouchonUniversel.Models.ModelsView;
+    using BouchonUniversel.Utils;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,13 +27,18 @@
         /// <summary>The metier.</summary>
         private readonly BouchonsMetier metier;
 
+        /// <summary>The settings bouchon metier (fournit la racine des fichiers de bouchons).</summary>
+        private readonly SettingsBouchonMetier settingsBouchon;
+
         /// <summary>Initializes a new instance of the <see cref="ServicesController" /> class.</summary>
         /// <param name="context">The context.</param>
         /// <param name="metier">The metier.</param>
-        public ServicesController(DataContext context, BouchonsMetier metier)
+        /// <param name="settingsBouchon">The settings bouchon metier.</param>
+        public ServicesController(DataContext context, BouchonsMetier metier, SettingsBouchonMetier settingsBouchon)
         {
             this.context = context;
             this.metier = metier;
+            this.settingsBouchon = settingsBouchon;
         }
 
         /// <summary>The create.</summary>
@@ -121,7 +127,52 @@
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="IActionResult" />.</returns>
         public IActionResult DownloadFile(string name)
-            => this.PhysicalFile(name, "application/xml", Path.GetFileName(name));
+        {
+            if (!BouchonFilePath.TryResolve(this.settingsBouchon.GetFilesPath(), name, out var fullPath) || !System.IO.File.Exists(fullPath))
+            {
+                return this.NotFound("Fichier introuvable ou hors du répertoire des bouchons.");
+            }
+
+            return this.PhysicalFile(fullPath, "application/xml", Path.GetFileName(fullPath));
+        }
+
+        /// <summary>Affiche le formulaire d'édition du contenu d'une réponse bouchonnée.</summary>
+        /// <param name="path">Chemin du fichier de réponse à éditer.</param>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        [HttpGet]
+        public async Task<IActionResult> EditFile(string path)
+        {
+            if (!BouchonFilePath.TryResolve(this.settingsBouchon.GetFilesPath(), path, out var fullPath) || !System.IO.File.Exists(fullPath))
+            {
+                return this.NotFound("Fichier introuvable ou hors du répertoire des bouchons.");
+            }
+
+            var model = new EditFileViewModel
+                        {
+                            Path = fullPath,
+                            FileName = Path.GetFileName(fullPath),
+                            Content = await System.IO.File.ReadAllTextAsync(fullPath).ConfigureAwait(false),
+                        };
+
+            return this.View(model);
+        }
+
+        /// <summary>Enregistre le contenu édité d'une réponse bouchonnée.</summary>
+        /// <param name="model">Le modèle de vue contenant le chemin et le nouveau contenu.</param>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditFile(EditFileViewModel model)
+        {
+            if (model == null || !BouchonFilePath.TryResolve(this.settingsBouchon.GetFilesPath(), model.Path, out var fullPath) || !System.IO.File.Exists(fullPath))
+            {
+                return this.NotFound("Fichier introuvable ou hors du répertoire des bouchons.");
+            }
+
+            await System.IO.File.WriteAllTextAsync(fullPath, model.Content ?? string.Empty).ConfigureAwait(false);
+            this.TempData["Message"] = "Fichier enregistré.";
+            return this.RedirectToAction(nameof(this.EditFile), new { path = fullPath });
+        }
 
         /// <summary>The edit.</summary>
         /// <param name="id">The id.</param>

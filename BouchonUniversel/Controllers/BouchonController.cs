@@ -2,14 +2,13 @@ namespace BouchonUniversel.Controllers
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
     using System.Web;
 
     using BouchonUniversel.Metier;
+    using BouchonUniversel.Models.Bouchons;
     using BouchonUniversel.Utils;
 
     using Microsoft.AspNetCore.Mvc;
@@ -30,12 +29,6 @@ namespace BouchonUniversel.Controllers
         public BouchonController(BouchonsMetier metier)
             => this.metier = metier;
 
-        /// <summary>La méthode DELETE n'est pas implémentée.</summary>
-        /// <param name="id">The id.</param>
-        [HttpDelete("NotImplemented")]
-        public void Delete(int? id)
-            => throw new NotImplementedException();
-
         /// <summary>Méthode get du bouchon (ne gère pas l'envoi d'un body en get).</summary>
         /// <remarks>
         ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
@@ -46,29 +39,17 @@ namespace BouchonUniversel.Controllers
         /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
         /// <param name="query">La paramètre de la requête.</param>
         /// <returns>Retourne la réponse du service associé au bouchon si celui-ci n'est pas activé, retourne le bouchon sinon.</returns>
-        /// <response code="405">
-        ///     -   Si la clé du service n'a pas été trouvée (un méssage spécifique est associé au retour)
-        ///     -   Si l'environnement n'a pas été trouve (un méssage spécifique est associé au retour)
-        ///     -   Si le fichier de bouchon n'a pas été trouvé (un méssage spécifique est associé au retour)
-        ///     -   Si le service associé au bouchon répond 405.
-        /// </response>
+        /// <response code="404">Si la clé du service ou l'environnement n'a pas été trouvé.</response>
+        /// <response code="500">En cas d'erreur inattendue lors du traitement de la requête.</response>
         [HttpGet("{cle}/{env}/{*route}")]
         [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(string), 405)]
+        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Get([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
             var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
             var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers).ConfigureAwait(false);
-
-            if (erreur != null)
-            {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
-            }
-
-            this.Response.Headers["Site"] = "Bouchon-Universel";
-            this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
-
-            return this.StatusCode(result.StatusCode, result.Body.ResolveResponse(this.Response.ContentType));
+            return this.BuildResponse(result, erreur);
         }
 
         /// <summary>The healthcheck.</summary>
@@ -78,33 +59,94 @@ namespace BouchonUniversel.Controllers
             => "OK";
 
         /// <summary>Méthode post du bouchon.</summary>
-        /// <remarks>
-        ///     Les headers passés en entrée sont transmis au service associé au bouchon ; les headers renvoyés par le service sont
-        ///     écrits dans la réponse.
-        /// </remarks>
         /// <param name="cle">La clé du service créé.</param>
         /// <param name="env">L'environnement créé.</param>
-        /// <param name="route">La route du service à appeler (tout ce qu'il y a après l'environnement est pris en compte).</param>
+        /// <param name="route">La route du service à appeler.</param>
         /// <param name="query">La paramètre de la requête.</param>
         /// <returns>Retourne la réponse du service associé au bouchon si celui-ci n'est pas activé, retourne le bouchon sinon.</returns>
-        /// <response code="405">
-        ///     -   Si la clé du service n'a pas été trouvée (un méssage spécifique est associé au retour)
-        ///     -   Si l'environnement n'a pas été trouve (un méssage spécifique est associé au retour)
-        ///     -   Si le fichier de bouchon n'a pas été trouvé (un méssage spécifique est associé au retour)
-        ///     -   Si le service associé au bouchon répond 405.
-        /// </response>
+        /// <response code="404">Si la clé du service ou l'environnement n'a pas été trouvé.</response>
+        /// <response code="500">En cas d'erreur inattendue lors du traitement de la requête.</response>
         [HttpPost("{cle}/{env}/{*route}")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Post([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
         {
-            var headers = this.Request.Headers.ToDictionary(pair => pair.Key, pair => pair.Value.AsEnumerable());
+            var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
+            var body = await this.Request.GetRawBodyStringAsync().ConfigureAwait(false);
+            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, body).ConfigureAwait(false);
+            return this.BuildResponse(result, erreur);
+        }
 
-            // On récupère le body de cette façon pour prendre en compte tous les genres de body (texte, json, binaires, ...).
-            var (result, erreur) = await this.metier.ProcessPostRequestAsync(cle, env, route, query, headers, await this.Request.GetRawBodyStringAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        /// <summary>Méthode put du bouchon.</summary>
+        /// <param name="cle">La clé du service créé.</param>
+        /// <param name="env">L'environnement créé.</param>
+        /// <param name="route">La route du service à appeler.</param>
+        /// <param name="query">La paramètre de la requête.</param>
+        /// <returns>Retourne la réponse du service associé au bouchon si celui-ci n'est pas activé, retourne le bouchon sinon.</returns>
+        /// <response code="404">Si la clé du service ou l'environnement n'a pas été trouvé.</response>
+        /// <response code="500">En cas d'erreur inattendue lors du traitement de la requête.</response>
+        [HttpPut("{cle}/{env}/{*route}")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(string), 500)]
+        public async Task<IActionResult> Put([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
+        {
+            var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
+            var body = await this.Request.GetRawBodyStringAsync().ConfigureAwait(false);
+            var (result, erreur) = await this.metier.ProcessPutRequestAsync(cle, env, route, query, headers, body).ConfigureAwait(false);
+            return this.BuildResponse(result, erreur);
+        }
 
-            // ReSharper disable once StyleCop.SA1126
+        /// <summary>Méthode patch du bouchon.</summary>
+        /// <param name="cle">La clé du service créé.</param>
+        /// <param name="env">L'environnement créé.</param>
+        /// <param name="route">La route du service à appeler.</param>
+        /// <param name="query">La paramètre de la requête.</param>
+        /// <returns>Retourne la réponse du service associé au bouchon si celui-ci n'est pas activé, retourne le bouchon sinon.</returns>
+        /// <response code="404">Si la clé du service ou l'environnement n'a pas été trouvé.</response>
+        /// <response code="500">En cas d'erreur inattendue lors du traitement de la requête.</response>
+        [HttpPatch("{cle}/{env}/{*route}")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(string), 500)]
+        public async Task<IActionResult> Patch([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
+        {
+            var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
+            var body = await this.Request.GetRawBodyStringAsync().ConfigureAwait(false);
+            var (result, erreur) = await this.metier.ProcessPatchRequestAsync(cle, env, route, query, headers, body).ConfigureAwait(false);
+            return this.BuildResponse(result, erreur);
+        }
+
+        /// <summary>Méthode delete du bouchon.</summary>
+        /// <param name="cle">La clé du service créé.</param>
+        /// <param name="env">L'environnement créé.</param>
+        /// <param name="route">La route du service à appeler.</param>
+        /// <param name="query">La paramètre de la requête.</param>
+        /// <returns>Retourne la réponse du service associé au bouchon si celui-ci n'est pas activé, retourne le bouchon sinon.</returns>
+        /// <response code="404">Si la clé du service ou l'environnement n'a pas été trouvé.</response>
+        /// <response code="500">En cas d'erreur inattendue lors du traitement de la requête.</response>
+        [HttpDelete("{cle}/{env}/{*route}")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(string), 500)]
+        public async Task<IActionResult> Delete([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
+        {
+            var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
+            var body = await this.Request.GetRawBodyStringAsync().ConfigureAwait(false);
+            var (result, erreur) = await this.metier.ProcessDeleteRequestAsync(cle, env, route, query, headers, body).ConfigureAwait(false);
+            return this.BuildResponse(result, erreur);
+        }
+
+        /// <summary>Construit la réponse HTTP à partir du résultat du métier, en propageant le statut sémantique en cas d'erreur.</summary>
+        /// <param name="result">La réponse bouchonnée (peut être nulle en cas d'erreur).</param>
+        /// <param name="erreur">L'erreur éventuelle.</param>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        private IActionResult BuildResponse(ReponseBouchonnee result, ResponseErreur erreur)
+        {
             if (erreur != null)
             {
-                return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
+                return this.StatusCode((int)erreur.StatusCode, erreur.CodeMessage);
             }
 
             this.Response.Headers["Site"] = "Bouchon-Universel";
@@ -112,11 +154,5 @@ namespace BouchonUniversel.Controllers
 
             return this.StatusCode(result.StatusCode, result.Body.ResolveResponse(this.Response.ContentType));
         }
-
-        /// <summary>La méthode PUT n'est pas implémentée.</summary>
-        /// <param name="value">The value.</param>
-        [HttpPut("NotImplemented")]
-        public void Put([FromBody] string value)
-            => throw new NotImplementedException();
     }
 }

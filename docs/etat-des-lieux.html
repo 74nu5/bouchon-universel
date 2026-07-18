@@ -146,6 +146,16 @@
     </ul>
   </div>
 
+  <div class="card" style="border-left:4px solid var(--green); margin-top:16px">
+    <h3 style="color:var(--green)">✅ Mise à jour — recommandations moyen terme appliquées</h3>
+    <ul class="clean">
+      <li><strong>Verbes PUT / DELETE / PATCH</strong> implémentés (relais <code>HttpClient</code> pour les verbes non couverts par Ustilz.Http), avec enregistrement/rejeu comme GET/POST</li>
+      <li><strong>Codes d'erreur HTTP sémantiques</strong> : 404 (clé/environnement introuvable), 500 (erreur inattendue) au lieu d'un 405 systématique</li>
+      <li><strong>Interface d'édition des réponses mockées</strong> : consultation et modification du contenu des fichiers de bouchon depuis le détail d'un service, avec protection anti-traversée de répertoire</li>
+      <li>Couverture de tests portée à <strong>23 tests</strong> (mapping d'erreurs, sécurité des chemins, relais des nouveaux verbes)</li>
+    </ul>
+  </div>
+
   <!-- ================= FONCTIONNEMENT ================= -->
   <h2><span class="ic">⚙️</span> Comment ça marche</h2>
   <p class="lead">Chaque appel entrant suit la route <code>/api/bouchon/{clé}/{env}/{*route}</code>. Le comportement dépend de l'activation du service&nbsp;:</p>
@@ -187,12 +197,12 @@
     <div class="card">
       <h3>API de bouchonnage</h3>
       <ul class="clean">
-        <li>Verbes <span class="tag t-ok">GET</span> et <span class="tag t-ok">POST</span> pleinement gérés</li>
+        <li>Verbes <span class="tag t-ok">GET</span> <span class="tag t-ok">POST</span> <span class="tag t-ok">PUT</span> <span class="tag t-ok">PATCH</span> <span class="tag t-ok">DELETE</span> gérés</li>
         <li>Transmission bidirectionnelle des <strong>en-têtes</strong> HTTP</li>
         <li>Prise en charge de tout type de corps (texte, JSON, binaire)</li>
         <li>Résolution automatique du format de sortie (JSON / XML / brut)</li>
+        <li>Codes d'erreur <strong>sémantiques</strong> (404 clé/env introuvable, 500 inattendu)</li>
         <li>Endpoint <code>healthcheck</code> et documentation <strong>Swagger</strong> sur <code>/swagger</code></li>
-        <li>Verbes PUT, DELETE, PATCH, HEAD… <span class="tag t-no">non implémentés (TODO)</span></li>
       </ul>
     </div>
   </div>
@@ -264,7 +274,8 @@
         <li><span class="tag t-ok">Résolu</span> <s>pas de tests unitaires</s> — projet xUnit ajouté</li>
         <li><span class="tag t-warn">Couverture verbes</span> seuls GET/POST ; PUT/DELETE/PATCH en TODO</li>
         <li><span class="tag t-ok">Résolu</span> <s>init base cassée au 1<sup>er</sup> lancement</s> — migrations EF appliquées au démarrage + seed config</li>
-        <li><span class="tag t-warn">Gestion d'erreurs</span> tout renvoyé en <code>405</code> avec code interne</li>
+        <li><span class="tag t-ok">Résolu</span> <s>seuls GET/POST</s> — PUT/DELETE/PATCH implémentés</li>
+        <li><span class="tag t-ok">Résolu</span> <s>tout renvoyé en 405</s> — codes HTTP sémantiques (404/500)</li>
       </ul>
     </div>
   </div>
@@ -274,7 +285,7 @@
   <div class="card">
     <div class="score-row"><div class="name">Concept &amp; utilité</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Architecture / lisibilité</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
-    <div class="score-row"><div class="name">Couverture fonctionnelle</div><div class="bar"><span style="width:60%"></span></div><div class="val">6/10</div></div>
+    <div class="score-row"><div class="name">Couverture fonctionnelle</div><div class="bar"><span style="width:85%"></span></div><div class="val">8.5/10</div></div>
     <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:65%"></span></div><div class="val">6.5/10</div></div>
     <div class="score-row"><div class="name">Actualité technique</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Industrialisation (CI/Docker)</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
@@ -284,7 +295,7 @@
   <h2><span class="ic">🧱</span> Recommandations</h2>
   <div class="grid g3">
     <div class="card" style="border-left:4px solid var(--green)"><h3 style="color:var(--green)">Court terme ✅ fait</h3><ul class="clean"><li><s>Migrer vers une version LTS</s> → .NET 10</li><li><s>Mettre en cache la config des patterns</s></li><li><s>Ajouter des tests unitaires sur le métier</s></li></ul></div>
-    <div class="card"><h3>Moyen terme</h3><ul class="clean"><li>Implémenter PUT / DELETE / PATCH</li><li>Codes HTTP d'erreur sémantiques (404/400/500)</li><li>Interface d'édition des réponses mockées</li></ul></div>
+    <div class="card" style="border-left:4px solid var(--green)"><h3 style="color:var(--green)">Moyen terme ✅ fait</h3><ul class="clean"><li><s>Implémenter PUT / DELETE / PATCH</s></li><li><s>Codes HTTP d'erreur sémantiques (404/500)</s></li><li><s>Interface d'édition des réponses mockées</s></li></ul></div>
     <div class="card"><h3>Long terme</h3><ul class="clean"><li>Latence/erreurs simulées (chaos)</li><li>Import/export de jeux de mocks</li><li>Authentification de l'admin</li></ul></div>
   </div>
 

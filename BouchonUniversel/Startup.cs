@@ -111,6 +111,9 @@ using System.Linq;
 
             services.AddSingleton<HttpService>();
 
+            // Clients HTTP pour le passthrough des verbes PUT/DELETE/PATCH (non gérés par Ustilz.Http).
+            services.AddHttpClient();
+
             // Configuration des patterns de dates chargée une seule fois (auparavant relue à chaque requête).
             services.AddSingleton<PatternDateFormatProvider>();
 

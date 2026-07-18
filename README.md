@@ -13,6 +13,10 @@ dotnet run --project BouchonUniversel
 
 L'interface Swagger de l'API est disponible sur `/swagger`. Un `Dockerfile` est également fourni pour une exécution en conteneur.
 
+Les verbes **GET, POST, PUT, PATCH et DELETE** sont pris en charge par le bouchon. En cas d'erreur,
+l'API renvoie un code HTTP sémantique (404 si la clé ou l'environnement est introuvable, 500 sinon).
+Le contenu des réponses mockées peut être édité depuis la page de détail d'un service.
+
 ## Base de données
 
 Le schéma SQLite est géré par les **migrations Entity Framework Core**. Les migrations en attente

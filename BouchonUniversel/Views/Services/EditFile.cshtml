@@ -1,0 +1,35 @@
+@model BouchonUniversel.Models.ModelsView.EditFileViewModel
+
+@{
+    this.ViewData["Title"] = "Éditer la réponse bouchonnée";
+    this.Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Éditer la réponse bouchonnée</h2>
+<h4>@(this.Model.FileName)</h4>
+<hr/>
+
+@if (this.TempData["Message"] != null)
+{
+    <div class="alert alert-success">@(this.TempData["Message"])</div>
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="EditFile" method="post">
+            <input type="hidden" asp-for="Path"/>
+            <input type="hidden" asp-for="FileName"/>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label">Contenu du fichier</label>
+                <textarea asp-for="Content" class="form-control" rows="24" style="font-family: monospace;"></textarea>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Enregistrer" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Services" asp-action="Index">Retour à la liste</a>
+</div>

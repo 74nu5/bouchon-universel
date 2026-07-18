@@ -7,6 +7,7 @@ namespace BouchonUniversel.Metier
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web;
     using System.Xml.Linq;
@@ -55,6 +56,8 @@ namespace BouchonUniversel.Metier
 
         private readonly PatternDateFormatProvider patternDateFormatProvider;
 
+        private readonly IHttpClientFactory httpClientFactory;
+
         /// <summary>Initializes a new instance of the <see cref="BouchonsMetier" /> class.</summary>
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
@@ -63,7 +66,8 @@ namespace BouchonUniversel.Metier
         /// <param name="logger">The logger.</param>
         /// <param name="fileService">The file service.</param>
         /// <param name="patternDateFormatProvider">Fournit (en cache) la configuration des patterns de dates.</param>
-        public BouchonsMetier(HttpService http, ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService, PatternDateFormatProvider patternDateFormatProvider)
+        /// <param name="httpClientFactory">Fabrique de clients HTTP pour les verbes PUT/DELETE/PATCH (non gérés par Ustilz.Http).</param>
+        public BouchonsMetier(HttpService http, ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService, PatternDateFormatProvider patternDateFormatProvider, IHttpClientFactory httpClientFactory)
         {
             this.logger = logger;
             this.servicesDAO = servicesDAO;
@@ -71,6 +75,7 @@ namespace BouchonUniversel.Metier
             this.settingsBouchonDAO = settingsBouchonDAO;
             this.fileService = fileService;
             this.patternDateFormatProvider = patternDateFormatProvider;
+            this.httpClientFactory = httpClientFactory;
             this.http = http;
         }
 
@@ -118,6 +123,57 @@ namespace BouchonUniversel.Metier
             Dictionary<string, IEnumerable<string>> headers,
             string body)
             => await this.ProcessRequestAsync(HttpVerb.Post, cle, env, route, query, headers, body).ConfigureAwait(false);
+
+        /// <summary>The process put request async.</summary>
+        /// <param name="cle">The cle.</param>
+        /// <param name="env">The env.</param>
+        /// <param name="route">The route.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="body">The body.</param>
+        /// <returns>The <see cref="Task" />.</returns>
+        internal async Task<(ReponseBouchonnee reponse, ResponseErreur? erreur)> ProcessPutRequestAsync(
+            string cle,
+            string env,
+            string route,
+            Dictionary<string, IEnumerable<string>> query,
+            Dictionary<string, IEnumerable<string>> headers,
+            string body)
+            => await this.ProcessRequestAsync(HttpVerb.Put, cle, env, route, query, headers, body).ConfigureAwait(false);
+
+        /// <summary>The process patch request async.</summary>
+        /// <param name="cle">The cle.</param>
+        /// <param name="env">The env.</param>
+        /// <param name="route">The route.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="body">The body.</param>
+        /// <returns>The <see cref="Task" />.</returns>
+        internal async Task<(ReponseBouchonnee reponse, ResponseErreur? erreur)> ProcessPatchRequestAsync(
+            string cle,
+            string env,
+            string route,
+            Dictionary<string, IEnumerable<string>> query,
+            Dictionary<string, IEnumerable<string>> headers,
+            string body)
+            => await this.ProcessRequestAsync(HttpVerb.Patch, cle, env, route, query, headers, body).ConfigureAwait(false);
+
+        /// <summary>The process delete request async.</summary>
+        /// <param name="cle">The cle.</param>
+        /// <param name="env">The env.</param>
+        /// <param name="route">The route.</param>
+        /// <param name="query">The query.</param>
+        /// <param name="headers">The headers.</param>
+        /// <param name="body">The body.</param>
+        /// <returns>The <see cref="Task" />.</returns>
+        internal async Task<(ReponseBouchonnee reponse, ResponseErreur? erreur)> ProcessDeleteRequestAsync(
+            string cle,
+            string env,
+            string route,
+            Dictionary<string, IEnumerable<string>> query,
+            Dictionary<string, IEnumerable<string>> headers,
+            string body)
+            => await this.ProcessRequestAsync(HttpVerb.Delete, cle, env, route, query, headers, body).ConfigureAwait(false);
 
         /// <summary>The format if date.</summary>
         /// <param name="value">The value.</param>
@@ -209,12 +265,10 @@ namespace BouchonUniversel.Metier
                     }
 
                     case HttpVerb.Put:
-
-                        // TODO Gérer le verbe PUT
+                        reponse = await this.SendViaHttpClientAsync(HttpMethod.Put, url.ToString(), headers, body, req).ConfigureAwait(false);
                         break;
                     case HttpVerb.Delete:
-
-                        // TODO Gérer le verbe DELETE
+                        reponse = await this.SendViaHttpClientAsync(HttpMethod.Delete, url.ToString(), headers, body, req).ConfigureAwait(false);
                         break;
                     case HttpVerb.Post:
                     {
@@ -239,8 +293,7 @@ namespace BouchonUniversel.Metier
                         // TODO Gérer le verbe TRACE
                         break;
                     case HttpVerb.Patch:
-
-                        // TODO Gérer le verbe PATCH
+                        reponse = await this.SendViaHttpClientAsync(HttpMethod.Patch, url.ToString(), headers, body, req).ConfigureAwait(false);
                         break;
                     case HttpVerb.Connect:
 
@@ -269,16 +322,6 @@ namespace BouchonUniversel.Metier
 
                 return (reponse, null);
             }
-            catch (KeyNotFoundException ex)
-            {
-                this.logger.LogError(ex, "Erreur lors de la requete");
-                return (null, new () { Message = ex.Message, Code = 1001 });
-            }
-            catch (EnvironmentNotFoundException ex)
-            {
-                this.logger.LogError(ex, "Erreur lors de la requete");
-                return (null, new () { Message = ex.Message, Code = 1002 });
-            }
             catch (FileNotFoundException ex)
             {
                 this.logger.LogError(ex, "Erreur lors de la requete");
@@ -299,9 +342,24 @@ namespace BouchonUniversel.Metier
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Erreur lors de la requete");
-                return (null, new () { Message = ex.Message, Code = 1999 });
+                return (null, ResponseErreur.FromException(ex));
             }
         }
+
+        /// <summary>Effectue un appel de type passthrough via <see cref="HttpClient" /> pour les verbes non gérés par Ustilz.Http (PUT/DELETE/PATCH).</summary>
+        /// <param name="httpMethod">Le verbe HTTP à utiliser.</param>
+        /// <param name="url">L'URL cible.</param>
+        /// <param name="headers">Les en-têtes à transmettre.</param>
+        /// <param name="body">Le corps de la requête (ignoré pour DELETE).</param>
+        /// <param name="req">La requête d'origine, conservée dans la réponse enregistrée.</param>
+        /// <returns>The <see cref="ReponseBouchonnee" />.</returns>
+        private async Task<ReponseBouchonnee> SendViaHttpClientAsync(
+            HttpMethod httpMethod,
+            string url,
+            Dictionary<string, IEnumerable<string>> headers,
+            string body,
+            Request req)
+            => await PassthroughHttp.SendAsync(this.httpClientFactory.CreateClient(), httpMethod, url, headers, body, req).ConfigureAwait(false);
 
         private static string GetFileName(HttpVerb method, Dictionary<string, IEnumerable<string>> query, FileSystemInfo bouchonDir)
         {
