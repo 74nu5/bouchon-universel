@@ -10,11 +10,6 @@
     <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nouveau service</a>
 </div>
 
-@if (this.TempData["Message"] != null)
-{
-    <div class="alert alert-warning">@(this.TempData["Message"])</div>
-}
-
 <div class="input-group mb-3" style="max-width: 420px;">
     <span class="input-group-text"><i class="bi bi-search"></i></span>
     <input id="filter" type="search" class="form-control" placeholder="Filtrer les services..." autocomplete="off"/>

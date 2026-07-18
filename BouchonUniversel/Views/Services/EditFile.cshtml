@@ -17,11 +17,6 @@
 <h5 class="text-body-secondary">@(this.Model.FileName)</h5>
 <hr/>
 
-@if (this.TempData["Message"] != null)
-{
-    <div class="alert alert-success">@(this.TempData["Message"])</div>
-}
-
 <form asp-action="EditFile" method="post">
     <input type="hidden" asp-for="Path"/>
     <input type="hidden" asp-for="FileName"/>
