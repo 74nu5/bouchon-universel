@@ -151,6 +151,7 @@ using System.Linq;
             services.AddTransient<EnvironnementDAO>();
             services.AddTransient<BouchonsMetier>();
             services.AddTransient<InstallMiddleware>();
+            services.AddSingleton<InstallationState>();
             services.AddTransient<FileService>();
         }
 

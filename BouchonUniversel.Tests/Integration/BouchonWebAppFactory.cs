@@ -15,6 +15,7 @@ namespace BouchonUniversel.Tests.Integration
 
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.Testing;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -33,11 +34,13 @@ namespace BouchonUniversel.Tests.Integration
         private readonly string filesPath;
         private readonly string adminUsername;
         private readonly string adminPasswordHash;
+        private readonly bool seedData;
 
         /// <summary>Initializes a new instance of the <see cref="BouchonWebAppFactory" /> class.</summary>
         /// <param name="adminUsername">Identifiant admin (active l'authentification si renseigné avec le hash).</param>
         /// <param name="adminPasswordHash">Hash du mot de passe admin.</param>
-        public BouchonWebAppFactory(string adminUsername = null, string adminPasswordHash = null)
+        /// <param name="seedData">Amorce les paramètres et un service de démonstration ; sinon, seul le schéma est créé (application « non installée »).</param>
+        public BouchonWebAppFactory(string adminUsername = null, string adminPasswordHash = null, bool seedData = true)
         {
             this.workDirectory = Path.Combine(Path.GetTempPath(), "bouchon-it-" + Guid.NewGuid().ToString("N"));
             this.databasePath = Path.Combine(this.workDirectory, "it.db");
@@ -45,6 +48,7 @@ namespace BouchonUniversel.Tests.Integration
             Directory.CreateDirectory(this.filesPath);
             this.adminUsername = adminUsername;
             this.adminPasswordHash = adminPasswordHash;
+            this.seedData = seedData;
         }
 
         /// <summary>Gets le répertoire racine des fichiers de bouchons utilisé par cette instance.</summary>
@@ -90,10 +94,17 @@ namespace BouchonUniversel.Tests.Integration
             {
                 var provider = scope.ServiceProvider;
 
-                // Applique les migrations et amorce les paramètres depuis la configuration (comme au démarrage réel).
-                provider.GetRequiredService<BouchonInitializer>().Initialize();
-
-                SeedChaosService(provider.GetRequiredService<DataContext>());
+                if (this.seedData)
+                {
+                    // Applique les migrations et amorce les paramètres depuis la configuration (comme au démarrage réel).
+                    provider.GetRequiredService<BouchonInitializer>().Initialize();
+                    SeedChaosService(provider.GetRequiredService<DataContext>());
+                }
+                else
+                {
+                    // Schéma seulement : l'application est « non installée » (aucun paramètre).
+                    provider.GetRequiredService<DataContext>().Database.Migrate();
+                }
             }
 
             return host;

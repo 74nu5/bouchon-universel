@@ -16,10 +16,16 @@ namespace BouchonUniversel.Middlewares
     {
         private readonly SettingsBouchonDAO settingsBouchonDAO;
 
+        private readonly InstallationState installationState;
+
         /// <summary>Initializes a new instance of the <see cref="InstallMiddleware" /> class.</summary>
         /// <param name="settingsBouchonDAO">Settings database service.</param>
-        public InstallMiddleware(SettingsBouchonDAO settingsBouchonDAO)
-            => this.settingsBouchonDAO = settingsBouchonDAO;
+        /// <param name="installationState">État d'installation mis en cache.</param>
+        public InstallMiddleware(SettingsBouchonDAO settingsBouchonDAO, InstallationState installationState)
+        {
+            this.settingsBouchonDAO = settingsBouchonDAO;
+            this.installationState = installationState;
+        }
 
         /// <summary>Request handling method.</summary>
         /// <param name="context">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext" /> for the current request.</param>
@@ -37,10 +43,21 @@ namespace BouchonUniversel.Middlewares
                 throw new ArgumentNullException(nameof(next));
             }
 
-            if (this.settingsBouchonDAO.IsSettingsMissing() && !context.Request.Path.StartsWithSegments("/api") && !context.Request.Path.StartsWithSegments("/install"))
+            // Tant que l'installation n'est pas confirmée, on vérifie l'état ; une fois installée, plus aucune requête base.
+            if (!this.installationState.IsInstalled)
             {
-                context.Response.Redirect("/install/");
-                return;
+                if (this.settingsBouchonDAO.IsSettingsMissing())
+                {
+                    if (!context.Request.Path.StartsWithSegments("/api") && !context.Request.Path.StartsWithSegments("/install"))
+                    {
+                        context.Response.Redirect("/install/");
+                        return;
+                    }
+                }
+                else
+                {
+                    this.installationState.MarkInstalled();
+                }
             }
 
             await next(context).ConfigureAwait(false);
