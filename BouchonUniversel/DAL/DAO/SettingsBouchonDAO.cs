@@ -32,6 +32,22 @@
         public string GetCheminFichier()
             => this.Querable.FirstOrDefault(bouchon => bouchon.Key == nameof(ApplicationSettings.CheminFichiers))?.Value;
 
+        /// <summary>Insère le paramètre s'il n'existe pas, sinon met à jour sa valeur (upsert par clé).</summary>
+        /// <param name="key">La clé du paramètre.</param>
+        /// <param name="value">La valeur à enregistrer.</param>
+        /// <returns>The <see cref="int" /> (nombre de lignes affectées).</returns>
+        public async Task<int> UpsertAsync(string key, string value)
+        {
+            var existing = this.Querable.FirstOrDefault(setting => setting.Key == key);
+            if (existing == null)
+            {
+                return await this.CreateAsync(new SettingsBouchon { Key = key, Value = value }).ConfigureAwait(false);
+            }
+
+            existing.Value = value;
+            return await this.UpdateAsync(existing).ConfigureAwait(false);
+        }
+
         /// <summary>The update conf bouchon.</summary>
         /// <param name="isActivated">The is activated.</param>
         /// <returns>The <see cref="bool" />.</returns>

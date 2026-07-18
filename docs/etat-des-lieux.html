@@ -323,7 +323,7 @@
     <strong>À traiter en priorité (quick wins &amp; dette identifiée) :</strong>
     <ul class="clean" style="margin-top:8px">
       <li><span class="tag t-ok">fait</span> <s><strong>Hacher le mot de passe admin</strong></s> — hash PBKDF2 salé (<code>PasswordHasher</code>) stocké dans <code>Admin:PasswordHash</code> ; vérification à temps constant ; commande <code>hash-password</code> pour générer le hash</li>
-      <li><strong>Upsert de la page <code>/install</code></strong> — la re-soumission crée aujourd'hui des lignes de settings en double (INSERT au lieu de créer-ou-mettre-à-jour)</li>
+      <li><span class="tag t-ok">fait</span> <s><strong>Upsert de la page <code>/install</code></strong></s> — <code>UpsertAsync</code> par clé (plus de doublons de settings) + pré-remplissage du formulaire avec la configuration existante</li>
       <li><strong>Tests d'intégration bout-en-bout</strong> (<code>WebApplicationFactory</code>) avec base seedée, pour couvrir chaos / import / passthrough sur un vrai serveur en aval</li>
       <li><strong>Cache du contrôle d'installation</strong> — <code>InstallMiddleware</code> interroge la base à chaque requête ; un drapeau en cache l'éliminerait</li>
     </ul>

@@ -26,7 +26,23 @@ namespace BouchonUniversel.Controllers
 
         public IActionResult Index()
         {
-            return this.View();
+            var model = new SettingsViewModel();
+
+            // Pré-remplissage avec la configuration existante pour permettre une reconfiguration.
+            if (!this.settingsBouchonDAO.IsSettingsMissing())
+            {
+                model.FilesPath = this.settingsBouchonDAO.GetCheminFichier();
+                try
+                {
+                    model.DefaultActivation = this.settingsBouchonDAO.GetBouchonState();
+                }
+                catch (System.Exception)
+                {
+                    // Paramètre « IsActivated » absent ou invalide : on laisse la valeur par défaut.
+                }
+            }
+
+            return this.View(model);
         }
 
         [HttpPost("")]
@@ -48,15 +64,11 @@ namespace BouchonUniversel.Controllers
                 return this.View("Index", model);
             }
 
-            // Les clés doivent correspondre à celles lues par l'application (cf. SettingsBouchonDAO / DbInitializer) :
-            // l'activation est stockée sous « IsActivated », et « UrlService » est amorcé pour rester cohérent.
-            var isActivatedSettings = new SettingsBouchon { Key = "IsActivated", Value = model.DefaultActivation.ToString() };
-            var filesPathSettings = new SettingsBouchon { Key = nameof(ApplicationSettings.CheminFichiers), Value = model.FilesPath };
-            var urlServiceSettings = new SettingsBouchon { Key = nameof(ApplicationSettings.UrlService), Value = string.Empty };
-
-            await this.settingsBouchonDAO.CreateAsync(isActivatedSettings).ConfigureAwait(false);
-            await this.settingsBouchonDAO.CreateAsync(filesPathSettings).ConfigureAwait(false);
-            await this.settingsBouchonDAO.CreateAsync(urlServiceSettings).ConfigureAwait(false);
+            // Upsert par clé : évite les doublons si l'installation est re-soumise ou si les paramètres ont déjà été amorcés.
+            // Les clés correspondent à celles lues par l'application (cf. SettingsBouchonDAO / DbInitializer).
+            // « UrlService » n'est pas géré ici : il est amorcé au démarrage et hors du périmètre de ce formulaire.
+            await this.settingsBouchonDAO.UpsertAsync("IsActivated", model.DefaultActivation.ToString()).ConfigureAwait(false);
+            await this.settingsBouchonDAO.UpsertAsync(nameof(ApplicationSettings.CheminFichiers), model.FilesPath).ConfigureAwait(false);
 
             return this.RedirectToAction("Index", "Home");
         }
