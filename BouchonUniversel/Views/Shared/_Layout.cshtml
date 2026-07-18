@@ -3,6 +3,7 @@
 @{
     var controller = this.ViewContext.RouteData.Values["controller"]?.ToString();
     string Active(string name) => string.Equals(controller, name, System.StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty;
+    var ogImage = $"{this.Context.Request.Scheme}://{this.Context.Request.Host}/og-image.png";
 }
 <head>
     <meta charset="utf-8"/>
@@ -22,6 +23,13 @@
     <link rel="icon" type="image/svg+xml" href="~/favicon.svg"/>
     <link rel="icon" type="image/png" href="~/favicon.png"/>
     <link rel="apple-touch-icon" href="~/apple-touch-icon.png"/>
+    <meta name="description" content="Bouchon Universel — serveur de bouchons HTTP (mocks) : administration et API de bouchonnage."/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="Bouchon Universel"/>
+    <meta property="og:description" content="Serveur de bouchons HTTP (mocks) : administration et API de bouchonnage."/>
+    <meta property="og:image" content="@ogImage"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:image" content="@ogImage"/>
     @(this.RenderSection("Styles", required: false))
 </head>
 <body>
