@@ -1,0 +1,33 @@
+@inherits LayoutComponentBase
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="">
+            <i class="bi bi-plug-fill text-primary"></i> Bouchon Universel
+            <span class="badge text-bg-secondary align-middle">docs</span>
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-outline-secondary btn-sm" href="https://github.com/74nu5/bouchon-universel" target="_blank" rel="noopener">
+                <i class="bi bi-github"></i> GitHub
+            </a>
+            <button class="btn btn-outline-secondary btn-sm" onclick="toggleTheme()" title="Basculer clair/sombre">
+                <i class="bi bi-circle-half"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="padding-top: 5rem;">
+    <div class="row">
+        <aside class="col-lg-3 mb-4">
+            <div class="docs-sidebar">
+                <NavMenu />
+            </div>
+        </aside>
+        <main class="col-lg-9">
+            <article class="docs-content pb-5">
+                @Body
+            </article>
+        </main>
+    </div>
+</div>

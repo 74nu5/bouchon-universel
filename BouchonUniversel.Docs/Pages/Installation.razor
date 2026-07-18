@@ -1,0 +1,40 @@
+@page "/installation"
+<PageTitle>Installation — Bouchon Universel</PageTitle>
+
+<h1>Installation</h1>
+<p class="lead">Trois façons de lancer l'outil. Dans tous les cas, il écoute ensuite sur <code>http://localhost:8080</code>.</p>
+
+<h2><i class="bi bi-box"></i> Docker</h2>
+<p>Sans rien installer d'autre que Docker :</p>
+<pre><code>docker run -p 8080:8080 -v bouchon-data:/app/data ghcr.io/74nu5/bouchon-universel:latest</code></pre>
+<p>Ou, depuis le dépôt cloné :</p>
+<pre><code>docker compose up</code></pre>
+
+<h2><i class="bi bi-terminal"></i> Binaire autonome</h2>
+<p>Aucune installation de .NET requise (exécutable auto-contenu).</p>
+<h5>Linux / macOS</h5>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/74nu5/bouchon-universel/master/install.sh | sh</code></pre>
+<h5>Windows (PowerShell)</h5>
+<pre><code>irm https://raw.githubusercontent.com/74nu5/bouchon-universel/master/install.ps1 | iex</code></pre>
+<p>
+    Les binaires par système sont aussi disponibles dans les
+    <a href="https://github.com/74nu5/bouchon-universel/releases" target="_blank" rel="noopener">Releases GitHub</a>.
+</p>
+
+<h2><i class="bi bi-code-slash"></i> Depuis les sources</h2>
+<p>Prérequis : SDK .NET 10.</p>
+<pre><code>dotnet run --project BouchonUniversel</code></pre>
+
+<h2><i class="bi bi-shield-lock"></i> Protéger l'administration (facultatif)</h2>
+<p>
+    L'authentification par cookie s'active dès qu'un identifiant et un mot de passe sont configurés.
+    Le mot de passe est fourni <strong>haché</strong> :
+</p>
+<pre><code>dotnet run --project BouchonUniversel -- hash-password "&lt;mot-de-passe&gt;"</code></pre>
+<p>Puis, via variables d'environnement :</p>
+<pre><code>Admin__Username=admin
+Admin__PasswordHash=&lt;hash-généré&gt;</code></pre>
+<p>
+    Un compte lecteur (<code>Admin__ViewerUsername</code> / <code>Admin__ViewerPasswordHash</code>) donne un accès
+    en lecture seule. L'API de bouchonnage reste toujours accessible sans authentification.
+</p>

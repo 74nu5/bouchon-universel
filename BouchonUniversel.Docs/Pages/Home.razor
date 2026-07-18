@@ -1,0 +1,59 @@
+@page "/"
+<PageTitle>Bouchon Universel — Introduction</PageTitle>
+
+<h1 class="mb-3"><i class="bi bi-plug-fill text-primary"></i> Bouchon Universel</h1>
+<p class="lead">
+    Serveur de <strong>bouchons HTTP</strong> (mocks) universel : intercalez-le entre un client et un service réel
+    pour <strong>enregistrer</strong> puis <strong>rejouer</strong> des réponses, sans dépendre de la disponibilité
+    des vrais services.
+</p>
+
+<div class="alert alert-info d-flex align-items-center gap-2">
+    <i class="bi bi-lightbulb"></i>
+    <div>Un « bouchon » est un service simulé : il renvoie une réponse prédéfinie à la place d'un appel réel.</div>
+</div>
+
+<h2>À quoi ça sert</h2>
+<div class="row row-cols-1 row-cols-md-2 g-3 my-1">
+    <div class="col">
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-hdd-network text-primary"></i> Développer sans dépendances</h5>
+                <p class="card-text">Travaillez côté client même si le service tiers n'est pas prêt ou est indisponible.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-check2-circle text-primary"></i> Tests déterministes</h5>
+                <p class="card-text">Rejouez des réponses stables et reproductibles pour vos tests d'intégration.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-record-circle text-primary"></i> Enregistrement automatique</h5>
+                <p class="card-text">Pas besoin d'écrire les mocks à la main : ils sont capturés au premier passage (mode proxy).</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card feature-card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-bezier2 text-primary"></i> Chaos &amp; templating</h5>
+                <p class="card-text">Simulez latence, erreurs et coupures ; injectez des valeurs dynamiques dans les réponses.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>Démarrer en une commande</h2>
+<pre><code>docker run -p 8080:8080 -v bouchon-data:/app/data ghcr.io/74nu5/bouchon-universel:latest</code></pre>
+<p>L'application est alors disponible sur <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a>.</p>
+
+<p>
+    <a class="btn btn-primary" href="installation"><i class="bi bi-download"></i> Guide d'installation</a>
+    <a class="btn btn-outline-secondary" href="utilisation"><i class="bi bi-play-circle"></i> Utilisation</a>
+</p>

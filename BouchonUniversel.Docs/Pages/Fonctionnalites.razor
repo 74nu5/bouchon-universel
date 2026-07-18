@@ -1,0 +1,49 @@
+@page "/fonctionnalites"
+<PageTitle>Fonctionnalités — Bouchon Universel</PageTitle>
+
+<h1>Fonctionnalités</h1>
+
+<h2><i class="bi bi-braces"></i> Templating des réponses</h2>
+<p>Activable par service, il substitue des jetons dans le corps des réponses rejouées :</p>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Jeton</th><th>Remplacé par</th></tr></thead>
+        <tbody>
+            <tr><td><code>{{route}}</code></td><td>La route appelée</td></tr>
+            <tr><td><code>{{query.NOM}}</code></td><td>Un paramètre de requête</td></tr>
+            <tr><td><code>{{header.NOM}}</code></td><td>Un en-tête de la requête</td></tr>
+            <tr><td><code>{{guid}}</code></td><td>Un identifiant unique</td></tr>
+            <tr><td><code>{{now}}</code> / <code>{{now:FORMAT}}</code></td><td>La date/heure courante</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2><i class="bi bi-bezier2"></i> Ingénierie du chaos</h2>
+<p>Par service, pour tester la résilience des clients :</p>
+<ul>
+    <li><strong>Latence</strong> simulée (millisecondes).</li>
+    <li><strong>Injection d'erreurs</strong> (probabilité + code HTTP renvoyé).</li>
+    <li><strong>Coupure de connexion</strong> et <strong>réponse tronquée</strong> (probabilité).</li>
+</ul>
+
+<h2><i class="bi bi-clock-history"></i> Dates réajustées</h2>
+<p>Les dates présentes dans une réponse enregistrée peuvent être recalculées à la date courante (mock « vivant »).</p>
+
+<h2><i class="bi bi-box-seam"></i> Import / export</h2>
+<p>Exportez tous les mocks en archive <code>tar.gz</code> et réimportez-les (extraction protégée contre la traversée de répertoire).</p>
+
+<h2><i class="bi bi-shield-check"></i> Sécurité &amp; rôles</h2>
+<ul>
+    <li>Authentification admin par cookie, mot de passe <strong>haché</strong> (PBKDF2).</li>
+    <li>Rôle <strong>lecteur</strong> (lecture seule) vs <strong>administrateur</strong> (écriture).</li>
+    <li>Limitation de débit du login (anti-bruteforce) et <strong>journal d'audit</strong> des modifications.</li>
+    <li>En-têtes de sécurité (CSP, HSTS, X-Frame-Options, nosniff).</li>
+</ul>
+
+<h2><i class="bi bi-activity"></i> Exploitation</h2>
+<ul>
+    <li>Sonde de santé <code>/health</code> (avec vérification de la base).</li>
+    <li>Journaux <strong>structurés</strong> (Serilog).</li>
+    <li>Schéma géré par <strong>migrations EF Core</strong>, appliquées au démarrage.</li>
+    <li>Sauvegarde de la base en un clic (copie SQLite cohérente).</li>
+</ul>

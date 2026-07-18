@@ -1,0 +1,34 @@
+name: Deploy docs (Azure Static Web Apps)
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'BouchonUniversel.Docs/**'
+      - '.github/workflows/azure-static-web-apps.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      # On construit nous-mêmes avec le SDK .NET 10 (plus fiable qu'Oryx pour les versions récentes).
+      - name: Publish Blazor WebAssembly
+        run: dotnet publish BouchonUniversel.Docs/BouchonUniversel.Docs.csproj -c Release -o docs-publish
+      - name: Deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: docs-publish/wwwroot
+          skip_app_build: true
+          output_location: ''
+          api_location: ''

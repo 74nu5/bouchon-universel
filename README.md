@@ -28,6 +28,19 @@ irm https://raw.githubusercontent.com/74nu5/bouchon-universel/master/install.ps1
 
 Les binaires par système sont aussi téléchargeables depuis les [Releases GitHub](https://github.com/74nu5/bouchon-universel/releases).
 
+## Documentation
+
+Un site de documentation **Blazor WebAssembly** (statique) se trouve dans `BouchonUniversel.Docs`
+(Introduction, Installation, Utilisation, Fonctionnalités). Il est déployé sur **Azure Static Web Apps**
+via le workflow `.github/workflows/azure-static-web-apps.yml` (nécessite le secret
+`AZURE_STATIC_WEB_APPS_API_TOKEN`).
+
+Pour le prévisualiser localement :
+
+```bash
+dotnet run --project BouchonUniversel.Docs
+```
+
 ## Développement
 
 Prérequis : SDK .NET 10.

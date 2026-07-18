@@ -1,0 +1,50 @@
+@page "/utilisation"
+<PageTitle>Utilisation — Bouchon Universel</PageTitle>
+
+<h1>Utilisation</h1>
+
+<h2>Modèle d'appel</h2>
+<p>Chaque appel bouchonné suit la route :</p>
+<pre><code>/api/bouchon/{clé}/{environnement}/{*route}</code></pre>
+<ul>
+    <li><strong>clé</strong> : identifiant du service configuré.</li>
+    <li><strong>environnement</strong> : nom de l'environnement (dev, recette, …).</li>
+    <li><strong>route</strong> : tout ce qui suit est transmis au service cible.</li>
+</ul>
+
+<h2>Enregistrer &amp; rejouer</h2>
+<p>Selon l'état d'activation du service :</p>
+<ul>
+    <li><strong>Proxy / enregistrement</strong> : l'appel est relayé au vrai service et la réponse est capturée.</li>
+    <li><strong>Rejeu</strong> : la réponse enregistrée est renvoyée, sans appeler le vrai service.</li>
+</ul>
+
+<h2>Verbes &amp; codes</h2>
+<p>
+    Verbes pris en charge : <span class="badge text-bg-secondary">GET</span>
+    <span class="badge text-bg-secondary">POST</span> <span class="badge text-bg-secondary">PUT</span>
+    <span class="badge text-bg-secondary">PATCH</span> <span class="badge text-bg-secondary">DELETE</span>
+    <span class="badge text-bg-secondary">HEAD</span>. CORS permissif (préflight OPTIONS géré).
+</p>
+<p>En cas d'erreur, l'API renvoie un code HTTP sémantique :</p>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Situation</th><th>Code</th></tr></thead>
+        <tbody>
+            <tr><td>Clé ou environnement introuvable</td><td><span class="badge text-bg-warning">404</span></td></tr>
+            <tr><td>Erreur inattendue</td><td><span class="badge text-bg-danger">500</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>Documentation de l'API</h2>
+<p>
+    L'interface Swagger est disponible sur <code>/swagger</code> une fois l'application lancée, et une sonde de
+    santé sur <code>/health</code>.
+</p>
+
+<h2>Administration</h2>
+<p>
+    Les services et environnements se gèrent depuis l'interface web (Bootstrap 5, thème clair/sombre) :
+    création, édition, duplication, recherche, et édition des réponses mockées avec coloration syntaxique.
+</p>
