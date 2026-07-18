@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bouchon Universel — État des lieux</title>
+<style>
+  :root {
+    --bg: #f6f8fa; --card: #ffffff; --ink: #1c2128; --muted: #5b6572;
+    --line: #e2e6ea; --accent: #2f6feb; --accent-soft: #eaf1fe;
+    --green: #1a7f37; --green-soft: #e6f4ea; --amber: #9a6700; --amber-soft: #fff5e0;
+    --red: #b42318; --red-soft: #fde8e6; --shadow: 0 1px 3px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --card: #161b22; --ink: #e6edf3; --muted: #9198a1;
+      --line: #2a313a; --accent: #4f8cff; --accent-soft: #172136;
+      --green: #4ac26b; --green-soft: #12261a; --amber: #d8a015; --amber-soft: #2a2110;
+      --red: #ff6b5e; --red-soft: #2b1513; --shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, var(--accent) 0%, #6a4ff0 100%);
+    color: #fff; padding: 56px 24px 48px; margin-bottom: 40px;
+  }
+  .hero-inner { max-width: 980px; margin: 0 auto; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .pill {
+    background: rgba(255,255,255,.16); color:#fff; border:1px solid rgba(255,255,255,.28);
+    padding: 4px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; letter-spacing:.02em;
+  }
+  h1 { margin: 0 0 8px; font-size: 40px; letter-spacing: -.02em; }
+  .subtitle { font-size: 18px; opacity: .95; margin: 0; max-width: 640px; }
+  .meta { margin-top: 22px; font-size: 13.5px; opacity: .85; }
+  h2 {
+    font-size: 24px; letter-spacing: -.01em; margin: 48px 0 18px;
+    padding-bottom: 10px; border-bottom: 2px solid var(--line); display:flex; align-items:center; gap:10px;
+  }
+  h2 .ic { font-size: 22px; }
+  h3 { font-size: 17px; margin: 24px 0 10px; }
+  p { color: var(--ink); }
+  .lead { color: var(--muted); }
+  .grid { display: grid; gap: 16px; }
+  .grid.g2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.g3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.g4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 720px) { .grid.g2, .grid.g3, .grid.g4 { grid-template-columns: 1fr; } h1{font-size:32px;} }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px; box-shadow: var(--shadow);
+  }
+  .card h3 { margin-top: 0; }
+  .stat { text-align: center; padding: 22px 14px; }
+  .stat .num { font-size: 34px; font-weight: 800; color: var(--accent); letter-spacing: -.02em; }
+  .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .kv { color: var(--muted); font-size: 14.5px; }
+  ul.clean { list-style: none; padding: 0; margin: 0; }
+  ul.clean li { padding: 7px 0 7px 26px; position: relative; border-bottom: 1px solid var(--line); }
+  ul.clean li:last-child { border-bottom: 0; }
+  ul.clean li::before { content: "▸"; color: var(--accent); position: absolute; left: 4px; top: 7px; }
+  .tag { display:inline-block; padding: 2px 9px; border-radius: 6px; font-size: 12px; font-weight:600; }
+  .t-ok { background: var(--green-soft); color: var(--green); }
+  .t-warn { background: var(--amber-soft); color: var(--amber); }
+  .t-no { background: var(--red-soft); color: var(--red); }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  .table-scroll { overflow-x: auto; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+  td code, p code, li code { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 5px; font-size: 13px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .flow { background: var(--card); border:1px solid var(--line); border-radius:14px; padding: 22px; box-shadow: var(--shadow); }
+  .flow-steps { display:flex; align-items:stretch; gap:0; flex-wrap:wrap; }
+  .step { flex:1; min-width: 150px; padding: 14px; border-radius:10px; background: var(--accent-soft); position:relative; }
+  .step .n { font-weight:800; color:var(--accent); font-size:13px; }
+  .step .t { font-weight:600; margin:4px 0; }
+  .step .d { font-size:13px; color:var(--muted); }
+  .arrow { display:flex; align-items:center; color:var(--muted); font-size:22px; padding:0 6px; }
+  @media (max-width:720px){ .arrow{ transform: rotate(90deg); padding:6px 0; } .flow-steps{flex-direction:column;} }
+  .callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+  .score-row { display:flex; align-items:center; gap:14px; margin:12px 0; }
+  .score-row .name { width: 200px; font-size:14.5px; font-weight:600; }
+  .bar { flex:1; height: 10px; background: var(--line); border-radius:999px; overflow:hidden; }
+  .bar > span { display:block; height:100%; border-radius:999px; background: linear-gradient(90deg,var(--accent),#6a4ff0); }
+  .score-row .val { width: 44px; text-align:right; font-size:13px; color:var(--muted); font-weight:600; }
+  footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; text-align:center; }
+  .two-col { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width:720px){ .two-col{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="badge-row">
+      <span class="pill">ASP.NET Core</span>
+      <span class="pill">.NET 5</span>
+      <span class="pill">EF Core · SQLite</span>
+      <span class="pill">Swagger</span>
+      <span class="pill">Docker</span>
+    </div>
+    <h1>Bouchon Universel</h1>
+    <p class="subtitle">État des lieux du projet — fonctionnalités, architecture technique et utilité. Serveur de <em>mocks</em> HTTP universel avec enregistrement &amp; rejeu de réponses.</p>
+    <div class="meta">Rapport généré le 18 juillet 2026 · Auteur du projet : Romain Avonde · Branche <code style="color:#fff;background:rgba(255,255,255,.18)">master</code></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ================= SYNTHÈSE ================= -->
+  <section>
+    <div class="grid g4">
+      <div class="card stat"><div class="num">~5,3k</div><div class="lbl">lignes de C#</div></div>
+      <div class="card stat"><div class="num">70</div><div class="lbl">fichiers .cs</div></div>
+      <div class="card stat"><div class="num">6</div><div class="lbl">contrôleurs</div></div>
+      <div class="card stat"><div class="num">74</div><div class="lbl">commits (depuis 2018)</div></div>
+    </div>
+  </section>
+
+  <!-- ================= EN BREF ================= -->
+  <h2><span class="ic">🧭</span> En bref</h2>
+  <p class="lead">
+    <strong>Bouchon Universel</strong> est une application web ASP.NET Core qui joue le rôle de <strong>serveur de bouchons (mocks) HTTP</strong>.
+    Elle s'intercale entre un client et un service réel : selon la configuration, elle relaie l'appel vers le vrai service
+    <em>en enregistrant</em> sa réponse, ou <em>rejoue</em> une réponse déjà capturée. L'objectif : simuler des dépendances externes
+    pour développer, tester ou faire des démonstrations sans dépendre de la disponibilité des vrais services.
+  </p>
+  <div class="callout">
+    Le mot « bouchon » est le terme français consacré (surtout dans le monde bancaire/assurance) pour <em>mock</em> / <em>stub</em> de service.
+    « Universel » car l'outil est agnostique du service cible : il fonctionne par simple proxy paramétré par une <strong>clé</strong> et un <strong>environnement</strong>.
+  </div>
+
+  <!-- ================= FONCTIONNEMENT ================= -->
+  <h2><span class="ic">⚙️</span> Comment ça marche</h2>
+  <p class="lead">Chaque appel entrant suit la route <code>/api/bouchon/{clé}/{env}/{*route}</code>. Le comportement dépend de l'activation du service&nbsp;:</p>
+  <div class="flow">
+    <div class="flow-steps">
+      <div class="step"><div class="n">1 · REQUÊTE</div><div class="t">Appel entrant</div><div class="d">Client appelle le bouchon avec une clé + un environnement + la route cible.</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">2 · ROUTAGE</div><div class="t">Service activé ?</div><div class="d">Le métier vérifie l'existence de la clé et de l'environnement, et leur état actif.</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">3a · REPLAY</div><div class="t">Rejeu du mock</div><div class="d">Si activé : lit la réponse enregistrée (fichier XML indexé par hash de la query).</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">3b · PROXY</div><div class="t">Passthrough</div><div class="d">Sinon : relaie l'appel au vrai service et <strong>enregistre</strong> la réponse pour plus tard.</div></div>
+    </div>
+  </div>
+  <div class="two-col" style="margin-top:16px">
+    <div class="card">
+      <h3>🔑 Indexation des réponses</h3>
+      <p class="kv">Chaque réponse est stockée dans un fichier <code>{METHODE}_{SHA256(query)}.xml</code> rangé par arborescence <code>clé/env/route</code>. Les valeurs de type date sont neutralisées avant le hash pour rester stables dans le temps.</p>
+    </div>
+    <div class="card">
+      <h3>🕓 MockRealTime</h3>
+      <p class="kv">Fonctionnalité distinctive : à la relecture, les dates présentes dans la réponse enregistrée peuvent être <strong>réajustées à la date courante</strong> (décalage relatif), via des patterns configurables (<code>PatternDateFormatConfig.json</code>). Utile pour des mocks qui « vieillissent » mal.</p>
+    </div>
+  </div>
+
+  <!-- ================= FONCTIONNALITÉS ================= -->
+  <h2><span class="ic">✨</span> Fonctionnalités</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Gestion (UI web MVC)</h3>
+      <ul class="clean">
+        <li>CRUD des <strong>Services</strong> (clé, URL cible, environnement, activation, mise à jour des dates)</li>
+        <li>CRUD des <strong>Environnements</strong> (activation individuelle)</li>
+        <li>CRUD des <strong>Bouchons</strong> et exploration des fichiers enregistrés</li>
+        <li>Page d'<strong>installation guidée</strong> au premier lancement (middleware de redirection)</li>
+        <li><strong>Export</strong> de tous les fichiers de mocks en archive <code>tar.gz</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>API de bouchonnage</h3>
+      <ul class="clean">
+        <li>Verbes <span class="tag t-ok">GET</span> et <span class="tag t-ok">POST</span> pleinement gérés</li>
+        <li>Transmission bidirectionnelle des <strong>en-têtes</strong> HTTP</li>
+        <li>Prise en charge de tout type de corps (texte, JSON, binaire)</li>
+        <li>Résolution automatique du format de sortie (JSON / XML / brut)</li>
+        <li>Endpoint <code>healthcheck</code> et documentation <strong>Swagger</strong> sur <code>/swagger</code></li>
+        <li>Verbes PUT, DELETE, PATCH, HEAD… <span class="tag t-no">non implémentés (TODO)</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= TECHNIQUE ================= -->
+  <h2><span class="ic">🏗️</span> Architecture technique</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Couche</th><th>Rôle</th><th>Éléments clés</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Controllers</strong></td><td>Points d'entrée HTTP (API + MVC)</td><td>Bouchon, BouchonsManager, Services, Environnements, Install, Home</td></tr>
+      <tr><td><strong>Metier</strong></td><td>Logique de bouchonnage</td><td>BouchonsMetier, SettingsBouchonMetier, BouchonInitializer</td></tr>
+      <tr><td><strong>DAL / DAO</strong></td><td>Accès données</td><td>EF Core, DataContext, DAO Services/Environnement/Settings, DbInitializer</td></tr>
+      <tr><td><strong>Services / Utils</strong></td><td>Fichiers &amp; utilitaires</td><td>FileService, MockRealTime, ResponseUtils, ZipUtils, HttpUtils</td></tr>
+      <tr><td><strong>Models</strong></td><td>Domaine &amp; vues</td><td>Bouchon, Service, Environnement, ReponseBouchonnee, ViewModels</td></tr>
+      <tr><td><strong>Middlewares</strong></td><td>Pipeline</td><td>InstallMiddleware (redirection tant que non configuré)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="grid g3" style="margin-top:16px">
+    <div class="card"><h3>🧩 Stack</h3><p class="kv">C# / ASP.NET Core MVC sur <strong>.NET 5</strong>, EF Core + SQLite, Swashbuckle (Swagger), Newtonsoft.Json, SharpZipLib, et la librairie maison <strong>Ustilz</strong> (Http/Json/Xml/Extensions).</p></div>
+    <div class="card"><h3>🗄️ Persistance</h3><p class="kv">Métadonnées (services, environnements, settings) en <strong>SQLite</strong> via EF Core. Réponses mockées stockées en <strong>fichiers XML</strong> sur le disque, hors base.</p></div>
+    <div class="card"><h3>🚀 Industrialisation</h3><p class="kv"><strong>Docker</strong>, publication single-file self-contained (linux-x64, trimming + ReadyToRun), CI <strong>GitHub Actions</strong> + <strong>GitLab CI</strong>, StyleCop &amp; analyseurs activés.</p></div>
+  </div>
+
+  <!-- ================= UTILITÉ ================= -->
+  <h2><span class="ic">🎯</span> Utilité &amp; cas d'usage</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>À quoi ça sert</h3>
+      <ul class="clean">
+        <li>Développer côté client sans attendre qu'un service tiers soit prêt</li>
+        <li>Tests d'intégration <strong>déterministes</strong> et reproductibles</li>
+        <li>Travailler hors-ligne / sans accès aux environnements réels</li>
+        <li>Démonstrations stables ne dépendant pas de services externes</li>
+        <li>Rejouer des scénarios capturés en conditions réelles (mode enregistrement)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Ce qui le distingue</h3>
+      <ul class="clean">
+        <li><strong>Auto-enregistrement</strong> : pas besoin d'écrire les mocks à la main, ils sont capturés au 1<sup>er</sup> passage</li>
+        <li><strong>MockRealTime</strong> : réajustement automatique des dates, rare chez les mocks classiques</li>
+        <li>Segmentation native par <strong>clé × environnement</strong></li>
+        <li>Activation fine, service par service et environnement par environnement</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= FORCES / LIMITES ================= -->
+  <h2><span class="ic">⚖️</span> Forces &amp; points de vigilance</h2>
+  <div class="two-col">
+    <div class="card" style="border-left:4px solid var(--green)">
+      <h3 style="color:var(--green)">Points forts</h3>
+      <ul class="clean">
+        <li>Architecture en couches claire et testable</li>
+        <li>Concept d'enregistrement/rejeu bien pensé</li>
+        <li>Documentation Swagger et commentaires XML soignés</li>
+        <li>Qualité de code outillée (StyleCop, analyseurs)</li>
+        <li>Prêt pour le conteneur (Docker + publication optimisée)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:4px solid var(--amber)">
+      <h3 style="color:var(--amber)">Points de vigilance</h3>
+      <ul class="clean">
+        <li><span class="tag t-no">Obsolescence</span> .NET 5 en fin de support — migration .NET 8/9 recommandée</li>
+        <li><span class="tag t-warn">Couverture verbes</span> seuls GET/POST ; PUT/DELETE/PATCH en TODO</li>
+        <li><span class="tag t-warn">Robustesse</span> lecture disque synchrone (<code>PatternDateFormatConfig.json</code>) à chaque requête</li>
+        <li><span class="tag t-warn">Tests</span> pas de projet de tests unitaires visible</li>
+        <li><span class="tag t-warn">Gestion d'erreurs</span> tout renvoyé en <code>405</code> avec code interne</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= MATURITÉ ================= -->
+  <h2><span class="ic">📊</span> Maturité perçue</h2>
+  <div class="card">
+    <div class="score-row"><div class="name">Concept &amp; utilité</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
+    <div class="score-row"><div class="name">Architecture / lisibilité</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
+    <div class="score-row"><div class="name">Couverture fonctionnelle</div><div class="bar"><span style="width:60%"></span></div><div class="val">6/10</div></div>
+    <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:40%"></span></div><div class="val">4/10</div></div>
+    <div class="score-row"><div class="name">Actualité technique</div><div class="bar"><span style="width:45%"></span></div><div class="val">4.5/10</div></div>
+    <div class="score-row"><div class="name">Industrialisation (CI/Docker)</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
+  </div>
+
+  <!-- ================= RECOMMANDATIONS ================= -->
+  <h2><span class="ic">🧱</span> Recommandations</h2>
+  <div class="grid g3">
+    <div class="card"><h3>Court terme</h3><ul class="clean"><li>Migrer vers .NET 8/9 (LTS)</li><li>Mettre en cache la config des patterns de dates</li><li>Ajouter des tests unitaires sur le métier</li></ul></div>
+    <div class="card"><h3>Moyen terme</h3><ul class="clean"><li>Implémenter PUT / DELETE / PATCH</li><li>Codes HTTP d'erreur sémantiques (404/400/500)</li><li>Interface d'édition des réponses mockées</li></ul></div>
+    <div class="card"><h3>Long terme</h3><ul class="clean"><li>Latence/erreurs simulées (chaos)</li><li>Import/export de jeux de mocks</li><li>Authentification de l'admin</li></ul></div>
+  </div>
+
+  <footer>
+    Rapport d'état des lieux — Bouchon Universel · généré automatiquement · 18/07/2026
+  </footer>
+
+</div>
+</body>
+</html>
