@@ -142,6 +142,7 @@
       <li><strong>Cache de <code>PatternDateFormatConfig.json</code></strong> via un <code>PatternDateFormatProvider</code> singleton (fini la lecture disque à chaque requête)</li>
       <li><strong>Tests unitaires xUnit</strong> sur le métier (<code>MockRealTime</code>, provider de patterns) — 10 tests au vert</li>
       <li>Bonus : suppression d'une dépendance à une <strong>API interne de Kestrel</strong>, correction d'une <strong>faille SQLite</strong> transitive (GHSA-2m69-gcr7-jv3q), et de bugs latents (headers, journalisation, regex)</li>
+      <li>Schéma géré par <strong>migrations EF Core</strong> (appliquées au démarrage), avec un garde-fou CI <code>has-pending-model-changes</code> qui casse le build si le modèle diverge des migrations</li>
     </ul>
   </div>
 

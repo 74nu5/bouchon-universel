@@ -23,5 +23,9 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Debug --no-restore
+    - name: Restore tools
+      run: dotnet tool restore
+    - name: Check for pending EF model changes
+      run: dotnet ef migrations has-pending-model-changes --project BouchonUniversel --startup-project BouchonUniversel
     - name: Test
       run: dotnet test --no-build --configuration Debug --verbosity normal

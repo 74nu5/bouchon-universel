@@ -12,6 +12,12 @@ build:
   script:
     - 'dotnet build --configuration Debug --no-restore'
 
+migrations-check:
+  stage: test
+  script:
+    - 'dotnet tool restore'
+    - 'dotnet ef migrations has-pending-model-changes --project BouchonUniversel --startup-project BouchonUniversel'
+
 test:
   stage: test
   script:
