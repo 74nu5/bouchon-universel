@@ -30,10 +30,12 @@ Les binaires par système sont aussi téléchargeables depuis les [Releases GitH
 
 ## Documentation
 
+📖 **Site en ligne : https://ambitious-river-06e7d3903.7.azurestaticapps.net**
+
 Un site de documentation **Blazor WebAssembly** (statique) se trouve dans `BouchonUniversel.Docs`
-(Introduction, Installation, Utilisation, Fonctionnalités). Il est déployé sur **Azure Static Web Apps**
-via le workflow `.github/workflows/azure-static-web-apps.yml` (nécessite le secret
-`AZURE_STATIC_WEB_APPS_API_TOKEN`).
+(Introduction, Démarrage rapide, Installation, Configuration, Utilisation, Fonctionnalités, Référence API,
+FAQ). Il est déployé sur **Azure Static Web Apps** via le workflow
+`.github/workflows/azure-static-web-apps.yml` (secret `AZURE_STATIC_WEB_APPS_API_TOKEN`).
 
 Pour le prévisualiser localement :
 
