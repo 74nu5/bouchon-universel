@@ -54,6 +54,20 @@ namespace BouchonUniversel.Controllers
             return this.BuildResponse(result, erreur);
         }
 
+        /// <summary>Méthode head du bouchon : mêmes en-têtes/statut que GET, sans corps (le framework le retire pour HEAD).</summary>
+        /// <param name="cle">La clé du service créé.</param>
+        /// <param name="env">L'environnement créé.</param>
+        /// <param name="route">La route du service à appeler.</param>
+        /// <param name="query">La paramètre de la requête.</param>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        [HttpHead("{cle}/{env}/{*route}")]
+        public async Task<IActionResult> Head([FromRoute] string cle, [FromRoute] string env, [FromRoute] string route, [FromQuery] Dictionary<string, IEnumerable<string>> query)
+        {
+            var headers = HttpUtils.GetHeadersFiltered(this.Request.Headers);
+            var (result, erreur) = await this.metier.ProcessGetRequestAsync(cle, env, HttpUtility.UrlDecode(route), query, headers).ConfigureAwait(false);
+            return this.BuildResponse(result, erreur);
+        }
+
         /// <summary>The healthcheck.</summary>
         /// <returns>The <see cref="string" />.</returns>
         [HttpGet("healthcheck")]

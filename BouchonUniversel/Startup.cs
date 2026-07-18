@@ -4,7 +4,8 @@ namespace BouchonUniversel
 
     using System;
     using System.IO;
-using System.Linq;
+    using System.Linq;
+    using System.Threading.RateLimiting;
 
     using BouchonUniversel.DAL;
     using BouchonUniversel.DAL.DAO;
@@ -20,7 +21,9 @@ using System.Linq;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Authorization;
+    using Microsoft.AspNetCore.RateLimiting;
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -40,6 +43,12 @@ using System.Linq;
 
         /// <summary>The version swagger.</summary>
         private const string VersionSwagger = "v1";
+
+        /// <summary>Nom de la politique CORS permissive appliquée (serveur de mocks appelé depuis n'importe quelle origine).</summary>
+        private const string CorsPolicy = "bouchon";
+
+        /// <summary>Nom de la politique de limitation de débit du login (anti-bruteforce).</summary>
+        private const string LoginRateLimitPolicy = "login";
 
         /// <summary>Initializes a new instance of the <see cref="Startup" /> class.</summary>
         /// <param name="configuration">The configuration.</param>
@@ -61,7 +70,19 @@ using System.Linq;
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
+
+            // En-têtes de sécurité appliqués à toutes les réponses.
+            app.Use(async (context, next) =>
+            {
+                var headers = context.Response.Headers;
+                headers["X-Content-Type-Options"] = "nosniff";
+                headers["X-Frame-Options"] = "DENY";
+                headers["Referrer-Policy"] = "no-referrer";
+                headers["Content-Security-Policy"] = "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:;";
+                await next().ConfigureAwait(false);
+            });
 
             app.UseStaticFiles();
 
@@ -74,13 +95,18 @@ using System.Linq;
 
             app.UseRouting();
 
+            app.UseCors(CorsPolicy);
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(
-                             endpoints => endpoints.MapControllerRoute(
-                                                                       "default",
-                                                                       "{controller=Home}/{action=Index}/{id?}"));
+            app.UseRateLimiter();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
         }
 
         /// <summary>The configure services.</summary>
@@ -117,6 +143,23 @@ using System.Linq;
             services.AddEntityFrameworkSqlite();
             services.AddDbContext<DataContext>(builder => builder.UseSqlite(this.GetSqliteConnection()));
 
+            // CORS permissif : un serveur de mocks est typiquement appelé depuis d'autres origines (gère aussi le préflight OPTIONS).
+            services.AddCors(options => options.AddPolicy(
+                CorsPolicy,
+                policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+            // Sondes de santé : liveness + vérification d'accès à la base (readiness).
+            services.AddHealthChecks().AddDbContextCheck<DataContext>();
+
+            // Limitation de débit du login (anti-bruteforce) : 5 tentatives par minute et par IP.
+            services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy(LoginRateLimitPolicy, context => RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+            });
+
             services.AddSwaggerGen(
                                    c =>
                                    {
@@ -134,6 +177,9 @@ using System.Linq;
                                        var xmlPath = Path.Combine(basePath, "BouchonUniversel.xml");
                                        c.IncludeXmlComments(xmlPath);
 
+                                       // La documentation ne couvre que l'API de bouchonnage ; les contrôleurs MVC
+                                       // d'administration (routage conventionnel, sans verbe explicite) en sont exclus.
+                                       c.DocInclusionPredicate((_, apiDescription) => apiDescription.RelativePath?.StartsWith("api/", StringComparison.OrdinalIgnoreCase) ?? false);
                                    });
 
             services.AddSingleton<HttpService>();

@@ -14,6 +14,7 @@ namespace BouchonUniversel.Controllers
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.RateLimiting;
     using Microsoft.Extensions.Options;
 
     #endregion
@@ -46,6 +47,7 @@ namespace BouchonUniversel.Controllers
         /// <returns>The <see cref="Task" />.</returns>
         [HttpPost("login")]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             this.ViewData["ReturnUrl"] = returnUrl;

@@ -329,6 +329,17 @@
     </ul>
   </div>
 
+  <div class="card" style="border-left:4px solid var(--green); margin-top:16px">
+    <h3 style="color:var(--green)">✅ Mise à jour — quick wins livrés</h3>
+    <ul class="clean">
+      <li><strong>Verbe HEAD</strong> + <strong>CORS</strong> permissif (gère le préflight OPTIONS)</li>
+      <li><strong>Health check</strong> <code>/health</code> (avec vérification base) et <strong>rate limiting</strong> du login (anti-bruteforce, 429)</li>
+      <li><strong>En-têtes de sécurité</strong> (CSP, HSTS, nosniff, X-Frame-Options) et <strong>sauvegarde</strong> de la base (copie SQLite en ligne)</li>
+      <li>Correctif au passage : <strong>Swagger <code>/swagger/v1/swagger.json</code></strong> (500 préexistant) — doc restreinte à l'API <code>/api/*</code></li>
+      <li>Couverture portée à <strong>64 tests</strong> (dont intégration : health, CORS, HEAD, en-têtes, backup, rate limit)</li>
+    </ul>
+  </div>
+
   <div class="grid g2">
     <div class="card">
       <h3>🎯 Fonctionnel — matching &amp; réponses</h3>
@@ -336,7 +347,7 @@
         <li>Matching de requêtes avancé (en-têtes, body JSONPath, regex de route, wildcards) au-delà du hash de query <span class="tag t-no">gros chantier</span></li>
         <li>Templating des réponses : injecter des valeurs de la requête, au-delà des dates (<code>MockRealTime</code>) <span class="tag t-warn">effort moyen</span></li>
         <li>Scénarios <em>stateful</em> / séquentiels : réponses variables selon l'ordre des appels <span class="tag t-no">gros chantier</span></li>
-        <li>Verbes HEAD / OPTIONS / TRACE + préflight CORS <span class="tag t-ok">quick win</span></li>
+        <li><span class="tag t-ok">fait</span> <s>Verbe HEAD + préflight CORS (OPTIONS)</s> — TRACE volontairement écarté (sensible)</li>
         <li>Validation des requêtes entrantes (OpenAPI / JSON Schema) <span class="tag t-warn">effort moyen</span></li>
         <li>Chaos avancé : coupure de connexion, réponses partielles/corrompues <span class="tag t-warn">effort moyen</span></li>
       </ul>
@@ -346,18 +357,18 @@
       <ul class="clean">
         <li>Stockage des réponses en base ou stockage objet (S3 / Blob) pour le <strong>multi-instance</strong> <span class="tag t-no">gros chantier</span></li>
         <li>Observabilité : logs structurés (Serilog) + métriques/traces (OpenTelemetry) <span class="tag t-warn">effort moyen</span></li>
-        <li>Health checks ASP.NET Core (liveness / readiness) <span class="tag t-ok">quick win</span></li>
+        <li><span class="tag t-ok">fait</span> <s>Health checks ASP.NET Core</s> — endpoint <code>/health</code> avec vérification d'accès à la base</li>
         <li>OpenAPI natif .NET (<code>Microsoft.AspNetCore.OpenApi</code>) + versionnage d'API <span class="tag t-warn">effort moyen</span></li>
-        <li>Rate limiting (middleware natif .NET) <span class="tag t-ok">quick win</span></li>
+        <li><span class="tag t-ok">fait</span> <s>Rate limiting (middleware natif .NET)</s> — appliqué au login</li>
       </ul>
     </div>
     <div class="card">
       <h3>🔒 Sécurité</h3>
       <ul class="clean">
         <li><span class="tag t-ok">fait</span> <s>Hachage du mot de passe admin (PBKDF2) + comparaison à temps constant</s></li>
-        <li>Anti-bruteforce : rate limiting / verrouillage du login <span class="tag t-ok">quick win</span></li>
+        <li><span class="tag t-ok">fait</span> <s>Anti-bruteforce : rate limiting du login</s> (5 tentatives/min/IP → 429)</li>
         <li>Rôles (lecture seule vs admin) + journal d'audit des modifications <span class="tag t-warn">effort moyen</span></li>
-        <li>En-têtes de sécurité (HSTS, CSP) + secrets via user-secrets / Key Vault <span class="tag t-ok">quick win</span></li>
+        <li><span class="tag t-ok">fait</span> <s>En-têtes de sécurité (HSTS, CSP, nosniff, X-Frame-Options)</s> — secrets admin déjà via user-secrets / env</li>
       </ul>
     </div>
     <div class="card">
@@ -367,7 +378,7 @@
         <li>Recherche / filtre / prévisualisation / diff des mocks, duplication de services <span class="tag t-warn">effort moyen</span></li>
         <li>Modernisation de l'UI (Bootstrap 3 → 5, thème sombre) <span class="tag t-warn">effort moyen</span></li>
         <li>Docker multi-arch + <code>docker-compose</code> / Helm, scan de vulnérabilités en CI <span class="tag t-warn">effort moyen</span></li>
-        <li>Sauvegarde / restauration de la base <span class="tag t-ok">quick win</span></li>
+        <li><span class="tag t-ok">fait</span> <s>Sauvegarde de la base</s> (téléchargement d'une copie SQLite cohérente en ligne) — restauration = remplacement de fichier hors ligne</li>
       </ul>
     </div>
   </div>

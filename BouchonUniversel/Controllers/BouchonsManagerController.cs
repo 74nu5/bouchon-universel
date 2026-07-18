@@ -13,6 +13,7 @@
 
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
 
     #endregion
@@ -122,6 +123,44 @@
             var fileStream = System.IO.File.OpenRead(tempFileName);
 
             return this.File(fileStream, "application/gzip", "files.tar.gz");
+        }
+
+        /// <summary>Télécharge une sauvegarde cohérente de la base SQLite (copie en ligne, sans interrompre le service).</summary>
+        /// <returns>The <see cref="IActionResult" />.</returns>
+        [HttpGet("backup")]
+        public IActionResult BackupDatabase()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            // Pooling désactivé : sinon la connexion (donc le fichier) reste verrouillée après Dispose et bloque la lecture.
+            var destinationConnectionString = new SqliteConnectionStringBuilder { DataSource = tempFile, Pooling = false }.ToString();
+            using (var destination = new SqliteConnection(destinationConnectionString))
+            {
+                destination.Open();
+                var source = (SqliteConnection)this.context.Database.GetDbConnection();
+                var wasClosed = source.State != System.Data.ConnectionState.Open;
+                if (wasClosed)
+                {
+                    source.Open();
+                }
+
+                try
+                {
+                    source.BackupDatabase(destination);
+                }
+                finally
+                {
+                    if (wasClosed)
+                    {
+                        source.Close();
+                    }
+                }
+            }
+
+            var bytes = System.IO.File.ReadAllBytes(tempFile);
+            System.IO.File.Delete(tempFile);
+
+            return this.File(bytes, "application/octet-stream", "bouchon-universel.db");
         }
 
         /// <summary>Affiche le formulaire d'import d'un jeu de mocks (archive tar.gz).</summary>

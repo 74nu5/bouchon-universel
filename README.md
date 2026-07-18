@@ -13,9 +13,14 @@ dotnet run --project BouchonUniversel
 
 L'interface Swagger de l'API est disponible sur `/swagger`. Un `Dockerfile` est également fourni pour une exécution en conteneur.
 
-Les verbes **GET, POST, PUT, PATCH et DELETE** sont pris en charge par le bouchon. En cas d'erreur,
-l'API renvoie un code HTTP sémantique (404 si la clé ou l'environnement est introuvable, 500 sinon).
-Le contenu des réponses mockées peut être édité depuis la page de détail d'un service.
+Les verbes **GET, POST, PUT, PATCH, DELETE et HEAD** sont pris en charge par le bouchon, avec **CORS**
+permissif (appel depuis n'importe quelle origine, préflight OPTIONS géré). En cas d'erreur, l'API renvoie
+un code HTTP sémantique (404 si la clé ou l'environnement est introuvable, 500 sinon). Le contenu des
+réponses mockées peut être édité depuis la page de détail d'un service.
+
+Une sonde de santé est exposée sur `/health` (vérifie aussi l'accès à la base). Toutes les réponses
+portent des en-têtes de sécurité (CSP, `X-Content-Type-Options`, `X-Frame-Options`, HSTS hors développement).
+Une sauvegarde de la base peut être téléchargée depuis « Sauvegarder la base » (copie SQLite cohérente).
 
 ## Base de données
 
