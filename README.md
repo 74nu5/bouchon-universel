@@ -30,7 +30,7 @@ Les binaires par système sont aussi téléchargeables depuis les [Releases GitH
 
 ## Documentation
 
-📖 **Site en ligne : https://ambitious-river-06e7d3903.7.azurestaticapps.net**
+📖 **Site en ligne : https://bouchon-universel.74nu5.dev**
 
 Un site de documentation **Blazor WebAssembly** (statique) se trouve dans `BouchonUniversel.Docs`
 (Introduction, Démarrage rapide, Installation, Configuration, Utilisation, Fonctionnalités, Référence API,
