@@ -65,7 +65,7 @@ namespace BouchonUniversel.Controllers
                 return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
             }
 
-            this.Response.Headers.Add("Site", "Bouchon-Universel");
+            this.Response.Headers["Site"] = "Bouchon-Universel";
             this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
 
             return this.StatusCode(result.StatusCode, result.Body.ResolveResponse(this.Response.ContentType));
@@ -107,7 +107,7 @@ namespace BouchonUniversel.Controllers
                 return this.StatusCode((int)HttpStatusCode.MethodNotAllowed, erreur.CodeMessage);
             }
 
-            this.Response.Headers.Add("Site", "Bouchon-Universel");
+            this.Response.Headers["Site"] = "Bouchon-Universel";
             this.Response.SetHeaders(result.Headers?.ToDictionary(kv => kv.Key, kv => kv.Value.AsEnumerable()));
 
             return this.StatusCode(result.StatusCode, result.Body.ResolveResponse(this.Response.ContentType));

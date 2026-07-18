@@ -2,8 +2,8 @@
 {
     #region Usings
 
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
 
     #endregion
 
@@ -14,16 +14,18 @@
 
         /// <summary>The main.</summary>
         /// <param name="args">The args.</param>
-        public static void Main(string[] args) => BuildWebHost(args).Run();
+        public static void Main(string[] args) => BuildHost(args).Run();
 
         #endregion
 
         #region Méthodes privées
 
-        /// <summary>The build web host.</summary>
+        /// <summary>The build host.</summary>
         /// <param name="args">The args.</param>
-        /// <returns>The <see cref="IWebHost"/>.</returns>
-        private static IWebHost BuildWebHost(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build();
+        /// <returns>The <see cref="IHost"/>.</returns>
+        private static IHost BuildHost(string[] args) => Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>())
+            .Build();
 
         #endregion
     }

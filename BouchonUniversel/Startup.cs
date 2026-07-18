@@ -111,6 +111,9 @@ using System.Linq;
 
             services.AddSingleton<HttpService>();
 
+            // Configuration des patterns de dates chargée une seule fois (auparavant relue à chaque requête).
+            services.AddSingleton<PatternDateFormatProvider>();
+
             services.AddTransient<SettingsBouchonMetier>();
             services.AddTransient<BouchonInitializer>();
             services.AddTransient<SettingsBouchonDAO>();

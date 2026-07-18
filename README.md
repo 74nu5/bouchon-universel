@@ -4,7 +4,7 @@ Application web ASP.NET Core permettant de créer et gérer des « bouchons » H
 
 ## Utilisation
 
-Prérequis : SDK .NET 5.
+Prérequis : SDK .NET 10.
 
 ```bash
 dotnet build
@@ -13,6 +13,15 @@ dotnet run --project BouchonUniversel
 
 L'interface Swagger de l'API est disponible sur `/swagger`. Un `Dockerfile` est également fourni pour une exécution en conteneur.
 
+## Tests
+
+```bash
+dotnet test
+```
+
+Les tests unitaires (xUnit) couvrent la logique métier de bouchonnage : ajustement des dates
+(`MockRealTime`) et chargement en cache de la configuration des patterns (`PatternDateFormatProvider`).
+
 ## Techno
 
-C# / ASP.NET Core (.NET 5), Entity Framework Core (SQLite), Swagger.
+C# / ASP.NET Core (.NET 10), Entity Framework Core 10 (SQLite), Swagger (Swashbuckle), xUnit.

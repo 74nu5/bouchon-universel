@@ -1,24 +1,25 @@
-FROM microsoft/dotnet:2.0-sdk AS build
-WORKDIR /app
+# syntax=docker/dockerfile:1
 
-# copy csproj and restore as distinct layers
+# --- Étape de build ---
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Copie des csproj et restauration en couche distincte (cache Docker).
 COPY *.sln .
 COPY BouchonUniversel/*.csproj ./BouchonUniversel/
 COPY BouchonUniversel.Utils/*.csproj ./BouchonUniversel.Utils/
 COPY BouchonUniversel.ApiTest/*.csproj ./BouchonUniversel.ApiTest/
-RUN dotnet restore
+COPY BouchonUniversel.Tests/*.csproj ./BouchonUniversel.Tests/
+RUN dotnet restore BouchonUniversel/BouchonUniversel.csproj
 
-# copy and build everything else
-COPY BouchonUniversel/. ./BouchonUniversel/
-COPY BouchonUniversel.Utils/. ./BouchonUniversel.Utils/
-COPY BouchonUniversel.ApiTest/. ./BouchonUniversel.ApiTest/
-RUN dotnet build
+# Copie du reste et publication (framework-dependent, sur l'image aspnet).
+COPY . .
+RUN dotnet publish BouchonUniversel/BouchonUniversel.csproj \
+    -c Release -o /app/publish \
+    --no-self-contained -p:PublishSingleFile=false -p:PublishReadyToRun=false
 
-FROM build AS publish
-WORKDIR /app/BouchonUniversel
-RUN dotnet publish -o out
-
-FROM microsoft/dotnet:2.0-runtime AS runtime
+# --- Étape d'exécution ---
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/BouchonUniversel/out ./
+COPY --from=build /app/publish ./
 ENTRYPOINT ["dotnet", "BouchonUniversel.dll"]

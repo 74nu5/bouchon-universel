@@ -1,8 +1,8 @@
-name: .NET Core
+name: .NET
 
 on:
   push:
-    branches: 
+    branches:
       - master
       - feature/*
   pull_request:
@@ -11,17 +11,17 @@ on:
 jobs:
   build:
 
-    runs-on: windows-2019
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 5.0.100-rc.1.20452.10
-    - name: Install dependencies
-      run: dotnet restore -r win-x64
+        dotnet-version: '10.0.x'
+    - name: Restore
+      run: dotnet restore
     - name: Build
-      run: dotnet build  -r win-x64 --configuration Release --no-restore
+      run: dotnet build --configuration Debug --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-build --configuration Debug --verbosity normal

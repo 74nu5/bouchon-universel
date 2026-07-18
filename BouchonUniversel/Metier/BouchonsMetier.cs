@@ -21,7 +21,6 @@ namespace BouchonUniversel.Metier
 
     using JetBrains.Annotations;
 
-    using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
     using Microsoft.Extensions.Logging;
 
     using Ustilz.Extensions;
@@ -54,18 +53,24 @@ namespace BouchonUniversel.Metier
 
         private readonly FileService fileService;
 
+        private readonly PatternDateFormatProvider patternDateFormatProvider;
+
         /// <summary>Initializes a new instance of the <see cref="BouchonsMetier" /> class.</summary>
         /// <param name="servicesDAO">The services DAO.</param>
         /// <param name="environnementDAO">The environnement DAO.</param>
         /// <param name="settingsBouchonDAO">The settings Bouchon DAO.</param>
         /// <param name="http">The http.</param>
-        public BouchonsMetier(HttpService http, ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService)
+        /// <param name="logger">The logger.</param>
+        /// <param name="fileService">The file service.</param>
+        /// <param name="patternDateFormatProvider">Fournit (en cache) la configuration des patterns de dates.</param>
+        public BouchonsMetier(HttpService http, ILogger<BouchonsMetier> logger, ServicesDAO servicesDAO, EnvironnementDAO environnementDAO, SettingsBouchonDAO settingsBouchonDAO, FileService fileService, PatternDateFormatProvider patternDateFormatProvider)
         {
             this.logger = logger;
             this.servicesDAO = servicesDAO;
             this.environnementDAO = environnementDAO;
             this.settingsBouchonDAO = settingsBouchonDAO;
             this.fileService = fileService;
+            this.patternDateFormatProvider = patternDateFormatProvider;
             this.http = http;
         }
 
@@ -93,7 +98,7 @@ namespace BouchonUniversel.Metier
             string route,
             Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers)
-            => await this.ProcessRequestAsync(HttpMethod.Get, cle, env, route, query, headers, null).ConfigureAwait(false);
+            => await this.ProcessRequestAsync(HttpVerb.Get, cle, env, route, query, headers, null).ConfigureAwait(false);
 
         /// <summary>The process post request async.</summary>
         /// <param name="cle">The cle.</param>
@@ -112,7 +117,7 @@ namespace BouchonUniversel.Metier
             Dictionary<string, IEnumerable<string>> query,
             Dictionary<string, IEnumerable<string>> headers,
             string body)
-            => await this.ProcessRequestAsync(HttpMethod.Post, cle, env, route, query, headers, body).ConfigureAwait(false);
+            => await this.ProcessRequestAsync(HttpVerb.Post, cle, env, route, query, headers, body).ConfigureAwait(false);
 
         /// <summary>The format if date.</summary>
         /// <param name="value">The value.</param>
@@ -144,7 +149,7 @@ namespace BouchonUniversel.Metier
         /// <param name="body">The body.</param>
         /// <returns>The <see cref="Task" />.</returns>
         private async Task<(ReponseBouchonnee? reponse, ResponseErreur? erreur)> ProcessRequestAsync(
-            HttpMethod method,
+            HttpVerb method,
             string cle,
             string env,
             string route,
@@ -169,7 +174,7 @@ namespace BouchonUniversel.Metier
 
                 var fileName = GetFileName(method, query, bouchonDir);
 
-                var pdfc = (await File.ReadAllTextAsync(@"./PatternDateFormatConfig.json").ConfigureAwait(false)).FromJson<PatternDateFormatConfig>();
+                var pdfc = this.patternDateFormatProvider.Config;
 
                 if (requestIsActivated)
                 {
@@ -189,7 +194,7 @@ namespace BouchonUniversel.Metier
                 var reponse = default(ReponseBouchonnee);
                 switch (method)
                 {
-                    case HttpMethod.Get:
+                    case HttpVerb.Get:
                     {
                         var (httpCode, responsePhrase, responseHeaders, response) = await this.http.GetHttpResponseAsync(url.ToString(), headers, null).ConfigureAwait(false);
                         reponse = new ()
@@ -203,15 +208,15 @@ namespace BouchonUniversel.Metier
                         break;
                     }
 
-                    case HttpMethod.Put:
+                    case HttpVerb.Put:
 
                         // TODO Gérer le verbe PUT
                         break;
-                    case HttpMethod.Delete:
+                    case HttpVerb.Delete:
 
                         // TODO Gérer le verbe DELETE
                         break;
-                    case HttpMethod.Post:
+                    case HttpVerb.Post:
                     {
                         var (httpCode, responsePhrase, responseHeaders, response) = await this.http.PostHttpResponseAsync(url.ToString(), headers, body, null).ConfigureAwait(false);
                         reponse = new ()
@@ -225,31 +230,31 @@ namespace BouchonUniversel.Metier
                         break;
                     }
 
-                    case HttpMethod.Head:
+                    case HttpVerb.Head:
 
                         // TODO Gérer le verbe HEAD
                         break;
-                    case HttpMethod.Trace:
+                    case HttpVerb.Trace:
 
                         // TODO Gérer le verbe TRACE
                         break;
-                    case HttpMethod.Patch:
+                    case HttpVerb.Patch:
 
                         // TODO Gérer le verbe PATCH
                         break;
-                    case HttpMethod.Connect:
+                    case HttpVerb.Connect:
 
                         // TODO Gérer le verbe CONNECT
                         break;
-                    case HttpMethod.Options:
+                    case HttpVerb.Options:
 
                         // TODO Gérer le verbe OPTIONS
                         break;
-                    case HttpMethod.Custom:
+                    case HttpVerb.Custom:
 
                         // TODO Gérer le verbe CUSTOM
                         break;
-                    case HttpMethod.None:
+                    case HttpVerb.None:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(method), method, null);
@@ -266,17 +271,17 @@ namespace BouchonUniversel.Metier
             }
             catch (KeyNotFoundException ex)
             {
-                this.logger.LogError("Erreur lors de la requete", ex);
+                this.logger.LogError(ex, "Erreur lors de la requete");
                 return (null, new () { Message = ex.Message, Code = 1001 });
             }
             catch (EnvironmentNotFoundException ex)
             {
-                this.logger.LogError("Erreur lors de la requete", ex);
+                this.logger.LogError(ex, "Erreur lors de la requete");
                 return (null, new () { Message = ex.Message, Code = 1002 });
             }
             catch (FileNotFoundException ex)
             {
-                this.logger.LogError("Erreur lors de la requete", ex);
+                this.logger.LogError(ex, "Erreur lors de la requete");
                 var confDir = new DirectoryInfo(Path.Combine(this.settingsBouchonDAO.GetCheminFichier(), cle, env, string.Empty));
                 var (reponse, reponseBouchonnee) = MockRealTime.GetUpdatedResponse(confDir.FullName, route);
 
@@ -293,12 +298,12 @@ namespace BouchonUniversel.Metier
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Erreur lors de la requete", ex);
+                this.logger.LogError(ex, "Erreur lors de la requete");
                 return (null, new () { Message = ex.Message, Code = 1999 });
             }
         }
 
-        private static string GetFileName(HttpMethod method, Dictionary<string, IEnumerable<string>> query, FileSystemInfo bouchonDir)
+        private static string GetFileName(HttpVerb method, Dictionary<string, IEnumerable<string>> query, FileSystemInfo bouchonDir)
         {
             var queryHash = string.Join(
                                         "&",

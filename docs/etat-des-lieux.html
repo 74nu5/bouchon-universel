@@ -98,9 +98,10 @@
   <div class="hero-inner">
     <div class="badge-row">
       <span class="pill">ASP.NET Core</span>
-      <span class="pill">.NET 5</span>
-      <span class="pill">EF Core · SQLite</span>
+      <span class="pill">.NET 10</span>
+      <span class="pill">EF Core 10 · SQLite</span>
       <span class="pill">Swagger</span>
+      <span class="pill">xUnit</span>
       <span class="pill">Docker</span>
     </div>
     <h1>Bouchon Universel</h1>
@@ -132,6 +133,16 @@
   <div class="callout">
     Le mot « bouchon » est le terme français consacré (surtout dans le monde bancaire/assurance) pour <em>mock</em> / <em>stub</em> de service.
     « Universel » car l'outil est agnostique du service cible : il fonctionne par simple proxy paramétré par une <strong>clé</strong> et un <strong>environnement</strong>.
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--green); margin-top:16px">
+    <h3 style="color:var(--green)">✅ Mise à jour — recommandations court terme appliquées (18/07/2026)</h3>
+    <ul class="clean">
+      <li><strong>Migration .NET 5 → .NET 10</strong> des 3 projets (+ nouveau projet de tests) ; build solution vert, application démarrée et validée en runtime</li>
+      <li><strong>Cache de <code>PatternDateFormatConfig.json</code></strong> via un <code>PatternDateFormatProvider</code> singleton (fini la lecture disque à chaque requête)</li>
+      <li><strong>Tests unitaires xUnit</strong> sur le métier (<code>MockRealTime</code>, provider de patterns) — 10 tests au vert</li>
+      <li>Bonus : suppression d'une dépendance à une <strong>API interne de Kestrel</strong>, correction d'une <strong>faille SQLite</strong> transitive (GHSA-2m69-gcr7-jv3q), et de bugs latents (headers, journalisation, regex)</li>
+    </ul>
   </div>
 
   <!-- ================= FONCTIONNEMENT ================= -->
@@ -202,7 +213,7 @@
   </div>
 
   <div class="grid g3" style="margin-top:16px">
-    <div class="card"><h3>🧩 Stack</h3><p class="kv">C# / ASP.NET Core MVC sur <strong>.NET 5</strong>, EF Core + SQLite, Swashbuckle (Swagger), Newtonsoft.Json, SharpZipLib, et la librairie maison <strong>Ustilz</strong> (Http/Json/Xml/Extensions).</p></div>
+    <div class="card"><h3>🧩 Stack</h3><p class="kv">C# / ASP.NET Core MVC sur <strong>.NET 10</strong>, EF Core 10 + SQLite, Swashbuckle 9 (Swagger), Newtonsoft.Json 13, SharpZipLib, xUnit, et la librairie maison <strong>Ustilz</strong> (Http/Json/Xml/Extensions).</p></div>
     <div class="card"><h3>🗄️ Persistance</h3><p class="kv">Métadonnées (services, environnements, settings) en <strong>SQLite</strong> via EF Core. Réponses mockées stockées en <strong>fichiers XML</strong> sur le disque, hors base.</p></div>
     <div class="card"><h3>🚀 Industrialisation</h3><p class="kv"><strong>Docker</strong>, publication single-file self-contained (linux-x64, trimming + ReadyToRun), CI <strong>GitHub Actions</strong> + <strong>GitLab CI</strong>, StyleCop &amp; analyseurs activés.</p></div>
   </div>
@@ -247,11 +258,12 @@
     <div class="card" style="border-left:4px solid var(--amber)">
       <h3 style="color:var(--amber)">Points de vigilance</h3>
       <ul class="clean">
-        <li><span class="tag t-no">Obsolescence</span> .NET 5 en fin de support — migration .NET 8/9 recommandée</li>
+        <li><span class="tag t-ok">Résolu</span> <s>.NET 5 en fin de support</s> — migré en <strong>.NET 10</strong></li>
+        <li><span class="tag t-ok">Résolu</span> <s>lecture disque à chaque requête</s> — config mise en cache</li>
+        <li><span class="tag t-ok">Résolu</span> <s>pas de tests unitaires</s> — projet xUnit ajouté</li>
         <li><span class="tag t-warn">Couverture verbes</span> seuls GET/POST ; PUT/DELETE/PATCH en TODO</li>
-        <li><span class="tag t-warn">Robustesse</span> lecture disque synchrone (<code>PatternDateFormatConfig.json</code>) à chaque requête</li>
-        <li><span class="tag t-warn">Tests</span> pas de projet de tests unitaires visible</li>
         <li><span class="tag t-warn">Gestion d'erreurs</span> tout renvoyé en <code>405</code> avec code interne</li>
+        <li><span class="tag t-warn">DB init</span> <code>InitializeData</code> commenté ; l'installation passe par la page dédiée</li>
       </ul>
     </div>
   </div>
@@ -262,15 +274,15 @@
     <div class="score-row"><div class="name">Concept &amp; utilité</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Architecture / lisibilité</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
     <div class="score-row"><div class="name">Couverture fonctionnelle</div><div class="bar"><span style="width:60%"></span></div><div class="val">6/10</div></div>
-    <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:40%"></span></div><div class="val">4/10</div></div>
-    <div class="score-row"><div class="name">Actualité technique</div><div class="bar"><span style="width:45%"></span></div><div class="val">4.5/10</div></div>
+    <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:65%"></span></div><div class="val">6.5/10</div></div>
+    <div class="score-row"><div class="name">Actualité technique</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Industrialisation (CI/Docker)</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
   </div>
 
   <!-- ================= RECOMMANDATIONS ================= -->
   <h2><span class="ic">🧱</span> Recommandations</h2>
   <div class="grid g3">
-    <div class="card"><h3>Court terme</h3><ul class="clean"><li>Migrer vers .NET 8/9 (LTS)</li><li>Mettre en cache la config des patterns de dates</li><li>Ajouter des tests unitaires sur le métier</li></ul></div>
+    <div class="card" style="border-left:4px solid var(--green)"><h3 style="color:var(--green)">Court terme ✅ fait</h3><ul class="clean"><li><s>Migrer vers une version LTS</s> → .NET 10</li><li><s>Mettre en cache la config des patterns</s></li><li><s>Ajouter des tests unitaires sur le métier</s></li></ul></div>
     <div class="card"><h3>Moyen terme</h3><ul class="clean"><li>Implémenter PUT / DELETE / PATCH</li><li>Codes HTTP d'erreur sémantiques (404/400/500)</li><li>Interface d'édition des réponses mockées</li></ul></div>
     <div class="card"><h3>Long terme</h3><ul class="clean"><li>Latence/erreurs simulées (chaos)</li><li>Import/export de jeux de mocks</li><li>Authentification de l'admin</li></ul></div>
   </div>
