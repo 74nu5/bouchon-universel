@@ -1,0 +1,102 @@
+@page "/faq"
+<PageTitle>FAQ &amp; dépannage — Bouchon Universel</PageTitle>
+
+<h1>FAQ &amp; dépannage</h1>
+
+<div class="accordion" id="faq">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+                Mon mock n'est pas rejoué, l'appel part vers le vrai service. Pourquoi ?
+            </button>
+        </h2>
+        <div id="q1" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+                Le rejeu n'a lieu que si <strong>le service ET son environnement sont activés</strong>. Vérifiez les
+                deux cases. Vérifiez aussi qu'un fichier existe pour cette route <em>et</em> ces mêmes paramètres de
+                requête (les paramètres font partie du hash du fichier).
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">
+                Je suis redirigé vers <code>/install</code>.
+            </button>
+        </h2>
+        <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+                L'application n'est pas encore configurée (aucun paramètre en base). Complétez l'assistant
+                d'installation ; les paramètres sont ensuite amorcés automatiquement.
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3">
+                Où est stockée la base, et comment la conserver entre deux redémarrages Docker ?
+            </button>
+        </h2>
+        <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+                La base SQLite et les fichiers de mocks vivent sous <code>/app/data</code> dans l'image. Montez un
+                volume pour les conserver : <code>-v bouchon-data:/app/data</code>. Le chemin est réglable via
+                <code>ConnectionStrings__BDDConnection</code> et <code>Bouchon__CheminFichiers</code>.
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q4">
+                En local, l'application écoute en HTTPS sur 5555 et le certificat pose problème.
+            </button>
+        </h2>
+        <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+                Sans <code>ASPNETCORE_URLS</code>, l'application écoute sur <code>https://*:5555</code>. Le plus simple
+                est d'utiliser Docker (HTTP sur 8080) ou de définir
+                <code>ASPNETCORE_URLS=http://localhost:8080</code>.
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q5">
+                Comment protéger l'administration ?
+            </button>
+        </h2>
+        <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+                Renseignez <code>Admin__Username</code> et <code>Admin__PasswordHash</code> (voir
+                <a href="configuration">Configuration</a>). L'API de bouchonnage reste toujours ouverte ; seule
+                l'interface web est protégée. Un compte lecteur en lecture seule est également possible.
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q6">
+                Comment tout réinitialiser ?
+            </button>
+        </h2>
+        <div id="q6" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+                Supprimez le volume de données (<code>docker volume rm bouchon-data</code>) ou le fichier de base et
+                le répertoire des bouchons. Le schéma est recréé au démarrage via les migrations EF Core.
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q7">
+                Puis-je appeler le bouchon depuis un navigateur (autre origine) ?
+            </button>
+        </h2>
+        <div id="q7" class="accordion-collapse collapse" data-bs-parent="#faq">
+            <div class="accordion-body">
+                Oui : CORS est permissif sur l'API de bouchonnage, et les requêtes préflight <code>OPTIONS</code>
+                sont gérées automatiquement.
+            </div>
+        </div>
+    </div>
+</div>

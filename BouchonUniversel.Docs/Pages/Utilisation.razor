@@ -2,49 +2,48 @@
 <PageTitle>Utilisation — Bouchon Universel</PageTitle>
 
 <h1>Utilisation</h1>
+<p class="lead">Comprendre le modèle enregistrement / rejeu. Pour un pas-à-pas concret, voir <a href="demarrage">Démarrage rapide</a>.</p>
 
 <h2>Modèle d'appel</h2>
-<p>Chaque appel bouchonné suit la route :</p>
 <pre><code>/api/bouchon/{clé}/{environnement}/{*route}</code></pre>
 <ul>
     <li><strong>clé</strong> : identifiant du service configuré.</li>
     <li><strong>environnement</strong> : nom de l'environnement (dev, recette, …).</li>
-    <li><strong>route</strong> : tout ce qui suit est transmis au service cible.</li>
+    <li><strong>route</strong> : tout ce qui suit est transmis tel quel au service cible.</li>
 </ul>
+<p>Exemple : <code>GET /api/bouchon/utilisateurs/dev/users/1?actif=true</code></p>
 
-<h2>Enregistrer &amp; rejouer</h2>
-<p>Selon l'état d'activation du service :</p>
-<ul>
-    <li><strong>Proxy / enregistrement</strong> : l'appel est relayé au vrai service et la réponse est capturée.</li>
-    <li><strong>Rejeu</strong> : la réponse enregistrée est renvoyée, sans appeler le vrai service.</li>
-</ul>
+<h2>Enregistrement ou rejeu ?</h2>
+<p>Le comportement dépend de l'activation, résumée ci-dessous :</p>
+<div class="table-responsive">
+    <table class="table table-sm table-bordered align-middle">
+        <thead>
+            <tr><th>Service activé</th><th>Environnement activé</th><th>Comportement</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><i class="bi bi-check-lg text-success"></i></td><td><i class="bi bi-check-lg text-success"></i></td><td><strong>Rejeu</strong> : la réponse enregistrée est renvoyée, sans appel réel.</td></tr>
+            <tr><td colspan="2" class="text-center">toute autre combinaison</td><td><strong>Proxy</strong> : l'appel est relayé au service réel, et sa réponse est <strong>enregistrée</strong>.</td></tr>
+        </tbody>
+    </table>
+</div>
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Astuce : gardez le service <em>désactivé</em> pour capturer des réponses réelles,
+    puis <em>activez-le</em> pour figer et rejouer ces réponses.
+</div>
 
-<h2>Verbes &amp; codes</h2>
+<h2>Verbes, en-têtes et erreurs</h2>
 <p>
     Verbes pris en charge : <span class="badge text-bg-secondary">GET</span>
     <span class="badge text-bg-secondary">POST</span> <span class="badge text-bg-secondary">PUT</span>
     <span class="badge text-bg-secondary">PATCH</span> <span class="badge text-bg-secondary">DELETE</span>
-    <span class="badge text-bg-secondary">HEAD</span>. CORS permissif (préflight OPTIONS géré).
-</p>
-<p>En cas d'erreur, l'API renvoie un code HTTP sémantique :</p>
-<div class="table-responsive">
-    <table class="table table-sm table-striped">
-        <thead><tr><th>Situation</th><th>Code</th></tr></thead>
-        <tbody>
-            <tr><td>Clé ou environnement introuvable</td><td><span class="badge text-bg-warning">404</span></td></tr>
-            <tr><td>Erreur inattendue</td><td><span class="badge text-bg-danger">500</span></td></tr>
-        </tbody>
-    </table>
-</div>
-
-<h2>Documentation de l'API</h2>
-<p>
-    L'interface Swagger est disponible sur <code>/swagger</code> une fois l'application lancée, et une sonde de
-    santé sur <code>/health</code>.
+    <span class="badge text-bg-secondary">HEAD</span>.
+    Les en-têtes sont transmis dans les deux sens ; CORS est permissif.
+    Le détail des codes d'erreur et du format de stockage est dans la <a href="api">Référence API</a>.
 </p>
 
-<h2>Administration</h2>
+<h2>Éditer une réponse</h2>
 <p>
-    Les services et environnements se gèrent depuis l'interface web (Bootstrap 5, thème clair/sombre) :
-    création, édition, duplication, recherche, et édition des réponses mockées avec coloration syntaxique.
+    Depuis le détail d'un service, chaque fichier de réponse est éditable dans un éditeur avec coloration
+    syntaxique et validation JSON/XML. Vous pouvez aussi activer le <a href="fonctionnalites">templating</a>
+    pour injecter des valeurs dynamiques au moment du rejeu.
 </p>

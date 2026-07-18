@@ -19,12 +19,21 @@
 </div>
 
 <h2><i class="bi bi-bezier2"></i> Ingénierie du chaos</h2>
-<p>Par service, pour tester la résilience des clients :</p>
-<ul>
-    <li><strong>Latence</strong> simulée (millisecondes).</li>
-    <li><strong>Injection d'erreurs</strong> (probabilité + code HTTP renvoyé).</li>
-    <li><strong>Coupure de connexion</strong> et <strong>réponse tronquée</strong> (probabilité).</li>
-</ul>
+<p>Paramètres configurables <strong>par service</strong> pour tester la résilience des clients :</p>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Paramètre</th><th>Valeurs</th><th>Effet</th></tr></thead>
+        <tbody>
+            <tr><td>Latence</td><td>millisecondes</td><td>Délai ajouté avant la réponse.</td></tr>
+            <tr><td>Probabilité d'erreur</td><td>0-100</td><td>% de chances de renvoyer une erreur simulée.</td></tr>
+            <tr><td>Code d'erreur</td><td>ex. 500, 503</td><td>Code HTTP renvoyé lors d'une erreur simulée (500 par défaut).</td></tr>
+            <tr><td>Probabilité de coupure</td><td>0-100</td><td>% de chances de couper brutalement la connexion (panne réseau).</td></tr>
+            <tr><td>Probabilité de troncature</td><td>0-100</td><td>% de chances de renvoyer une réponse partielle/corrompue.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<p class="text-body-secondary small"><i class="bi bi-lightbulb"></i> Exemple de templating : avec le corps enregistré <code>{"id":"{{query.id}}","ts":"{{now}}"}</code>, un appel <code>?id=42</code> renverra <code>{"id":"42","ts":"2026-01-01T…"}</code>.</p>
 
 <h2><i class="bi bi-clock-history"></i> Dates réajustées</h2>
 <p>Les dates présentes dans une réponse enregistrée peuvent être recalculées à la date courante (mock « vivant »).</p>

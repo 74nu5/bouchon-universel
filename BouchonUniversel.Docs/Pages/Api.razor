@@ -1,0 +1,77 @@
+@page "/api"
+<PageTitle>Référence API — Bouchon Universel</PageTitle>
+
+<h1>Référence API</h1>
+
+<h2>Endpoint de bouchonnage</h2>
+<p>Un seul endpoint, décliné sur six verbes :</p>
+<pre><code>{VERBE} /api/bouchon/{clé}/{environnement}/{*route}</code></pre>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Verbe</th><th>Corps</th><th>Comportement</th></tr></thead>
+        <tbody>
+            <tr><td><span class="badge text-bg-secondary">GET</span></td><td>—</td><td>Rejeu ou proxy + enregistrement</td></tr>
+            <tr><td><span class="badge text-bg-secondary">HEAD</span></td><td>—</td><td>Comme GET, sans corps de réponse</td></tr>
+            <tr><td><span class="badge text-bg-secondary">POST</span></td><td>oui</td><td>Rejeu ou proxy + enregistrement</td></tr>
+            <tr><td><span class="badge text-bg-secondary">PUT</span></td><td>oui</td><td>Rejeu ou proxy + enregistrement</td></tr>
+            <tr><td><span class="badge text-bg-secondary">PATCH</span></td><td>oui</td><td>Rejeu ou proxy + enregistrement</td></tr>
+            <tr><td><span class="badge text-bg-secondary">DELETE</span></td><td>ignoré</td><td>Rejeu ou proxy + enregistrement</td></tr>
+        </tbody>
+    </table>
+</div>
+<p>
+    Les <strong>en-têtes</strong> de la requête sont transmis au service cible (sauf <code>Host</code>) ; les en-têtes
+    de la réponse sont réécrits dans la sortie, avec en plus <code>Site: Bouchon-Universel</code>.
+    <strong>CORS</strong> est permissif (préflight <code>OPTIONS</code> géré automatiquement).
+</p>
+
+<h2>Codes d'erreur</h2>
+<p>En cas d'erreur, la réponse contient <code>{code interne} - {message}</code> :</p>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>HTTP</th><th>Code interne</th><th>Cause</th></tr></thead>
+        <tbody>
+            <tr><td><span class="badge text-bg-warning">404</span></td><td><code>1001</code></td><td>Clé de service introuvable</td></tr>
+            <tr><td><span class="badge text-bg-warning">404</span></td><td><code>1002</code></td><td>Environnement introuvable</td></tr>
+            <tr><td><span class="badge text-bg-danger">500</span></td><td><code>1999</code></td><td>Erreur inattendue</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>Endpoints utilitaires</h2>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Route</th><th>Rôle</th></tr></thead>
+        <tbody>
+            <tr><td><code>GET /api/bouchon/healthcheck</code></td><td>Renvoie <code>OK</code>.</td></tr>
+            <tr><td><code>GET /health</code></td><td>Sonde de santé (avec vérification de la base).</td></tr>
+            <tr><td><code>GET /swagger</code></td><td>Documentation interactive de l'API de bouchonnage.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>Endpoints d'administration</h2>
+<p>Interface web (protégée si l'authentification est configurée) :</p>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Route</th><th>Rôle</th></tr></thead>
+        <tbody>
+            <tr><td><code>/</code></td><td>Tableau de bord</td></tr>
+            <tr><td><code>/Services</code>, <code>/Environnements</code></td><td>Gestion des services et environnements</td></tr>
+            <tr><td><code>/download</code></td><td>Export des mocks (tar.gz)</td></tr>
+            <tr><td><code>/import</code></td><td>Import d'un jeu de mocks (tar.gz)</td></tr>
+            <tr><td><code>/backup</code></td><td>Sauvegarde de la base SQLite</td></tr>
+            <tr><td><code>/install</code></td><td>Assistant d'installation</td></tr>
+            <tr><td><code>/account/login</code>, <code>/account/logout</code></td><td>Connexion / déconnexion admin</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>Stockage des réponses</h2>
+<p>Chaque réponse enregistrée est un fichier XML :</p>
+<pre><code>{CheminFichiers}/{clé}/{environnement}/{route}/{VERBE}_{hash}.xml</code></pre>
+<ul>
+    <li>le <strong>hash</strong> est un SHA-256 des paramètres de requête (les valeurs de type date sont neutralisées pour rester stables) ;</li>
+    <li>le fichier contient le corps (en <code>CDATA</code>), les en-têtes, le code HTTP, la phrase de statut et la requête d'origine ;</li>
+    <li>il est directement éditable depuis l'interface (avec coloration syntaxique).</li>
+</ul>

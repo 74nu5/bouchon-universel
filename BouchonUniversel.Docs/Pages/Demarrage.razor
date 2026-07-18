@@ -1,0 +1,53 @@
+@page "/demarrage"
+<PageTitle>Démarrage rapide — Bouchon Universel</PageTitle>
+
+<h1>Démarrage rapide</h1>
+<p class="lead">Créer et rejouer votre premier bouchon en cinq étapes.</p>
+
+<h2>1. Lancer l'application</h2>
+<pre><code>docker run -p 8080:8080 -v bouchon-data:/app/data ghcr.io/74nu5/bouchon-universel:latest</code></pre>
+<p>Ouvrez ensuite <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a> (tableau de bord d'administration).</p>
+
+<h2>2. Créer un environnement</h2>
+<p>
+    Menu <strong>Environnements → Nouvel environnement</strong>. Un environnement représente une cible
+    (par ex. <code>dev</code>, <code>recette</code>). Cochez <em>activé</em>.
+</p>
+
+<h2>3. Créer un service</h2>
+<p>Menu <strong>Services → Nouveau service</strong> :</p>
+<ul>
+    <li><strong>Clé</strong> : identifiant utilisé dans l'URL (ex. <code>utilisateurs</code>).</li>
+    <li><strong>Environnement</strong> : celui créé à l'étape 2.</li>
+    <li><strong>URL</strong> : l'adresse du <em>vrai</em> service à bouchonner (ex. <code>https://api.exemple.com/</code>).</li>
+    <li><strong>Activé</strong> : <span class="badge text-bg-secondary">décoché</span> pour l'instant (mode enregistrement).</li>
+</ul>
+
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i>
+    Un service est rejoué (mock) uniquement lorsque <strong>le service ET son environnement sont activés</strong>.
+    Sinon, l'appel est relayé au vrai service et sa réponse est <strong>enregistrée</strong>.
+</div>
+
+<h2>4. Enregistrer une réponse (mode proxy)</h2>
+<p>Appelez le bouchon ; l'appel est transmis à l'URL réelle et la réponse est capturée :</p>
+<pre><code>curl http://localhost:8080/api/bouchon/utilisateurs/dev/users/1</code></pre>
+<p>
+    La réponse est stockée dans un fichier XML sous
+    <code>{répertoire des bouchons}/utilisateurs/dev/users/1/GET_&lt;hash&gt;.xml</code>
+    (le <em>hash</em> dépend des paramètres de requête).
+</p>
+
+<h2>5. Rejouer la réponse (mode mock)</h2>
+<p>
+    Éditez le service et cochez <strong>Activé</strong> (l'environnement doit l'être aussi). Le même appel
+    renvoie désormais la réponse enregistrée, <strong>sans</strong> contacter le vrai service :
+</p>
+<pre><code>curl http://localhost:8080/api/bouchon/utilisateurs/dev/users/1</code></pre>
+
+<h2>Et ensuite ?</h2>
+<p>
+    Vous pouvez <strong>éditer</strong> la réponse enregistrée (menu détail du service, bouton « éditer »),
+    activer le <a href="fonctionnalites">templating et le chaos</a>, ou
+    <a href="configuration">configurer</a> l'authentification et le stockage.
+</p>

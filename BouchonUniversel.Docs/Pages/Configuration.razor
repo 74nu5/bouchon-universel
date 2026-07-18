@@ -1,0 +1,84 @@
+@page "/configuration"
+<PageTitle>Configuration — Bouchon Universel</PageTitle>
+
+<h1>Configuration</h1>
+<p class="lead">
+    La configuration se fait via <code>appsettings.json</code> ou, de préférence, par
+    <strong>variables d'environnement</strong> (idéal en conteneur).
+</p>
+
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i>
+    Pour une clé imbriquée, remplacez le <code>:</code> par un double tiret bas <code>__</code> en variable
+    d'environnement. Exemple : <code>Bouchon:CheminFichiers</code> → <code>Bouchon__CheminFichiers</code>.
+</div>
+
+<h2>Général</h2>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Clé</th><th>Description</th><th>Défaut (image Docker)</th></tr></thead>
+        <tbody>
+            <tr><td><code>ASPNETCORE_URLS</code></td><td>Adresse(s) d'écoute</td><td><code>http://+:8080</code></td></tr>
+            <tr><td><code>ASPNETCORE_ENVIRONMENT</code></td><td><code>Development</code> ou <code>Production</code></td><td><code>Production</code></td></tr>
+            <tr><td><code>ConnectionStrings:BDDConnection</code></td><td>Chemin du fichier SQLite</td><td><code>/app/data/BouchonUniversel.db</code></td></tr>
+        </tbody>
+    </table>
+</div>
+<p class="text-body-secondary small">En local (hors conteneur, sans <code>ASPNETCORE_URLS</code>), l'application écoute sur <code>https://*:5555</code>.</p>
+
+<h2>Section <code>Bouchon</code></h2>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Clé</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td><code>Bouchon:CheminFichiers</code></td><td>chemin</td><td>Répertoire racine où sont stockées les réponses mockées.</td></tr>
+            <tr><td><code>Bouchon:DefautActivation</code></td><td>booléen</td><td>État d'activation initial amorcé au premier démarrage.</td></tr>
+            <tr><td><code>Bouchon:UrlService</code></td><td>chaîne</td><td>Valeur par défaut historique. La cible réelle d'un appel est l'<strong>URL propre à chaque service</strong>.</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>Section <code>Admin</code> (authentification)</h2>
+<p>L'authentification n'est active que si <code>Username</code> et un mot de passe (haché ou clair) sont renseignés.</p>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead><tr><th>Clé</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td><code>Admin:Username</code></td><td>Identifiant administrateur.</td></tr>
+            <tr><td><code>Admin:PasswordHash</code></td><td>Hash PBKDF2 du mot de passe admin (recommandé).</td></tr>
+            <tr><td><code>Admin:Password</code></td><td>Mot de passe admin en clair (dépannage/dev uniquement).</td></tr>
+            <tr><td><code>Admin:ViewerUsername</code></td><td>Identifiant du compte lecteur (lecture seule), facultatif.</td></tr>
+            <tr><td><code>Admin:ViewerPasswordHash</code></td><td>Hash du mot de passe lecteur.</td></tr>
+            <tr><td><code>Admin:ViewerPassword</code></td><td>Mot de passe lecteur en clair (dépannage/dev).</td></tr>
+        </tbody>
+    </table>
+</div>
+<p>Génération d'un hash de mot de passe :</p>
+<pre><code>dotnet run --project BouchonUniversel -- hash-password "&lt;mot-de-passe&gt;"</code></pre>
+
+<h2>Journalisation</h2>
+<p>
+    Les journaux sont produits par <strong>Serilog</strong> (JSON compact). Les niveaux se règlent via la section
+    standard <code>Logging:LogLevel</code> d'ASP.NET Core, par exemple <code>Logging:LogLevel:Default = Information</code>.
+</p>
+
+<h2>Patterns de dates (<code>PatternDateFormatConfig.json</code>)</h2>
+<p>
+    Ce fichier (à la racine de l'application) définit les expressions régulières et formats utilisés pour
+    <strong>réajuster les dates</strong> dans les réponses (voir <a href="fonctionnalites">Fonctionnalités</a>).
+    Deux formats sont fournis par défaut : <code>yyyy-MM-dd</code> et <code>dd-MM-yyyy</code>.
+</p>
+
+<h2>Exemple (docker-compose)</h2>
+<pre><code>services:
+  bouchon:
+    image: ghcr.io/74nu5/bouchon-universel:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - bouchon-data:/app/data
+    environment:
+      Admin__Username: admin
+      Admin__PasswordHash: "AQAAAA..."   # via hash-password
+volumes:
+  bouchon-data:</code></pre>
