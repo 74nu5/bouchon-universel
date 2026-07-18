@@ -44,8 +44,11 @@ namespace BouchonUniversel.Tests
         [InlineData("123456", "123")]
         [InlineData("a", "a")]
         [InlineData("", "")]
-        [InlineData(null, null)]
         public void Truncate_ReturnsFirstHalf(string input, string expected)
             => Assert.Equal(expected, ChaosPlan.Truncate(input));
+
+        [Fact]
+        public void Truncate_Null_ReturnsNull()
+            => Assert.Null(ChaosPlan.Truncate(null));
     }
 }

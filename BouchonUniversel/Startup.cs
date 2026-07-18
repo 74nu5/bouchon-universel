@@ -13,6 +13,7 @@ namespace BouchonUniversel
     using BouchonUniversel.Middlewares;
     using BouchonUniversel.Middlewares.Extensions;
     using BouchonUniversel.Models;
+    using BouchonUniversel.Security;
     using BouchonUniversel.Services;
 
     using JetBrains.Annotations;
@@ -29,6 +30,8 @@ namespace BouchonUniversel
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+
+    using Serilog;
 
     using Ustilz.Http;
 
@@ -72,6 +75,9 @@ namespace BouchonUniversel
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            // Journalisation structurée des requêtes (Serilog).
+            app.UseSerilogRequestLogging();
 
             // En-têtes de sécurité appliqués à toutes les réponses.
             app.Use(async (context, next) =>
@@ -121,11 +127,17 @@ namespace BouchonUniversel
 
             services.AddMvc(options =>
             {
+                // Journal d'audit des modifications d'administration.
+                options.Filters.Add<AuditActionFilter>();
+
                 if (adminAuthEnabled)
                 {
                     // Toutes les pages d'administration exigent une authentification ; l'API et le compte sont [AllowAnonymous].
                     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                     options.Filters.Add(new AuthorizeFilter(policy));
+
+                    // Les modifications exigent le rôle Admin (le lecteur est en lecture seule).
+                    options.Filters.Add<AdminWriteAuthorizationFilter>();
                 }
             });
 

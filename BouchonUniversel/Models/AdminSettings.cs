@@ -16,6 +16,15 @@ namespace BouchonUniversel.Models
         /// <summary>Gets or sets the admin password en clair. Déconseillé (dépannage / dev) : préférer <see cref="PasswordHash" />.</summary>
         public string Password { get; set; }
 
+        /// <summary>Gets or sets l'identifiant du compte lecteur (rôle lecture seule), facultatif.</summary>
+        public string ViewerUsername { get; set; }
+
+        /// <summary>Gets or sets le hash du mot de passe lecteur (recommandé).</summary>
+        public string ViewerPasswordHash { get; set; }
+
+        /// <summary>Gets or sets le mot de passe lecteur en clair (dépannage / dev).</summary>
+        public string ViewerPassword { get; set; }
+
         /// <summary>Gets a value indicating whether l'authentification admin est activée.</summary>
         public bool IsEnabled
             => !string.IsNullOrEmpty(this.Username)

@@ -64,5 +64,36 @@ namespace BouchonUniversel.Tests
         [Fact]
         public void Verify_Disabled_Fails()
             => Assert.False(AdminPassword.Verify(new AdminSettings(), "admin", "s3cret"));
+
+        [Fact]
+        public void ResolveRole_AdminCredentials_ReturnsAdmin()
+        {
+            var settings = new AdminSettings { Username = "admin", PasswordHash = AdminPassword.Hash("a") };
+
+            Assert.Equal(Roles.Admin, AdminPassword.ResolveRole(settings, "admin", "a"));
+        }
+
+        [Fact]
+        public void ResolveRole_ViewerCredentials_ReturnsViewer()
+        {
+            var settings = new AdminSettings
+                           {
+                               Username = "admin",
+                               PasswordHash = AdminPassword.Hash("a"),
+                               ViewerUsername = "lecteur",
+                               ViewerPasswordHash = AdminPassword.Hash("v"),
+                           };
+
+            Assert.Equal(Roles.Viewer, AdminPassword.ResolveRole(settings, "lecteur", "v"));
+        }
+
+        [Fact]
+        public void ResolveRole_InvalidCredentials_ReturnsNull()
+        {
+            var settings = new AdminSettings { Username = "admin", PasswordHash = AdminPassword.Hash("a") };
+
+            Assert.Null(AdminPassword.ResolveRole(settings, "admin", "mauvais"));
+            Assert.Null(AdminPassword.ResolveRole(settings, "inconnu", "a"));
+        }
     }
 }

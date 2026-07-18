@@ -57,13 +57,14 @@ namespace BouchonUniversel.Controllers
                 return this.View(model);
             }
 
-            if (!AdminPassword.Verify(this.adminSettings, model.Username, model.Password))
+            var role = AdminPassword.ResolveRole(this.adminSettings, model.Username, model.Password);
+            if (role == null)
             {
                 this.ModelState.AddModelError(string.Empty, "Identifiant ou mot de passe incorrect.");
                 return this.View(model);
             }
 
-            var claims = new List<Claim> { new (ClaimTypes.Name, model.Username) };
+            var claims = new List<Claim> { new (ClaimTypes.Name, model.Username), new (ClaimTypes.Role, role) };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await this.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity)).ConfigureAwait(false);
 

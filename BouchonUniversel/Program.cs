@@ -14,6 +14,9 @@ namespace BouchonUniversel
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
+    using Serilog;
+    using Serilog.Formatting.Compact;
+
     #endregion
 
     /// <summary>The program.</summary>
@@ -45,6 +48,10 @@ namespace BouchonUniversel
         /// <param name="args">The args.</param>
         /// <returns>The <see cref="IHostBuilder" />.</returns>
         public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
+                                                                          .UseSerilog((context, configuration) => configuration
+                                                                                                                 .ReadFrom.Configuration(context.Configuration)
+                                                                                                                 .Enrich.FromLogContext()
+                                                                                                                 .WriteTo.Console(new CompactJsonFormatter()))
                                                                           .ConfigureWebHostDefaults(
                                                                                                     builder => builder.UseStartup<Startup>().UseUrls("https://*:5555"));
 

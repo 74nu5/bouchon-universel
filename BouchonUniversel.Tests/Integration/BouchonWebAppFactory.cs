@@ -34,13 +34,17 @@ namespace BouchonUniversel.Tests.Integration
         private readonly string filesPath;
         private readonly string adminUsername;
         private readonly string adminPasswordHash;
+        private readonly string viewerUsername;
+        private readonly string viewerPasswordHash;
         private readonly bool seedData;
 
         /// <summary>Initializes a new instance of the <see cref="BouchonWebAppFactory" /> class.</summary>
         /// <param name="adminUsername">Identifiant admin (active l'authentification si renseigné avec le hash).</param>
         /// <param name="adminPasswordHash">Hash du mot de passe admin.</param>
         /// <param name="seedData">Amorce les paramètres et un service de démonstration ; sinon, seul le schéma est créé (application « non installée »).</param>
-        public BouchonWebAppFactory(string adminUsername = null, string adminPasswordHash = null, bool seedData = true)
+        /// <param name="viewerUsername">Identifiant du compte lecteur (facultatif).</param>
+        /// <param name="viewerPasswordHash">Hash du mot de passe lecteur (facultatif).</param>
+        public BouchonWebAppFactory(string adminUsername = null, string adminPasswordHash = null, bool seedData = true, string viewerUsername = null, string viewerPasswordHash = null)
         {
             this.workDirectory = Path.Combine(Path.GetTempPath(), "bouchon-it-" + Guid.NewGuid().ToString("N"));
             this.databasePath = Path.Combine(this.workDirectory, "it.db");
@@ -48,6 +52,8 @@ namespace BouchonUniversel.Tests.Integration
             Directory.CreateDirectory(this.filesPath);
             this.adminUsername = adminUsername;
             this.adminPasswordHash = adminPasswordHash;
+            this.viewerUsername = viewerUsername;
+            this.viewerPasswordHash = viewerPasswordHash;
             this.seedData = seedData;
         }
 
@@ -80,6 +86,12 @@ namespace BouchonUniversel.Tests.Integration
                 {
                     settings["Admin:Username"] = this.adminUsername;
                     settings["Admin:PasswordHash"] = this.adminPasswordHash;
+                }
+
+                if (!string.IsNullOrEmpty(this.viewerUsername))
+                {
+                    settings["Admin:ViewerUsername"] = this.viewerUsername;
+                    settings["Admin:ViewerPasswordHash"] = this.viewerPasswordHash;
                 }
 
                 config.AddInMemoryCollection(settings);
