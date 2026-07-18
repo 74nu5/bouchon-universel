@@ -5,6 +5,7 @@ namespace BouchonUniversel
     using System;
 
     using BouchonUniversel.Metier;
+    using BouchonUniversel.Security;
 
     using JetBrains.Annotations;
 
@@ -23,9 +24,17 @@ namespace BouchonUniversel
         /// <param name="args">The args.</param>
         public static void Main(string[] args)
         {
+            // Outil : génère un hash de mot de passe admin à coller dans Admin:PasswordHash.
+            //   dotnet run -- hash-password <motdepasse>
+            if (args is { Length: >= 2 } && string.Equals(args[0], "hash-password", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine(AdminPassword.Hash(args[1]));
+                return;
+            }
+
             var host = BuildWebHost(args);
 
-            // Création du schéma (EnsureCreated) et amorçage des paramètres depuis la configuration.
+            // Application des migrations et amorçage des paramètres depuis la configuration.
             // Idempotent : ne réamorce pas si des paramètres existent déjà.
             InitializeData(host);
 

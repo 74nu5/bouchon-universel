@@ -8,6 +8,7 @@ namespace BouchonUniversel.Controllers
 
     using BouchonUniversel.Models;
     using BouchonUniversel.Models.ModelsView;
+    using BouchonUniversel.Security;
 
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -54,7 +55,7 @@ namespace BouchonUniversel.Controllers
                 return this.View(model);
             }
 
-            if (!this.AreCredentialsValid(model.Username, model.Password))
+            if (!AdminPassword.Verify(this.adminSettings, model.Username, model.Password))
             {
                 this.ModelState.AddModelError(string.Empty, "Identifiant ou mot de passe incorrect.");
                 return this.View(model);
@@ -76,10 +77,5 @@ namespace BouchonUniversel.Controllers
             await this.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
             return this.RedirectToAction(nameof(this.Login));
         }
-
-        private bool AreCredentialsValid(string username, string password)
-            => this.adminSettings.IsEnabled
-               && string.Equals(username, this.adminSettings.Username, System.StringComparison.Ordinal)
-               && string.Equals(password, this.adminSettings.Password, System.StringComparison.Ordinal);
     }
 }

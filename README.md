@@ -45,13 +45,24 @@ Chaque service peut simuler une **latence** (en millisecondes) et l'**injection 
 ## Authentification de l'administration
 
 Les écrans d'administration peuvent être protégés par une authentification par cookie. Elle est **activée
-uniquement** si un identifiant et un mot de passe sont configurés dans la section `Admin` :
+uniquement** si un identifiant et un mot de passe sont configurés dans la section `Admin`.
+
+Le mot de passe doit de préférence être fourni **haché** (PBKDF2 salé, format `PasswordHasher` ASP.NET Core).
+Générer le hash puis le placer dans `Admin:PasswordHash` :
+
+```bash
+dotnet run --project BouchonUniversel -- hash-password "<mot-de-passe>"
+# → copier la valeur affichée dans Admin:PasswordHash
+```
 
 ```bash
 # via variables d'environnement (recommandé plutôt que appsettings.json)
 Admin__Username=admin
-Admin__Password=<mot-de-passe>
+Admin__PasswordHash=<hash-généré>
 ```
+
+Un mot de passe en clair (`Admin:Password`) reste accepté en dépannage/développement (comparaison à temps
+constant), mais `Admin:PasswordHash` est le chemin recommandé.
 
 L'API de bouchonnage (`/api/bouchon/*`) et la page d'installation restent toujours accessibles sans authentification.
 

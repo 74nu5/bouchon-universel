@@ -322,7 +322,7 @@
   <div class="callout">
     <strong>À traiter en priorité (quick wins &amp; dette identifiée) :</strong>
     <ul class="clean" style="margin-top:8px">
-      <li><strong>Hacher le mot de passe admin</strong> (PBKDF2) + comparaison à temps constant — il est aujourd'hui comparé en clair depuis la configuration</li>
+      <li><span class="tag t-ok">fait</span> <s><strong>Hacher le mot de passe admin</strong></s> — hash PBKDF2 salé (<code>PasswordHasher</code>) stocké dans <code>Admin:PasswordHash</code> ; vérification à temps constant ; commande <code>hash-password</code> pour générer le hash</li>
       <li><strong>Upsert de la page <code>/install</code></strong> — la re-soumission crée aujourd'hui des lignes de settings en double (INSERT au lieu de créer-ou-mettre-à-jour)</li>
       <li><strong>Tests d'intégration bout-en-bout</strong> (<code>WebApplicationFactory</code>) avec base seedée, pour couvrir chaos / import / passthrough sur un vrai serveur en aval</li>
       <li><strong>Cache du contrôle d'installation</strong> — <code>InstallMiddleware</code> interroge la base à chaque requête ; un drapeau en cache l'éliminerait</li>
@@ -354,7 +354,7 @@
     <div class="card">
       <h3>🔒 Sécurité</h3>
       <ul class="clean">
-        <li>Hachage du mot de passe admin (PBKDF2) + comparaison à temps constant <span class="tag t-ok">quick win</span></li>
+        <li><span class="tag t-ok">fait</span> <s>Hachage du mot de passe admin (PBKDF2) + comparaison à temps constant</s></li>
         <li>Anti-bruteforce : rate limiting / verrouillage du login <span class="tag t-ok">quick win</span></li>
         <li>Rôles (lecture seule vs admin) + journal d'audit des modifications <span class="tag t-warn">effort moyen</span></li>
         <li>En-têtes de sécurité (HSTS, CSP) + secrets via user-secrets / Key Vault <span class="tag t-ok">quick win</span></li>
