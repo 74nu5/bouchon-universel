@@ -1,24 +1,24 @@
-# Lancement local : docker compose up --build
-# Multi-arch : docker buildx build --platform linux/amd64,linux/arm64 -t bouchon-universel:latest .
+# Démarrage local : docker compose up --build   →   http://localhost:8080
+# Ou, sans cloner le dépôt, avec l'image publiée :
+#   docker run -p 8080:8080 -v bouchon-data:/app/data ghcr.io/74nu5/bouchon-universel:latest
 services:
   bouchon:
     build:
       context: .
       dockerfile: Dockerfile
+    # Pour utiliser l'image publiée plutôt que de builder : commenter "build" et décommenter "image".
+    # image: ghcr.io/74nu5/bouchon-universel:latest
     image: bouchon-universel:latest
     ports:
       - "8080:8080"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__BDDConnection: /app/data/BouchonUniversel.db
-      Bouchon__CheminFichiers: /app/data/files
-      Bouchon__DefautActivation: "true"
-      Bouchon__UrlService: ""
-      # Authentification admin (facultatif) : renseigner Admin__Username + Admin__PasswordHash
-      # (générer le hash : dotnet run --project BouchonUniversel -- hash-password <motdepasse>).
     volumes:
       - bouchon-data:/app/data
+    # Authentification admin (facultatif) : générer le hash via
+    #   dotnet run --project BouchonUniversel -- hash-password <motdepasse>
+    # puis décommenter :
+    # environment:
+    #   Admin__Username: admin
+    #   Admin__PasswordHash: "<hash>"
 
 volumes:
   bouchon-data:

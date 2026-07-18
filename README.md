@@ -2,7 +2,33 @@
 
 Application web ASP.NET Core permettant de créer et gérer des « bouchons » HTTP (services simulés / mocks). Elle expose une API pour définir des services, des environnements et leurs réponses, avec un stockage SQLite via Entity Framework Core et une documentation Swagger.
 
-## Utilisation
+## Démarrage rapide
+
+Choisissez l'option qui vous convient — l'application est ensuite disponible sur **http://localhost:8080**.
+
+**Docker (rien à installer d'autre)**
+
+```bash
+docker run -p 8080:8080 -v bouchon-data:/app/data ghcr.io/74nu5/bouchon-universel:latest
+# ou, depuis le dépôt cloné :
+docker compose up
+```
+
+**Binaire autonome (sans .NET installé)**
+
+```bash
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/74nu5/bouchon-universel/master/install.sh | sh
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/74nu5/bouchon-universel/master/install.ps1 | iex
+```
+
+Les binaires par système sont aussi téléchargeables depuis les [Releases GitHub](https://github.com/74nu5/bouchon-universel/releases).
+
+## Développement
 
 Prérequis : SDK .NET 10.
 

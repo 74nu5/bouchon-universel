@@ -21,5 +21,18 @@ RUN dotnet publish BouchonUniversel/BouchonUniversel.csproj \
 # --- Étape d'exécution ---
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
+
+# Configuration par défaut : écoute HTTP sur 8080, base et fichiers dans un volume persistant.
+ENV ASPNETCORE_URLS=http://+:8080 \
+    ASPNETCORE_ENVIRONMENT=Production \
+    ConnectionStrings__BDDConnection=/app/data/BouchonUniversel.db \
+    Bouchon__CheminFichiers=/app/data/files \
+    Bouchon__DefautActivation=true \
+    Bouchon__UrlService=""
+
+RUN mkdir -p /app/data/files
+VOLUME /app/data
+EXPOSE 8080
+
 COPY --from=build /app/publish ./
 ENTRYPOINT ["dotnet", "BouchonUniversel.dll"]
