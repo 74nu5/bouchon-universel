@@ -72,8 +72,11 @@ L'API de bouchonnage (`/api/bouchon/*`) et la page d'installation restent toujou
 dotnet test
 ```
 
-Les tests unitaires (xUnit) couvrent la logique métier de bouchonnage : ajustement des dates
-(`MockRealTime`) et chargement en cache de la configuration des patterns (`PatternDateFormatProvider`).
+- **Tests unitaires** (xUnit) : logique métier (ajustement des dates `MockRealTime`, cache des patterns,
+  chaos, mapping d'erreurs, sécurité des chemins, hachage du mot de passe, upsert des paramètres).
+- **Tests d'intégration bout-en-bout** (`WebApplicationFactory`, base SQLite et fichiers isolés) : pipeline
+  HTTP complet — healthcheck, codes d'erreur sémantiques sur tous les verbes, injection de chaos,
+  redirection d'authentification et API restée ouverte.
 
 ## Techno
 

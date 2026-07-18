@@ -298,7 +298,7 @@
     <div class="score-row"><div class="name">Concept &amp; utilité</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Architecture / lisibilité</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
     <div class="score-row"><div class="name">Couverture fonctionnelle</div><div class="bar"><span style="width:85%"></span></div><div class="val">8.5/10</div></div>
-    <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:75%"></span></div><div class="val">7.5/10</div></div>
+    <div class="score-row"><div class="name">Tests &amp; robustesse</div><div class="bar"><span style="width:85%"></span></div><div class="val">8.5/10</div></div>
     <div class="score-row"><div class="name">Actualité technique</div><div class="bar"><span style="width:90%"></span></div><div class="val">9/10</div></div>
     <div class="score-row"><div class="name">Industrialisation (CI/Docker)</div><div class="bar"><span style="width:80%"></span></div><div class="val">8/10</div></div>
   </div>
@@ -324,7 +324,7 @@
     <ul class="clean" style="margin-top:8px">
       <li><span class="tag t-ok">fait</span> <s><strong>Hacher le mot de passe admin</strong></s> — hash PBKDF2 salé (<code>PasswordHasher</code>) stocké dans <code>Admin:PasswordHash</code> ; vérification à temps constant ; commande <code>hash-password</code> pour générer le hash</li>
       <li><span class="tag t-ok">fait</span> <s><strong>Upsert de la page <code>/install</code></strong></s> — <code>UpsertAsync</code> par clé (plus de doublons de settings) + pré-remplissage du formulaire avec la configuration existante</li>
-      <li><strong>Tests d'intégration bout-en-bout</strong> (<code>WebApplicationFactory</code>) avec base seedée, pour couvrir chaos / import / passthrough sur un vrai serveur en aval</li>
+      <li><span class="tag t-ok">fait</span> <s><strong>Tests d'intégration bout-en-bout</strong></s> — <code>WebApplicationFactory</code> avec base SQLite &amp; fichiers isolés, service seedé : healthcheck, codes sémantiques (tous verbes), injection de chaos, redirection d'auth</li>
       <li><strong>Cache du contrôle d'installation</strong> — <code>InstallMiddleware</code> interroge la base à chaque requête ; un drapeau en cache l'éliminerait</li>
     </ul>
   </div>

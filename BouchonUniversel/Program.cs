@@ -32,7 +32,7 @@ namespace BouchonUniversel
                 return;
             }
 
-            var host = BuildWebHost(args);
+            var host = CreateHostBuilder(args).Build();
 
             // Application des migrations et amorçage des paramètres depuis la configuration.
             // Idempotent : ne réamorce pas si des paramètres existent déjà.
@@ -41,13 +41,12 @@ namespace BouchonUniversel
             host.Run();
         }
 
-        /// <summary>The build web host.</summary>
+        /// <summary>The create host builder. Exposé publiquement pour les outils (EF, tests d'intégration via WebApplicationFactory).</summary>
         /// <param name="args">The args.</param>
-        /// <returns>The <see cref="IWebHost" />.</returns>
-        private static IHost BuildWebHost(string[] args) => Host.CreateDefaultBuilder(args)
-                                                                .ConfigureWebHostDefaults(
-                                                                                          builder => builder.UseStartup<Startup>().UseUrls("https://*:5555"))
-                                                                .Build();
+        /// <returns>The <see cref="IHostBuilder" />.</returns>
+        public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
+                                                                          .ConfigureWebHostDefaults(
+                                                                                                    builder => builder.UseStartup<Startup>().UseUrls("https://*:5555"));
 
         /// <summary>The initialize data.</summary>
         /// <param name="host">The host.</param>
