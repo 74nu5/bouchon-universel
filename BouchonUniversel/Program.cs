@@ -24,7 +24,11 @@ namespace BouchonUniversel
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
-            // InitializeData(host);
+
+            // Création du schéma (EnsureCreated) et amorçage des paramètres depuis la configuration.
+            // Idempotent : ne réamorce pas si des paramètres existent déjà.
+            InitializeData(host);
+
             host.Run();
         }
 
