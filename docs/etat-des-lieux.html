@@ -311,6 +311,67 @@
     <div class="card" style="border-left:4px solid var(--green)"><h3 style="color:var(--green)">Long terme ✅ fait</h3><ul class="clean"><li><s>Latence/erreurs simulées (chaos)</s></li><li><s>Import/export de jeux de mocks</s></li><li><s>Authentification de l'admin</s></li></ul></div>
   </div>
 
+  <!-- ================= ÉVOLUTIONS POTENTIELLES ================= -->
+  <h2><span class="ic">🚀</span> Évolutions potentielles</h2>
+  <p class="lead">
+    Toutes les recommandations du rapport initial (court / moyen / long terme) étant livrées, voici des pistes
+    d'évolution au-delà, regroupées par thème. L'étiquette indique l'<strong>effort</strong> estimé —
+    <span class="tag t-ok">quick win</span> <span class="tag t-warn">effort moyen</span> <span class="tag t-no">gros chantier</span>.
+  </p>
+
+  <div class="callout">
+    <strong>À traiter en priorité (quick wins &amp; dette identifiée) :</strong>
+    <ul class="clean" style="margin-top:8px">
+      <li><strong>Hacher le mot de passe admin</strong> (PBKDF2) + comparaison à temps constant — il est aujourd'hui comparé en clair depuis la configuration</li>
+      <li><strong>Upsert de la page <code>/install</code></strong> — la re-soumission crée aujourd'hui des lignes de settings en double (INSERT au lieu de créer-ou-mettre-à-jour)</li>
+      <li><strong>Tests d'intégration bout-en-bout</strong> (<code>WebApplicationFactory</code>) avec base seedée, pour couvrir chaos / import / passthrough sur un vrai serveur en aval</li>
+      <li><strong>Cache du contrôle d'installation</strong> — <code>InstallMiddleware</code> interroge la base à chaque requête ; un drapeau en cache l'éliminerait</li>
+    </ul>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>🎯 Fonctionnel — matching &amp; réponses</h3>
+      <ul class="clean">
+        <li>Matching de requêtes avancé (en-têtes, body JSONPath, regex de route, wildcards) au-delà du hash de query <span class="tag t-no">gros chantier</span></li>
+        <li>Templating des réponses : injecter des valeurs de la requête, au-delà des dates (<code>MockRealTime</code>) <span class="tag t-warn">effort moyen</span></li>
+        <li>Scénarios <em>stateful</em> / séquentiels : réponses variables selon l'ordre des appels <span class="tag t-no">gros chantier</span></li>
+        <li>Verbes HEAD / OPTIONS / TRACE + préflight CORS <span class="tag t-ok">quick win</span></li>
+        <li>Validation des requêtes entrantes (OpenAPI / JSON Schema) <span class="tag t-warn">effort moyen</span></li>
+        <li>Chaos avancé : coupure de connexion, réponses partielles/corrompues <span class="tag t-warn">effort moyen</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🏗️ Technique &amp; architecture</h3>
+      <ul class="clean">
+        <li>Stockage des réponses en base ou stockage objet (S3 / Blob) pour le <strong>multi-instance</strong> <span class="tag t-no">gros chantier</span></li>
+        <li>Observabilité : logs structurés (Serilog) + métriques/traces (OpenTelemetry) <span class="tag t-warn">effort moyen</span></li>
+        <li>Health checks ASP.NET Core (liveness / readiness) <span class="tag t-ok">quick win</span></li>
+        <li>OpenAPI natif .NET (<code>Microsoft.AspNetCore.OpenApi</code>) + versionnage d'API <span class="tag t-warn">effort moyen</span></li>
+        <li>Rate limiting (middleware natif .NET) <span class="tag t-ok">quick win</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🔒 Sécurité</h3>
+      <ul class="clean">
+        <li>Hachage du mot de passe admin (PBKDF2) + comparaison à temps constant <span class="tag t-ok">quick win</span></li>
+        <li>Anti-bruteforce : rate limiting / verrouillage du login <span class="tag t-ok">quick win</span></li>
+        <li>Rôles (lecture seule vs admin) + journal d'audit des modifications <span class="tag t-warn">effort moyen</span></li>
+        <li>En-têtes de sécurité (HSTS, CSP) + secrets via user-secrets / Key Vault <span class="tag t-ok">quick win</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🎨 UX &amp; Ops</h3>
+      <ul class="clean">
+        <li>Éditeur avec coloration syntaxique + validation JSON/XML (Monaco / CodeMirror) <span class="tag t-warn">effort moyen</span></li>
+        <li>Recherche / filtre / prévisualisation / diff des mocks, duplication de services <span class="tag t-warn">effort moyen</span></li>
+        <li>Modernisation de l'UI (Bootstrap 3 → 5, thème sombre) <span class="tag t-warn">effort moyen</span></li>
+        <li>Docker multi-arch + <code>docker-compose</code> / Helm, scan de vulnérabilités en CI <span class="tag t-warn">effort moyen</span></li>
+        <li>Sauvegarde / restauration de la base <span class="tag t-ok">quick win</span></li>
+      </ul>
+    </div>
+  </div>
+
   <footer>
     Rapport d'état des lieux — Bouchon Universel · généré automatiquement · 18/07/2026
   </footer>
