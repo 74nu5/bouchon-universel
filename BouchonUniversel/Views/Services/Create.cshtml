@@ -13,28 +13,28 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Cle" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Cle" class="form-label"></label>
                 <input asp-for="Cle" class="form-control"/>
                 <span asp-validation-for="Cle" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Environnement" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Environnement" class="form-label"></label>
                 <select asp-for="EnvironnementId" class="form-control" asp-items="this.ViewBag.EnvironnementId"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="Url" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Url" class="form-label"></label>
                 <input asp-for="Url" class="form-control"/>
                 <span asp-validation-for="Url" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <div class="checkbox">
                     <label>
                         <input asp-for="IsEnabled"/> @(this.Html.DisplayNameFor(model => model.IsEnabled))
                     </label>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <div class="checkbox">
                     <label>
                         <input asp-for="UpdateDates"/> @(this.Html.DisplayNameFor(model => model.UpdateDates))
@@ -43,35 +43,35 @@
             </div>
             <hr/>
             <p class="text-muted">Ingénierie du chaos (facultatif)</p>
-            <div class="form-group">
-                <label asp-for="LatencyMs" class="control-label">Latence simulée (ms)</label>
+            <div class="mb-3">
+                <label asp-for="LatencyMs" class="form-label">Latence simulée (ms)</label>
                 <input asp-for="LatencyMs" class="form-control" type="number" min="0"/>
             </div>
-            <div class="form-group">
-                <label asp-for="ErrorProbability" class="control-label">Probabilité d'erreur (0-100)</label>
+            <div class="mb-3">
+                <label asp-for="ErrorProbability" class="form-label">Probabilité d'erreur (0-100)</label>
                 <input asp-for="ErrorProbability" class="form-control" type="number" min="0" max="100"/>
             </div>
-            <div class="form-group">
-                <label asp-for="ErrorStatusCode" class="control-label">Code d'erreur simulé (500 par défaut)</label>
+            <div class="mb-3">
+                <label asp-for="ErrorStatusCode" class="form-label">Code d'erreur simulé (500 par défaut)</label>
                 <input asp-for="ErrorStatusCode" class="form-control" type="number" min="0"/>
             </div>
-            <div class="form-group">
-                <label asp-for="ConnectionResetProbability" class="control-label">Probabilité de coupure de connexion (0-100)</label>
+            <div class="mb-3">
+                <label asp-for="ConnectionResetProbability" class="form-label">Probabilité de coupure de connexion (0-100)</label>
                 <input asp-for="ConnectionResetProbability" class="form-control" type="number" min="0" max="100"/>
             </div>
-            <div class="form-group">
-                <label asp-for="TruncateResponseProbability" class="control-label">Probabilité de réponse tronquée (0-100)</label>
+            <div class="mb-3">
+                <label asp-for="TruncateResponseProbability" class="form-label">Probabilité de réponse tronquée (0-100)</label>
                 <input asp-for="TruncateResponseProbability" class="form-control" type="number" min="0" max="100"/>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <div class="checkbox">
                     <label>
                         <input asp-for="Templating"/> Activer le templating des réponses ({{query.x}}, {{header.x}}, {{guid}}, {{now}})
                     </label>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default"/>
+            <div class="mb-3">
+                <input type="submit" value="Create" class="btn btn-secondary"/>
             </div>
         </form>
     </div>

@@ -1,43 +1,59 @@
-﻿@model IEnumerable<BouchonUniversel.Models.Bouchons.Environnement>
+@model IEnumerable<BouchonUniversel.Models.Bouchons.Environnement>
 
 @{
-    this.ViewData["Title"] = "Index";
+    this.ViewData["Title"] = "Environnements";
     this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h2 class="mb-0"><i class="bi bi-diagram-3"></i> Environnements</h2>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nouvel environnement</a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @(this.Html.DisplayNameFor(model => model.Nom))
-        </th>
-        <th>
-            @(this.Html.DisplayNameFor(model => model.IsEnabled))
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in this.Model)
-    {
+<div class="input-group mb-3" style="max-width: 420px;">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input id="filter" type="search" class="form-control" placeholder="Filtrer les environnements..." autocomplete="off"/>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead>
         <tr>
-            <td>
-                @(this.Html.DisplayFor(modelItem => item.Nom))
-            </td>
-            <td>
-                @(this.Html.DisplayFor(modelItem => item.IsEnabled))
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            <th>@(this.Html.DisplayNameFor(model => model.Nom))</th>
+            <th>@(this.Html.DisplayNameFor(model => model.IsEnabled))</th>
+            <th class="text-end">Actions</th>
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody id="rows">
+        @foreach (var item in this.Model)
+        {
+            <tr>
+                <td class="fw-semibold">@(this.Html.DisplayFor(modelItem => item.Nom))</td>
+                <td>
+                    <span class="badge @(item.IsEnabled ? "text-bg-success" : "text-bg-secondary")">@(item.IsEnabled ? "Activé" : "Inactif")</span>
+                </td>
+                <td class="text-end text-nowrap">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Détails"><i class="bi bi-eye"></i></a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Éditer"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Supprimer"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var input = document.getElementById('filter');
+            var rows = document.querySelectorAll('#rows tr');
+            input.addEventListener('input', function () {
+                var q = this.value.toLowerCase();
+                rows.forEach(function (row) {
+                    row.style.display = row.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
+                });
+            });
+        })();
+    </script>
+}

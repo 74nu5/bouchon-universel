@@ -5,8 +5,16 @@
     this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Éditer la réponse bouchonnée</h2>
-<h4>@(this.Model.FileName)</h4>
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/material-darker.min.css"/>
+    <style>
+        .CodeMirror { height: 60vh; border: 1px solid var(--bs-border-color); border-radius: .375rem; }
+    </style>
+}
+
+<h2><i class="bi bi-pencil-square"></i> Éditer la réponse bouchonnée</h2>
+<h5 class="text-body-secondary">@(this.Model.FileName)</h5>
 <hr/>
 
 @if (this.TempData["Message"] != null)
@@ -14,22 +22,70 @@
     <div class="alert alert-success">@(this.TempData["Message"])</div>
 }
 
-<div class="row">
-    <div class="col-md-10">
-        <form asp-action="EditFile" method="post">
-            <input type="hidden" asp-for="Path"/>
-            <input type="hidden" asp-for="FileName"/>
-            <div class="form-group">
-                <label asp-for="Content" class="control-label">Contenu du fichier</label>
-                <textarea asp-for="Content" class="form-control" rows="24" style="font-family: monospace;"></textarea>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Enregistrer" class="btn btn-primary"/>
-            </div>
-        </form>
-    </div>
-</div>
+<form asp-action="EditFile" method="post">
+    <input type="hidden" asp-for="Path"/>
+    <input type="hidden" asp-for="FileName"/>
 
-<div>
-    <a asp-controller="Services" asp-action="Index">Retour à la liste</a>
-</div>
+    <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+        <label for="mode" class="form-label mb-0">Langage :</label>
+        <select id="mode" class="form-select form-select-sm" style="width:auto;">
+            <option value="xml" selected>XML</option>
+            <option value="application/json">JSON</option>
+        </select>
+        <button type="button" id="validate" class="btn btn-sm btn-outline-secondary"><i class="bi bi-check2-circle"></i> Valider</button>
+        <span id="validation" class="ms-1"></span>
+    </div>
+
+    <div class="mb-3">
+        <textarea asp-for="Content" id="content" class="form-control" rows="24"></textarea>
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Enregistrer</button>
+        <a asp-controller="Services" asp-action="Index" class="btn btn-outline-secondary">Retour à la liste</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/javascript/javascript.min.js"></script>
+    <script>
+        (function () {
+            var dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            var editor = CodeMirror.fromTextArea(document.getElementById('content'), {
+                mode: 'xml',
+                lineNumbers: true,
+                lineWrapping: true,
+                theme: dark ? 'material-darker' : 'default'
+            });
+
+            document.getElementById('mode').addEventListener('change', function () {
+                editor.setOption('mode', this.value);
+            });
+
+            document.getElementById('validate').addEventListener('click', function () {
+                var out = document.getElementById('validation');
+                var text = editor.getValue();
+                var mode = document.getElementById('mode').value;
+                var ok = true, message = '';
+                try {
+                    if (mode === 'application/json') {
+                        JSON.parse(text);
+                        message = 'JSON valide';
+                    } else {
+                        var doc = new DOMParser().parseFromString(text, 'application/xml');
+                        if (doc.getElementsByTagName('parsererror').length > 0) {
+                            throw new Error('XML invalide');
+                        }
+                        message = 'XML valide';
+                    }
+                } catch (e) {
+                    ok = false;
+                    message = e.message;
+                }
+                out.className = 'ms-1 badge ' + (ok ? 'text-bg-success' : 'text-bg-danger');
+                out.textContent = message;
+            });
+        })();
+    </script>
+}

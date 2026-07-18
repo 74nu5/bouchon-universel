@@ -1,54 +1,70 @@
-﻿body {
-    padding-bottom: 20px;
-    padding-top: 50px;
+/* Styles applicatifs — compatibles Bootstrap 5 et thème clair/sombre (data-bs-theme). */
+
+/* Masque le résumé de validation vide. */
+.validation-summary-valid {
+    display: none;
 }
 
+/* Cartes de la page d'accueil. */
 .flexbox {
-    -moz-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    -o-flex-wrap: wrap;
-    -o-justify-content: center;
-    -webkit-flex-wrap: wrap;
-    -webkit-justify-content: center;
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 150px;
+    gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 .flexbox a {
-    -moz-flex-wrap: wrap;
-    -ms-align-items: center;
-    -ms-border-radius: 45px;
-    -ms-flex-wrap: wrap;
-    -o-align-items: center;
-    -o-flex-wrap: wrap;
-    -o-justify-content: center;
-    -webkit-align-items: center;
-    -webkit-flex-wrap: wrap;
-    -webkit-justify-content: center;
-    align-items: center;
-    background-color: #233;
-    border: solid 1px #FA4;
-    border-radius: 45px;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
-    height: 200px;
+    align-items: center;
     justify-content: center;
-    margin: 15px auto;
-    width: 350px;
+    width: 320px;
+    height: 200px;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    text-decoration: none;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
 }
 
-.flexbox a span { font-size: 1.4em; }
+.flexbox a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    border-color: var(--bs-primary);
+}
+
+.flexbox a span {
+    font-size: 1.4em;
+    margin-top: .75rem;
+}
 
 .flexbox a img {
     display: block;
-    margin: auto 10px;
-    max-width: 250px;
+    max-width: 220px;
+    height: auto;
 }
 
-.validation-summary-valid {
-    display: none;
+/* Shim : cases à cocher (ancien markup .checkbox). */
+.checkbox label {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
+}
+
+.checkbox input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Shim : listes de définition (ancien .dl-horizontal) en présentation lisible et responsive. */
+dl.dl-horizontal dt {
+    font-weight: 600;
+}
+
+dl.dl-horizontal dd {
+    margin: 0 0 .5rem;
 }

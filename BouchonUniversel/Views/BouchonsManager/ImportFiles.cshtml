@@ -20,10 +20,10 @@
             Son contenu sera extrait dans le répertoire des bouchons.
         </p>
         <form asp-action="ImportFiles" method="post" enctype="multipart/form-data">
-            <div class="form-group">
+            <div class="mb-3">
                 <input type="file" name="archive" accept=".gz,.tgz,application/gzip" class="form-control-file"/>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <input type="submit" value="Importer" class="btn btn-primary"/>
             </div>
         </form>

@@ -347,7 +347,17 @@
       <li><strong>Observabilité</strong> : logs structurés Serilog + journal de requêtes</li>
       <li><strong>Rôles</strong> admin / lecteur (lecture seule) + <strong>journal d'audit</strong> des modifications</li>
       <li><strong>Docker</strong> multi-arch (buildx) + <code>docker-compose</code> (volume persistant) + <strong>scan de vulnérabilités</strong> en CI</li>
-      <li>Couverture portée à <strong>85 tests</strong>. Restent en passe dédiée : UI (Bootstrap 5 + thème sombre, éditeur Monaco, recherche/filtre/diff), OpenAPI natif + versioning, validation de requêtes (JSON Schema), OpenTelemetry, chart Helm.</li>
+      <li>Couverture portée à <strong>85 tests</strong>.</li>
+    </ul>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--green); margin-top:16px">
+    <h3 style="color:var(--green)">✅ Mise à jour — passe UI</h3>
+    <ul class="clean">
+      <li><strong>Bootstrap 5</strong> (migration complète des 25 vues) + <strong>thème sombre</strong> commutable (persisté, respecte les préférences système) + <strong>Bootstrap Icons</strong></li>
+      <li><strong>Éditeur de réponses CodeMirror</strong> : coloration syntaxique XML/JSON + bouton de validation</li>
+      <li><strong>Recherche/filtre</strong> instantané des listes, <strong>duplication</strong> de services, prévisualisation via l'éditeur</li>
+      <li>Restent en passe dédiée : diff des mocks, OpenAPI natif + versioning, validation de requêtes (JSON Schema), OpenTelemetry, chart Helm.</li>
     </ul>
   </div>
 
@@ -385,9 +395,9 @@
     <div class="card">
       <h3>🎨 UX &amp; Ops</h3>
       <ul class="clean">
-        <li>Éditeur avec coloration syntaxique + validation JSON/XML (Monaco / CodeMirror) <span class="tag t-warn">effort moyen</span></li>
-        <li>Recherche / filtre / prévisualisation / diff des mocks, duplication de services <span class="tag t-warn">effort moyen</span></li>
-        <li>Modernisation de l'UI (Bootstrap 3 → 5, thème sombre) <span class="tag t-warn">effort moyen</span></li>
+        <li><span class="tag t-ok">fait</span> <s>Éditeur avec coloration syntaxique + validation JSON/XML</s> (CodeMirror)</li>
+        <li><span class="tag t-ok">fait</span> <s>Recherche/filtre des listes, duplication de services, prévisualisation</s> — le diff reste à faire</li>
+        <li><span class="tag t-ok">fait</span> <s>Modernisation de l'UI (Bootstrap 3 → 5, thème sombre)</s></li>
         <li><span class="tag t-ok">fait</span> <s>Docker multi-arch (buildx) + <code>docker-compose</code> + scan de vulnérabilités en CI</s> — chart Helm non fourni</li>
         <li><span class="tag t-ok">fait</span> <s>Sauvegarde de la base</s> (téléchargement d'une copie SQLite cohérente en ligne) — restauration = remplacement de fichier hors ligne</li>
       </ul>

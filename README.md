@@ -104,6 +104,14 @@ dotnet test
   HTTP complet — healthcheck, codes d'erreur sémantiques sur tous les verbes, injection de chaos,
   redirection d'authentification et API restée ouverte.
 
+## Interface d'administration
+
+L'interface est en **Bootstrap 5** avec un **thème clair/sombre** commutable (persisté, respecte les
+préférences système). Les listes disposent d'un **filtre de recherche** instantané, les services peuvent être
+**dupliqués**, et l'éditeur de réponses mockées offre une **coloration syntaxique** (CodeMirror) avec
+validation JSON/XML.
+
 ## Techno
 
-C# / ASP.NET Core (.NET 10), Entity Framework Core 10 (SQLite), Swagger (Swashbuckle), xUnit.
+C# / ASP.NET Core (.NET 10), Entity Framework Core 10 (SQLite), Serilog, Swagger (Swashbuckle),
+Bootstrap 5 + CodeMirror, xUnit.

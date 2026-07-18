@@ -123,6 +123,48 @@
             return this.View(model);
         }
 
+        /// <summary>Duplique un service existant (nouvelle clé suffixée « -copie », désactivé), puis ouvre son édition.</summary>
+        /// <param name="id">L'identifiant du service à dupliquer.</param>
+        /// <returns>The <see cref="Task" />.</returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Duplicate(long id)
+        {
+            var source = await this.context.Services.AsNoTracking().SingleOrDefaultAsync(service => service.Id == id).ConfigureAwait(false);
+            if (source == null)
+            {
+                return this.NotFound();
+            }
+
+            var clone = new Service
+                        {
+                            Cle = source.Cle + "-copie",
+                            EnvironnementId = source.EnvironnementId,
+                            Url = source.Url,
+                            IsEnabled = false,
+                            UpdateDates = source.UpdateDates,
+                            LatencyMs = source.LatencyMs,
+                            ErrorProbability = source.ErrorProbability,
+                            ErrorStatusCode = source.ErrorStatusCode,
+                            Templating = source.Templating,
+                            ConnectionResetProbability = source.ConnectionResetProbability,
+                            TruncateResponseProbability = source.TruncateResponseProbability,
+                        };
+
+            this.context.Services.Add(clone);
+            try
+            {
+                await this.context.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (DbUpdateException)
+            {
+                this.TempData["Message"] = $"Impossible de dupliquer : une clé « {clone.Cle} » existe déjà pour cet environnement.";
+                return this.RedirectToAction(nameof(this.Index));
+            }
+
+            return this.RedirectToAction(nameof(this.Edit), new { id = clone.Id });
+        }
+
         /// <summary>The download file.</summary>
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="IActionResult" />.</returns>

@@ -1,61 +1,75 @@
-﻿@model IEnumerable<BouchonUniversel.Models.Bouchons.Service>
+@model IEnumerable<BouchonUniversel.Models.Bouchons.Service>
 
 @{
-    this.ViewData["Title"] = "Index";
+    this.ViewData["Title"] = "Services";
     this.Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h2 class="mb-0"><i class="bi bi-hdd-network"></i> Services</h2>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nouveau service</a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @(this.Html.DisplayNameFor(model => model.Cle))
-        </th>
-        <th>
-            @(this.Html.DisplayNameFor(model => model.Url))
-        </th>
-        <th>
-            @(this.Html.DisplayNameFor(model => model.IsEnabled))
-        </th>
-        <th>
-            @(this.Html.DisplayNameFor(model => model.UpdateDates))
-        </th>
-        <th>
-            @(this.Html.DisplayNameFor(model => model.Environnement))
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in this.Model)
-    {
+@if (this.TempData["Message"] != null)
+{
+    <div class="alert alert-warning">@(this.TempData["Message"])</div>
+}
+
+<div class="input-group mb-3" style="max-width: 420px;">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input id="filter" type="search" class="form-control" placeholder="Filtrer les services..." autocomplete="off"/>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead>
         <tr>
-            <td>
-                @(this.Html.DisplayFor(modelItem => item.Cle))
-            </td>
-            <td>
-                <a href="@item.Url" target="_blank">@item.Url</a>
-            </td>
-            <td>
-                @(this.Html.DisplayFor(modelItem => item.IsEnabled))
-            </td>
-            <td>
-                @(this.Html.DisplayFor(modelItem => item.UpdateDates))
-            </td>
-            <td>
-                @(this.Html.DisplayFor(modelItem => item.Environnement.Nom))
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            <th>@(this.Html.DisplayNameFor(model => model.Cle))</th>
+            <th>@(this.Html.DisplayNameFor(model => model.Url))</th>
+            <th>Environnement</th>
+            <th>@(this.Html.DisplayNameFor(model => model.IsEnabled))</th>
+            <th>@(this.Html.DisplayNameFor(model => model.UpdateDates))</th>
+            <th class="text-end">Actions</th>
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody id="rows">
+        @foreach (var item in this.Model)
+        {
+            <tr>
+                <td class="fw-semibold">@(this.Html.DisplayFor(modelItem => item.Cle))</td>
+                <td class="text-truncate" style="max-width: 320px;"><a href="@item.Url" target="_blank" rel="noopener">@item.Url</a></td>
+                <td>@(this.Html.DisplayFor(modelItem => item.Environnement.Nom))</td>
+                <td>
+                    <span class="badge @(item.IsEnabled ? "text-bg-success" : "text-bg-secondary")">@(item.IsEnabled ? "Activé" : "Inactif")</span>
+                </td>
+                <td>
+                    <span class="badge @(item.UpdateDates ? "text-bg-info" : "text-bg-light")">@(item.UpdateDates ? "Oui" : "Non")</span>
+                </td>
+                <td class="text-end text-nowrap">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Détails"><i class="bi bi-eye"></i></a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Éditer"><i class="bi bi-pencil"></i></a>
+                    <form asp-action="Duplicate" asp-route-id="@item.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Dupliquer"><i class="bi bi-files"></i></button>
+                    </form>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Supprimer"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var input = document.getElementById('filter');
+            var rows = document.querySelectorAll('#rows tr');
+            input.addEventListener('input', function () {
+                var q = this.value.toLowerCase();
+                rows.forEach(function (row) {
+                    row.style.display = row.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
+                });
+            });
+        })();
+    </script>
+}

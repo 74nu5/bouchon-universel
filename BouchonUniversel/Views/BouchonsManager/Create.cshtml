@@ -13,17 +13,17 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="BaseUrl" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="BaseUrl" class="form-label"></label>
                 <input asp-for="BaseUrl" class="form-control"/>
                 <span asp-validation-for="BaseUrl" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ServiceUrl" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="ServiceUrl" class="form-label"></label>
                 <input asp-for="ServiceUrl" class="form-control"/>
                 <span asp-validation-for="ServiceUrl" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <div class="checkbox">
                     <label>
                         <input asp-for="IsEnabled"/> @(this.Html.DisplayNameFor(model => model.IsEnabled))
@@ -31,8 +31,8 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default"/>
+            <div class="mb-3">
+                <input type="submit" value="Create" class="btn btn-secondary"/>
             </div>
         </form>
     </div>

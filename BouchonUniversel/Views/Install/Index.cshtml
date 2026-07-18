@@ -9,12 +9,12 @@
 <form asp-controller="Install" asp-action="SaveSettings" method="post" class="d-flex w50">
   <div class="alert alert-danger"  asp-validation-summary="All"></div>
 
-  <div class="form-group">
+  <div class="mb-3">
     <label asp-for="FilesPath"></label>
     <input class="form-control" asp-for="FilesPath" required>
     <span asp-validation-for="FilesPath"></span>
   </div>
-  <div class="form-group form-check">
+  <div class="mb-3 form-check">
     <input class="form-check-input" asp-for="DefaultActivation">
     <label class="form-check-label" asp-for="DefaultActivation"></label>
     <span asp-validation-for="DefaultActivation"></span>
